@@ -1,0 +1,225 @@
+Processes:
+1,  AFM will call the dumper directly when it is completed.
+    This way, dumper can utilize some temp results(e.g. value & table) from AFM service.
+    But this can NOT impact AFM job, meaning if calling dumper failed, AFM itself will be completed anyway.
+2,  This dumper module will also be incorporated into osa_bundle service, and can be called via REST API.
+    This way, if calling this job failed by AFM, we don't have to rerun AFM instead of triggering the REST API.
+
+
+AFM parameters:
+--Adding one more parameter for AFM: deliveryFlag[Y|N-default]
+{"jobId": 1234,           # mandatory. passed from JobScheduler
+ "stepId": 3,             # mandatory. passed from JobScheduler
+ "batchId": 0,            # mandatory. passed from JobScheduler
+ "retry": 0,              # mandatory. passed from JobScheduler
+ "groupName": "7:2",      # mandatory. passed from JobScheduler [jobDefinitionId:cycleKey or jobDefinitionId:cycleKey:vendorKey:retailerKey]
+ "enableFileExtract": "false",     # Optional. need to delivery alerts to customers? default false
+ "debug":"N"              # char: optional [Y|N(default)]. debug model will keep most of staging tables and generate more log.
+}
+
+delivery parameters:
+{
+   "groupName": "7:2",                      # groupName from delivery job if AFM directlt calling failed.
+   "sla_time": "2018-11-14 23:00:00.000",   # Optional. no need to pass sla_time for default. calling api instead. but support sla_time.
+   "debug":"N"                              # char: optional [Y|N(default)]. debug model will keep most of staging tables and generate more log.
+ }
+
+
+Items:
+1, We can get the shared folder("report.networkshare.dir") from NXG silo for SVR rule. but how to handle RETAILER rule? This is similar for mail & ftp, they are all silo level
+   The share folder will be configed from UI.
+   RETAILER rule & SVR rule are sharing the same folder, but with different file name to differentiate customers.
+
+2, Need to send alerts to vendors for RETAILER rule? how to send? depends on item 1.
+   No need to send alerts to vendors for RETAILER rule.
+
+    -- delivery methods.
+    -- file delivery folder[default]
+    qa: qarptfdririsuser
+    \\prodp1nas1\nxgqaappdata\nextgen\app\rv\reportshare\iris
+    prod: prodrptfdririsuser
+    \\prodp1nas1\nxgprodappdata\nextgen\app\rv\reportshare\iris
+
+    -- ftp / email [tbd]
+    ftp just simply call send_file, going forward will need to support upload to ftp
+    email not required now.
+
+3, columns
+   Call get_default_header API to get all columns for alert center. Then get required fields from those default columns and then send to customers.
+
+4, copy file from Linux to Windows via scp? or via samba?
+   working on it.
+   testing the special chars when dumping data via Python csv module
+测试从linux 拷贝文件到windows共享路径
+测试csv格式如果字段里面有逗号的情况
+
+5, using ".txt" as file extension no matter what the delimiter is.
+
+6, calling API to get related SQL. (stored in AP_CONFIG_META_ATTRIBUTE)
+   API: https://irisqa.rsicorp.local/provision/layout/allattributes
+   Other settings are stored in below meta table AP_META_DUMP. (e.g. filter, delimiter etc)
+
+
+
+--DDL
+
+--drop table AP_META_DELIVERIES
+--drop table AP_META_ENDPOINTS
+CREATE TABLE AP_META_ENDPOINTS
+(
+	ID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	SERVER nvarchar(100) NULL,
+	EXTRACTION_FOLDER nvarchar(max) NULL,
+	USERNAME nvarchar(100) NULL,
+	PASSWORD nvarchar(100) NULL,
+	MAIL_SUBJECT nvarchar(max) NULL,
+	MAIL_BODY nvarchar(max) NULL,
+	MAIL_RECPSTO nvarchar(max) NULL,
+	MAIL_RECPSCC nvarchar(max) NULL,
+	DELIVERY_TYPE nvarchar(20) NOT NULL,  -- 'ftp', 'shared_folder', 'email'
+	ENABLED char(1) NOT NULL
+);
+ALTER TABLE AP_META_ENDPOINTS ADD CONSTRAINT DF_ENDPOINTS_ENABLED DEFAULT ('T') FOR ENABLED;
+
+--example value (\\prodp1nas1\nxgqaappdata\nextgen\app\rv\reportshare\iris)
+--truncate table AP_META_ENDPOINTS
+insert into DBO.AP_META_ENDPOINTS (SERVER, EXTRACTION_FOLDER, USERNAME, PASSWORD, MAIL_SUBJECT, MAIL_BODY, MAIL_RECPSTO, MAIL_RECPSCC, DELIVERY_TYPE)
+values(NULL, '\\prodp1nas1\nxgqaappdata\nextgen\app\rv\reportshare\iris', 'shared_user', 'shared_pwd', NULL, NULL, NULL, NULL, 'shared_folder')
+
+insert into DBO.AP_META_ENDPOINTS (SERVER, EXTRACTION_FOLDER, USERNAME, PASSWORD, MAIL_SUBJECT, MAIL_BODY, MAIL_RECPSTO, MAIL_RECPSCC, DELIVERY_TYPE)
+values('ftp_server', 'ftpfolder/iris', 'ftp_user', 'ftp_pwd', NULL, NULL, NULL, NULL, 'ftp')
+
+insert into DBO.AP_META_ENDPOINTS (SERVER, EXTRACTION_FOLDER, USERNAME, PASSWORD, MAIL_SUBJECT, MAIL_BODY, MAIL_RECPSTO, MAIL_RECPSCC, DELIVERY_TYPE)
+values ('smtp_server', NULL, 'mail_account', 'mail_pwd', '<Retailer Name> <Supplier Name> Alerts <Date>',
+'<html><body><p>Hi All,<br><br>
+Alerts have been available for all vendors. Please kindly refer to the attachment for the Alert Dump file.<br><br>
+<br><br>Thanks and Best regards,
+<br>RSI</p></body></html>',
+'Jonn.Doe@Chobani.com;Jane.Doe@Chobani.com', 'iris@retailsulotions.com', 'email')
+
+CREATE TABLE AP_META_DELIVERIES
+(
+	ID INT IDENTITY(1,1) NOT NULL,
+	CYCLE_KEY INT NOT NULL,
+	VENDOR_KEY INT NULL,
+	RETAILER_KEY INT NOT NULL,
+	DELIVERY_NAME nvarchar(1024) NOT NULL,  -- This should be displayed name in UI. So UI needs to feed this to backend. e.g. RSI_Target_Alert, RSI_Target_Chobani_Alert
+	FILTERS nvarchar(max) NULL, -- e.g. [{'filter': 'alert_type', 'value': 'Phantom,D-Void,Shelf OOS'}, {'filter': 'category', 'value': 'category1,category2'}]
+	DELIMITER nvarchar(2) NOT NULL,
+	ENDPOINT_ID INT NOT NULL,   --1|2|3  FK of AP_META_ENDPOINTS.ID
+	ENABLED char(1) NOT NULL
+);
+ALTER TABLE AP_META_DELIVERIES ADD CONSTRAINT DF_DELIVERIES_ENABLED DEFAULT ('T') FOR ENABLED;
+ALTER TABLE AP_META_DELIVERIES WITH CHECK ADD CONSTRAINT FK_DELIVERIES_ENDPOINTS FOREIGN KEY(ENDPOINT_ID) REFERENCES AP_META_ENDPOINTS (ID);
+
+--testing data
+--truncate table AP_META_DELIVERIES
+INSERT INTO AP_META_DELIVERIES (CYCLE_KEY, VENDOR_KEY, RETAILER_KEY, DELIVERY_NAME, FILTERS, DELIMITER, ENDPOINT_ID)
+VALUES (2, 113, 267, 'RSI_RETAILERNAME_VENDORNAME_ALERT', '{"alert_type": "Phantom,D-Void,Shelf OOS,STO", "category":""}', ',', 1);
+
+INSERT INTO AP_META_DELIVERIES (CYCLE_KEY, VENDOR_KEY, RETAILER_KEY, DELIVERY_NAME, FILTERS, DELIMITER, ENDPOINT_ID)
+VALUES (2, 664, 5240, 'RSI_RETAILERNAME_VENDORNAME_ALERT', '{"alert_type": "Phantom,D-Void,Shelf OOS,STO", "category":""}', ',', 1);
+
+
+
+
+
+
+
+
+
+obsolete
+--DDL
+--meta table which interacts with UI
+drop table DBO.AP_META_DUMPFILES
+CREATE TABLE DBO.AP_META_DUMPFILES
+(
+    VENDOR_KEY INT NOT NULL,
+    RETAILER_KEY INT NOT NULL,
+    CYCLE_KEY INT NOT NULL,
+    --COLUMNS nvarchar(max) NOT NULL,		  --which columns needed?
+    --ALERT_TYPE nvarchar(20) NOT NULL,	      --alert type filters. what type of data customers want? Phantom/D-Void/ShelfOOS/All)
+    --CATEGORY_TYPE nvarchar(20) NOT NULL,    --category type filters.
+    FILTERS nvarchar(max) NULL,               -- e.g. [{"filter": "alert_type", "value": "Phantom,D-Void,Shelf OOS"}, {"filter": "category", "value": "category1,category2"}]
+    DELIMITER nvarchar(2) NOT NULL,	          --what the file format? "," or "|" or other delimiters
+	FILENAME_PATTERN nvarchar(1024) NOT NULL,  --file name?
+    EXTRACTION_FOLDER nvarchar(200) NOT NULL,    -- \\prodp1nas1\nxgprodappdata\nextgen\app\RV\reportshare\iris\*.csv
+	DELIVERY_TYPE nvarchar(20) NOT NULL,      --mail/ftp/others
+	IS_ENABLED char(1) NOT NULL			      --enabled?
+)
+
+VENDOR_KEY, RETAILER_KEY, CYCLE_KEY, FILTERS, DELIMITER, FILENAME_PATTERN, EXTRACTION_FOLDER, DELIVERY_TYPE, IS_ENABLED
+
+
+
+
+------------------------------------ previous info ---------------------------------------
+-- TDB. meta table for backend usage if required. Could be replaced by properties file.
+CREATE TABLE dbo.ANL_META_DUMPFILES
+(
+	VENDOR_KEY int NOT NULL,			    --vendor & retailer to identify the customers
+	RETAILER_KEY int NOT NULL,
+	SOURCE nvarchar(max) NOT NULL,		    --actual sql
+	EXTRACTIONFOLDER nvarchar(1024) NULL,	--to what folder?
+	FILENAMEPATTERN nvarchar(1024) NOT NULL, --file name?
+	EMAILSUBJECT nvarchar(max) NULL,	    --mail subject
+	EMAILBODY nvarchar(max) NULL,		    --mail body
+	EMAILRECPSTO varchar(max) NULL,		    --mail to
+	EMAILRECPSCC varchar(max) NULL,		    --mail cc
+	ISENABLED char(1) NOT NULL			    --enabled?
+)
+
+Q:
+1, what the EXTRACTIONFOLDER looks like? and what the FILENAMEPATTERN should be?
+2, where to get EMAILRECPSTO, CC, Body and related info if mail required ?
+
+1, created a meta table ap_meta_dump to store configs from UI.
+2, generate related source sql according to table ap_meta_dump.
+3, dump data according to source query.
+4, send data.
+   a), mail: mail account info should configed in config.properties file. (using Python mail template Jinja)
+   b), file:
+
+
+-- obsolete
+IF OBJECT_ID (N'ANL_META_DUMPFILES', N'U') IS NULL
+BEGIN
+	CREATE TABLE dbo.ANL_META_DUMPFILES
+	(
+		VENDOR_KEY int NOT NULL,			        --vendor & retailer to identify the customers
+		RETAILER_KEY int NOT NULL,
+		SOURCE_TYPE nvarchar(10) NOT NULL,	        --table or query  table as default
+		SOURCE nvarchar(max) NOT NULL,		        --actual table name or query
+		REQUIRED_FIELDS nvarchar(max) NOT NULL,		--which columns needed?
+		ALERT_TYPE nvarchar(20) NOT NULL,	  --what type of data customers want? Phantom/D-Void/ShelfOOS/All
+		DELIMITER nvarchar(1) NOT NULL,	    --what the file format? "," or "|" or other delimiters
+		EXTRACTION_FOLDER nvarchar(1024) NULL,	--to what folder?
+		FILENAME_PATTERN nvarchar(1024) NOT NULL,	--file name?
+		DELIVERY_TYPE nvarchar(30) NOT NULL,     --mail/ftp/others
+		EMAIL_SUBJECT nvarchar(max) NULL,	        --mail subject
+		EMAIL_BODY nvarchar(max) NULL,		          --mail body
+		EMAIL_RECPSTO varchar(max) NULL,		      --mail to
+		EMAIL_RECPSCC varchar(max) NULL,	        --mail cc
+		IS_ENABLED char(1) NOT NULL			          --enabled?
+	)
+	ALTER TABLE dbo.ANL_META_DUMPFILES
+	ADD CONSTRAINT PK_ANL_META_DUMPFILES PRIMARY KEY CLUSTERED (VENDOR_KEY, RETAILER_KEY),
+		CONSTRAINT CK_ANL_META_DUMPFILES check (IS_ENABLED in ('T','F')),
+		CONSTRAINT DF_ANL_META_DUMPFILES_ISENABLED default 'T' for IS_ENABLED
+
+  --sample data
+	INSERT INTO dbo.ANL_META_DUMPFILES
+	(VENDOR_KEY, RETAILER_KEY, SOURCE_TYPE, SOURCE, REQUIRED_FIELDS, ALERT_TYPE, DELIMITER,
+	 EXTRACTION_FOLDER, FILENAME_PATTERN, DELIVERY_TYPE,
+	 EMAIL_SUBJECT, EMAIL_BODY, EMAIL_RECPSTO, EMAIL_RECPSCC, IS_ENABLED)
+	VALUES (113, 267, 'table', 'FACT_PROCESSED_ALERT', 'VENDOR_KEY, RETAILER_KEY', 'all', ',',
+           'C:\RSI\Fusion\App\RV\MASTERDATA\GeneratedReports', 'RSI_ALERT_DUMP_', 'mail',
+           'Alert Dump Report',
+           '<html><body>
+          <p>Hi All,<br><br>
+          Alerts have been available for all vendors. Please kindly refer to the attachment for the Alert Dump file.<br><br>
+          <br><br>Thanks and Best regards,<br>RSI
+          </p></body></html>' ,
+          'ben.wu@retailsolutions.com;' ,'ben.wu@retailsolutions.com', 'T')
+
+END

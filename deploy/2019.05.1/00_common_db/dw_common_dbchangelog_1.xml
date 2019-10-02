@@ -1,0 +1,129 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet author="hong.hu (generated)" id="1">
+        <sql>
+            DROP TABLE IF EXISTS $(common).DIM_FEEDBACK_TEMPLATE_DETAIL;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="2">
+        <sql>
+            DROP TABLE IF EXISTS $(common).DIM_FEEDBACK_TEMPLATE;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="3">
+        <sql>
+            CREATE TABLE IF NOT EXISTS $(common).DIM_FEEDBACK_TEMPLATE
+            (
+                ID IDENTITY(1,1,1) PRIMARY KEY ENCODING RLE,
+                NAME VARCHAR(128) NOT NULL ENCODING RLE, 
+                STATUS char(1) NOT NULL ENCODING RLE, 
+                UNIQUE (NAME) ENABLED
+            ) UNSEGMENTED all nodes;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="4">
+        <sql>
+            CREATE TABLE IF NOT EXISTS $(common).DIM_FEEDBACK_TEMPLATE_DETAIL
+            (
+                ID IDENTITY(1,1,1) PRIMARY KEY ENCODING RLE,
+                TEMPLATE_ID INTEGER NOT NULL CONSTRAINT FK_DIM_FEEDBACK_TEMPLATE_ID REFERENCES $(common).DIM_FEEDBACK_TEMPLATE (ID) ENCODING RLE, 
+                FeedbackDesc varchar(255) NOT NULL ENCODING RLE,
+                AcceptAdjustment char(1) ENCODING RLE,
+                EffectiveFeedback char(1) ENCODING RLE,
+                FeedbackRank char(1) ENCODING RLE,
+                FeedbackSubRank char(1) ENCODING RLE,
+                HasFeedback char(1) ENCODING RLE,
+                TrueAlert char(1) ENCODING RLE,
+                NotOnPlanogram char(1) ENCODING RLE,
+                alertTypeList varchar(512) ENCODING RLE, 
+                UNIQUE (TEMPLATE_ID, FeedbackDesc) ENABLED
+            ) UNSEGMENTED all nodes;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="5">
+        <sql>
+            INSERT INTO $(common).DIM_FEEDBACK_TEMPLATE(NAME, STATUS) VALUES('RSi Standard', 'A');
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="6">
+        <sql>
+            INSERT INTO $(common).DIM_FEEDBACK_TEMPLATE_DETAIL(TEMPLATE_ID, FeedbackDesc, AcceptAdjustment, EffectiveFeedback, FeedbackRank, FeedbackSubRank, HasFeedback, TrueAlert, NotOnPlanogram, alertTypeList)
+            SELECT (SELECT ID FROM $(common).DIM_FEEDBACK_TEMPLATE WHERE NAME='RSi Standard'), 'Item on shelf - Missing, Incorrect, or Damaged Tag', 'Y', 'Y', 'B', 'A', 'Y', 'Y', 'N', 'Phantom,D-Void,Shelf OOS,STO' UNION ALL
+            SELECT (SELECT ID FROM $(common).DIM_FEEDBACK_TEMPLATE WHERE NAME='RSi Standard'), 'Item on shelf - Wrong Place or Obscured', 'Y', 'Y', 'B', 'C', 'Y', 'Y', 'N', 'Phantom,D-Void,Shelf OOS,STO' UNION ALL
+            SELECT (SELECT ID FROM $(common).DIM_FEEDBACK_TEMPLATE WHERE NAME='RSi Standard'), 'Item on shelf - Inventory Discrepancy', 'Y', 'Y', 'B', 'B', 'Y', 'Y', 'N', 'Phantom,D-Void,Shelf OOS,STO' UNION ALL
+            SELECT (SELECT ID FROM $(common).DIM_FEEDBACK_TEMPLATE WHERE NAME='RSi Standard'), 'Item on shelf - Other Issues', 'Y', 'Y', 'B', 'D', 'Y', 'Y', 'N', 'Phantom,D-Void,Shelf OOS,STO' UNION ALL
+            SELECT (SELECT ID FROM $(common).DIM_FEEDBACK_TEMPLATE WHERE NAME='RSi Standard'), 'Item on shelf - No Issue or Inventory Discrepancy', 'N', 'N', 'D', 'B', 'Y', 'N', 'N', 'Phantom,D-Void,Shelf OOS,STO' UNION ALL
+            SELECT (SELECT ID FROM $(common).DIM_FEEDBACK_TEMPLATE WHERE NAME='RSi Standard'), 'Item not on shelf - Inventory Discrepancy', 'Y', 'Y', 'A', 'A', 'Y', 'Y', 'N', 'Phantom,D-Void,Shelf OOS,STO' UNION ALL
+            SELECT (SELECT ID FROM $(common).DIM_FEEDBACK_TEMPLATE WHERE NAME='RSi Standard'), 'Item not on shelf - No Inventory Discrepancy', 'Y', 'Y', 'A', 'C', 'Y', 'Y', 'N', 'Phantom,D-Void,Shelf OOS,STO' UNION ALL
+            SELECT (SELECT ID FROM $(common).DIM_FEEDBACK_TEMPLATE WHERE NAME='RSi Standard'), 'Item not on shelf - Missing Tag', 'Y', 'Y', 'A', 'B', 'Y', 'Y', 'N', 'Phantom,D-Void,Shelf OOS,STO' UNION ALL
+            SELECT (SELECT ID FROM $(common).DIM_FEEDBACK_TEMPLATE WHERE NAME='RSi Standard'), 'Item not on Planogram', 'N', 'N', 'E', 'I', 'Y', 'Y', 'Y', 'Phantom,D-Void,Shelf OOS,STO';
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="7">
+        <sql>
+            alter table $(common).ALT_META_INTERVENTION add column APPLICATION varchar(50);
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="8">
+        <sql>
+            UPDATE $(common).ALT_META_INTERVENTION
+            SET APPLICATION = T.APPLICATION
+            FROM  (
+                SELECT 0 AS INTERVENTIONKEY, 'All' AS APPLICATION UNION ALL
+                SELECT 1 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 2 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 3 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 4 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 5 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 6 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 7 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 8 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 9 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 10 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 11 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 12 AS INTERVENTIONKEY, 'EPC' AS APPLICATION UNION ALL
+                SELECT 13 AS INTERVENTIONKEY, 'EPC' AS APPLICATION UNION ALL
+                SELECT 14 AS INTERVENTIONKEY, 'EPC' AS APPLICATION UNION ALL
+                SELECT 15 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 16 AS INTERVENTIONKEY, 'All' AS APPLICATION UNION ALL
+                SELECT 17 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 18 AS INTERVENTIONKEY, 'All' AS APPLICATION UNION ALL
+                SELECT 19 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 20 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 21 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 22 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 23 AS INTERVENTIONKEY, 'RR' AS APPLICATION UNION ALL
+                SELECT 24 AS INTERVENTIONKEY, 'RR' AS APPLICATION UNION ALL
+                SELECT 25 AS INTERVENTIONKEY, 'RR' AS APPLICATION UNION ALL
+                SELECT 26 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 30 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 31 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 32 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 33 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 34 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 35 AS INTERVENTIONKEY, 'AA' AS APPLICATION UNION ALL
+                SELECT 36 AS INTERVENTIONKEY, 'AA' AS APPLICATION UNION ALL
+                SELECT 37 AS INTERVENTIONKEY, 'AA' AS APPLICATION UNION ALL
+                SELECT 38 AS INTERVENTIONKEY, 'AA' AS APPLICATION UNION ALL
+                SELECT 39 AS INTERVENTIONKEY, 'All' AS APPLICATION 
+            ) T WHERE ALT_META_INTERVENTION.INTERVENTION_KEY = T.INTERVENTIONKEY;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="9">
+        <sql>
+            ALTER TABLE $(common).DIM_FEEDBACK_ASSUMPTIONS ADD COLUMN TEMPLATE_ID INTEGER;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="10">
+        <sql>
+			update $(common).ALT_META_INTERVENTION set Application='OOS' where application='AA';
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="11">
+        <sql>
+			alter table $(common).dim_store add PRIME_DC varchar(512);
+            alter table $(common).dim_store add RSI_BANNER varchar(512);
+        </sql>
+    </changeSet>
+    
+</databaseChangeLog>

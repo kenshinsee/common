@@ -1,0 +1,55 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+import time
+import json
+from tornado.web import RequestHandler
+from concurrent.futures import ThreadPoolExecutor
+from tornado.concurrent import run_on_executor
+from log.logger import Logger
+from common.step_status import StepStatus
+from DataCompleteAG import DCWrapperAG
+
+MAX_WORKERS = 123
+logger = Logger(log_level="INFO", target="console", module_name="dc_ag_service")
+
+
+class DataCompleteAGHandler(RequestHandler):
+    """
+    Schedule will send POST request to this to get payload from Available Cycles API,
+    organize json data to call retailerAFM, then post return to API invokeRetailerAFM
+    POST body like
+    {
+        "jobId": 1234567890,
+        "stepId": 1,
+        "batchId": 1,
+        "retry": 0,
+        "log_level": 20
+    }
+    log_level: optional default 20 AS Info, refer logging level
+    """
+    executor = ThreadPoolExecutor(max_workers=MAX_WORKERS)
+
+    def initialize(self, meta):
+        self._logger = logger
+        self._meta = meta.copy()
+        self._request_body = json.loads(self.request.body.decode('utf-8'))
+        self._request_body["log_level"] = self._request_body.get("log_level", 20)
+        self._logger.set_level(self._request_body["log_level"])
+        self._logger.set_keys(log_id="{}_{}".format(self._request_body["jobId"], self._request_body["stepId"]))
+        self._logger.debug(self._request_body)
+        self._request_body["header"] = {"Content-Type": "application/json", "hour_offset": "-6",
+                                        "module_name": self._logger.format_dict["module_name"]}
+
+    @run_on_executor
+    def data_complete(self):
+        dc = DCWrapperAG(meta={**self._meta, **{"logger": self._logger}}.copy())
+        dc.on_action(self._request_body.copy())
+
+    def post(self, *args, **kwargs):
+        self.data_complete()
+        self.set_header('Content-Type', 'application/json')
+        self._request_body["status"] = StepStatus.RUNNING.value
+        self._request_body["message"] = '{}: Data complete alert generation is processing with parameters {}'.format(
+            time.asctime(time.localtime(time.time())), self._request_body)
+        self.write(json.dumps(self._request_body))
+        self.flush()

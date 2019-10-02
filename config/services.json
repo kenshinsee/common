@@ -1,0 +1,167 @@
+{
+   "common_lib": {
+        "base_dir": "common/lib"
+   }, 
+   "alertNanny": {
+        "base_dir": "alert_generation",
+        "module_name": "alert", 
+        "class_name": "AlertNanny", 
+        "class_main_func": "process()",
+        "handler_class_name": "AlertHandler",
+        "url_prefix": "/osa/ag/process", 
+        "service_bundle_name": "alert"
+   }, 
+   "afmNanny": {
+        "base_dir": "alert_filtering/BackendService",
+        "module_name": "afm", 
+        "class_name": "AFMNanny", 
+        "class_main_func": "main_process()",
+        "handler_class_name": "AFMHandler",
+        "url_prefix": "/osa/afm/process", 
+        "service_bundle_name": "afm"
+   }, 
+   "scorecardNanny": {
+        "base_dir": "scorecard",
+        "module_name": "scorecard", 
+        "class_name": "ScorecardNanny", 
+        "class_main_func": "main_process()",
+        "handler_class_name": "ScorecardHandler",
+        "url_prefix": "/osa/scorecard/process", 
+        "service_bundle_name": "scorecard"
+   }, 
+   "deployNanny": {
+        "base_dir": "common/deploy",
+        "module_name": "deploy", 
+        "class_name": "DeployNanny", 
+        "class_main_func": "main()",
+        "handler_class_name": "DeployHandler",
+        "url_prefix": "/deploy/(.*)", 
+        "service_bundle_name": "deploy"
+   }, 
+   "feedbackNanny": {
+        "base_dir": "common/script/data_persistence",
+        "module_name": "feedback", 
+        "class_name": "FeedbackPersistNanny", 
+        "class_main_func": "run()",
+        "handler_class_name": "FeedbackPersistHandler",
+        "url_prefix": "/osa_bundle/persistfeedback/process", 
+        "service_bundle_name": "osa_bundle"
+   },
+   "syncDimDataNanny": {
+        "base_dir": "common/script/data_sync",
+        "module_name": "SyncDimData", 
+        "class_name": "SyncDimDataNanny", 
+        "class_main_func": "process()",
+        "handler_class_name": "SyncDimDataHandler",
+        "url_prefix": "/osa_bundle/syncDimData/process",
+        "service_bundle_name": "osa_bundle"
+   },
+   "dataCompleteAGNanny": {
+        "base_dir": "common/script/data_complete_ag",
+        "module_name": "DataCompleteAG",
+        "class_name": "DataCompleteAGNanny",
+        "class_main_func": "process()",
+        "handler_class_name": "DataCompleteAGHandler",
+        "url_prefix": "/osa_bundle/dataCompleteAG/process",
+        "service_bundle_name": "osa_bundle"
+   },
+   "syncRDPFeedbackNanny": {
+        "base_dir": "common/script/sync_rdp_feedback",
+        "module_name": "SyncFeedbackFromRDP",
+        "class_name": "FeedbackNanny",
+        "class_main_func": "main_process()",
+        "handler_class_name": "FeedbackHandler",
+        "url_prefix": "/osa_bundle/syncrdpfdbk/process",
+        "service_bundle_name": "osa_bundle"
+   },
+   "dataCompleteETLNanny": {
+        "base_dir": "common/script/data_complete_etl",
+        "module_name": "DataCompleteETLNanny",
+        "class_name": "DataCompleteETLNanny",
+        "class_main_func": "process()",
+        "handler_class_name": "DataCompleteETLHandler",
+        "url_prefix": "/osa_bundle/dataCompleteETL/process",
+        "service_bundle_name": "osa_bundle"
+   },
+   "dataCompleteETLVRNanny": {
+        "base_dir": "common/script/data_complete_etl",
+        "module_name": "DataCompleteETLNanny",
+        "class_name": "DataCompleteETLVRNanny",
+        "class_main_func": "process()",
+        "handler_class_name": "DataCompleteETLVRHandler",
+        "url_prefix": "/osa_bundle/dataCompleteETLVR/process",
+        "service_bundle_name": "osa_bundle"
+   },
+   "AFMSupportNanny": {
+        "base_dir": "common/script/support",
+        "module_name": "afm_rule.AFMConfigToTable",
+        "class_name": "AFMConfigToTableNanny",
+        "class_main_func": "insert_data()",
+        "handler_class_name": "AFMSupportHandler",
+        "url_prefix": "/osa_bundle/afmsupport/process",
+        "service_bundle_name": "osa_bundle"
+   },
+   "dumpAlertsNanny": {
+        "base_dir": "common/script/dump_tool",
+        "module_name": "dumpmain",
+        "class_name": "DumpNanny",
+        "class_main_func": "main_process()",
+        "handler_class_name": "DumpHandler",
+        "url_prefix": "/osa_bundle/dumper/process",
+        "service_bundle_name": "osa_bundle"
+   },
+   "initialDataNanny": {
+        "base_dir": "common/script/initial_data",
+        "module_name": "InitialData",
+        "class_name": "InitialDataNanny",
+        "class_main_func": "process()",
+        "handler_class_name": "InitialDataHandler",
+        "url_prefix": "/osa_bundle/initialData/process",
+        "service_bundle_name": "osa_bundle"
+   },
+   "dataCleanupNanny": {
+        "base_dir": "common/script/data_cleanup",
+        "module_name": "DataCleanup",
+        "class_name": "DataCleanupNanny",
+        "class_main_func": "process()", 
+        "handler_class_name": "DataCleanupHandler",
+        "url_prefix": "/osa_bundle/dataCleanup/process",
+        "service_bundle_name": "osa_bundle"
+   },
+   "scdNanny": {
+        "base_dir": "common/script/scd",
+        "module_name": "scd.scd",
+        "class_name": "ScdNanny",
+        "class_main_func": "main()", 
+        "handler_class_name": "ScdHandler",
+        "url_prefix": "/osa_bundle/scd/process",
+        "service_bundle_name": "osa_bundle"
+   },
+   "DataCompleteBlobNanny": {
+        "base_dir": "common/script/data_complete_blob",
+        "module_name": "DataCompleteBlob",
+        "class_name": "DataCompleteBlobNanny",
+        "class_main_func": "process()",
+        "handler_class_name": "DataCompleteBlobHandler",
+        "url_prefix": "/osa_bundle/dataCompleteBlob/process",
+        "service_bundle_name": "osa_bundle"
+   },
+   "PacificNotificationNanny": {
+        "base_dir": "common/script/data_complete_blob",
+        "module_name": "PacificNotification",
+        "class_name": "PacificNotificationNanny",
+        "class_main_func": "process()",
+        "handler_class_name": "PacificNotificationHandler",
+        "url_prefix": "/osa_bundle/pacificnotifier/process",
+        "service_bundle_name": "osa_bundle"
+   },
+   "MobileNotifierNanny": {
+        "base_dir": "common/script/support",
+        "module_name": "mobile_notifier.MobileNotifier",
+        "class_name": "MobileNotifierNanny",
+        "class_main_func": "process()",
+        "handler_class_name": "MobileNotifierHandler",
+        "url_prefix": "/osa_bundle/mobilenotifier/process",
+        "service_bundle_name": "osa_bundle"
+   }
+}

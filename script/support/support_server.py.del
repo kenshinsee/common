@@ -1,0 +1,251 @@
+#!/usr/bin/env python
+# coding=utf-8
+
+import json, datetime, os, traceback
+import tornado.web
+import tornado.ioloop
+import tornado.autoreload
+from tornado.web import HTTPError
+from tornado.concurrent import run_on_executor
+from concurrent.futures import ThreadPoolExecutor
+from db.db_operation import MSOperation
+from log.logger import Logger
+from common.step_status import StepStatus
+from afm_rule.AFMConfigToTable import AFMConfigToTable
+from job_schedule.ScheduleParamsToTable import ScheduleParamsToTable
+
+
+# how many threads can be run at the same time. could trigger multi AFM based on vendor&retailer
+MAX_WORKERS = 100
+PORT = 8888
+TIMER = 1   # if job failed, then rerun 1 time automatically. this could fix some system issue.
+settings = {'debug': False, 'autoreload': False}
+
+# getting generic config file and main script
+# SEP = os.path.sep
+# cwd = os.path.dirname(os.path.realpath(__file__))
+# generic_main_file = cwd + SEP + '..' + SEP + '..' + SEP + 'script' + SEP + 'main.py'
+# CONFIG_FILE = cwd + SEP + '..' + SEP + '..' + SEP + 'config' + SEP + 'config.properties'
+# meta = {}
+# exec(open(generic_main_file).read())    # fill meta argument
+
+_logger = Logger(log_level="INFO", target="console", module_name="supportservice",
+                 vendor_key=-1, retailer_key=-1, sql_conn=None)
+
+
+class AFMSupportHandler(tornado.web.RequestHandler):
+
+    executor = ThreadPoolExecutor(max_workers=MAX_WORKERS)
+
+    def initialize(self, meta):
+        self.meta = meta
+
+    # get action will be only used for testing purpose. we will be using post action going forward.
+    def get(self, *args, **kwargs):
+        """
+        http://localhost:8000/osa/support/process
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        self.write("Please trigger AFMConfig module of supportservice via post action")
+
+    def post(self, *args, **kwargs):
+        """
+        http://localhost:8000/osa/support/afmrule
+        json data with post action
+        {
+            "ruleType":"RETAILER",
+            "cycleKey":2,
+            "vendorKey":740,
+            "retailerKey":5240,
+            "owner":"Loblaw Canada",
+            "itemScope":"",
+            "storeScope":"",
+            "typeList":"D-Void,Shelf OOS,Phantom",
+            "createdBy":"support@rsicorp.local",
+            "rules":[{
+                "ruleId":1,
+                "subLevelMetrics":"",
+                "parameter1":"15",
+                "parameter2":"STOREID",
+                "parameter3":"ProjectedWeeklySalesGain"
+            },{
+                "ruleId":32,
+                "subLevelMetrics":"",
+                "parameter1":"10",
+                "parameter2":"14",
+                "parameter3":"10"
+            },{
+                "ruleId":40,
+                "subLevelMetrics":"",
+                "parameter1":"(AlertLostSalesToDate >= 4 AND (AlertLostUnitsToDate >= 0.7 OR (AlertLostUnitsToDate < 0.7 AND DaysSincePOS >= 85)))",
+                "parameter2":"",
+                "parameter3":""
+            },{
+                "ruleId":61,
+                "subLevelMetrics":"",
+                "parameter1":"",
+                "parameter2":"",
+                "parameter3":""
+            },{
+                "ruleId":62,
+                "subLevelMetrics":"",
+                "parameter1":"",
+                "parameter2":"",
+                "parameter3":""
+            }
+            ]
+        }
+        """
+        self.set_header('Content-Type', 'application/json')
+        tornado.web.RequestHandler.write_error = self.write_error
+        params = json.loads(self.request.body.decode('utf-8'))
+        _logger.info("input json data is: %s" % params)
+
+        self.trigger_support(params)
+
+        params["status"] = StepStatus.RUNNING.value  # running
+        _logger.info("AFM Config is being processed at: %s with below parameters: %s" % (datetime.datetime.now(), params))
+        self.write(params)
+        self.flush()
+
+    @run_on_executor
+    def trigger_support(self, params):
+        try:
+            __debug = params.get("debug", 'N')
+            __log_level = 'DEBUG' if str(__debug).upper() in ['Y', 'YES', 'T', 'TRUE'] else 'INFO'
+            _logger.set_level(log_level=__log_level)
+
+            data_load = AFMConfigToTable(meta=self.meta, params=params)
+            data_load.insert_data()
+
+        # warning will be treated as success
+        except Warning as msg:
+            _logger.warning("Warning: %s" % msg)
+
+        except KeyError as msg:
+            _logger.warning(traceback.format_exc())
+            _logger.error("KeyError: %s" % msg)
+
+        except SystemExit as msg:
+            _logger.debug("In except SystemExit with message: %s" % msg)
+            if msg.code == 2:   # CANCEL: job termination check.
+                _logger.warning('AFM Config Job get cancelled.')
+            else:
+                _logger.warning('AFM Config job exits with code: %s' % msg)
+
+        except Exception as msg:
+            _logger.debug("In except Exception with message: %s" % msg)
+            _logger.error(msg)     # will raise RuntimeError
+
+        finally:
+            _logger.info("AFM Config is done at: %s" % datetime.datetime.now())
+
+    def write_error(self, status_code, **kwargs):
+        if status_code == 500:
+            self.write("<h1>Internal Server Error</h1>")
+        elif status_code == 400:
+            self.write('<h1>tornado.web.MissingArgumentError: HTTP 400: Bad Request (Missing argument retailerKey)</h1>')
+        elif status_code == 403:
+            self.write('<h1>sorry, request forbidden!</h1>')
+        else:
+            self.write('<h1>sorry, %s error occured!</h1>' % str(status_code))
+
+
+class ScheduleSupportHandler(tornado.web.RequestHandler):
+    executor = ThreadPoolExecutor(max_workers=MAX_WORKERS)
+
+    def initialize(self, meta):
+        self.meta = meta
+
+    # get action will be only used for testing purpose. we will be using post action going forward.
+    def get(self, *args, **kwargs):
+        """
+        http://localhost:8000/osa/support/process
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        self.write("Please trigger schedule module of supportservice via post action")
+
+    def post(self, *args, **kwargs):
+        """
+        http://localhost:8000/osa/support/schedule
+        json data with post action
+        {
+          "creater": "ben.wu@rsicorp.local",
+          "groupName": "1:58:4:1",
+          "jobDefinitionId": 1,
+          "parametersContext": "",
+          "priority": 1,
+          "scheduleExpression": "",
+          "scheduleName": "1:57:4:1:OSMAlerting",
+          "scheduleType": "EVENT"
+        }
+        """
+        self.set_header('Content-Type', 'application/json')
+        tornado.web.RequestHandler.write_error = self.write_error
+        params = json.loads(self.request.body.decode('utf-8'))
+        _logger.info("input json data is: %s" % params)
+
+        self.trigger_support(params)
+
+        params["status"] = StepStatus.RUNNING.value  # running
+        _logger.info("Schedule support is being triggered at: %s with below parameters: %s" % (datetime.datetime.now(), params))
+        self.write(params)
+        self.flush()
+
+    @run_on_executor
+    def trigger_support(self, params):
+        try:
+            __debug = params.get("debug", 'N')
+            __log_level = 'DEBUG' if str(__debug).upper() == 'Y' else 'INFO'
+            _logger.set_level(log_level=__log_level)
+
+            loader = ScheduleParamsToTable(meta=self.meta, params=params)
+            loader.load_data()
+
+        # warning will be treated as success
+        except Warning as msg:
+            _logger.warning("Warning: %s" % msg)
+
+        except KeyError as msg:
+            _logger.warning(traceback.format_exc())
+            _logger.error("KeyError: %s" % msg)
+
+        except SystemExit as msg:
+            _logger.debug("In except SystemExit with message: %s" % msg)
+            if msg.code == 2:   # CANCEL: job termination check.
+                _logger.warning('Schedule Job get cancelled.')
+            else:
+                _logger.warning('Schedule job exits with code: %s' % msg)
+
+        except Exception as msg:
+            _logger.debug("In except Exception with message: %s" % msg)
+            _logger.error(msg)     # will raise RuntimeError
+
+        finally:
+            _logger.info("Schedule is done at: %s" % datetime.datetime.now())
+
+    def write_error(self, status_code, **kwargs):
+        if status_code == 500:
+            self.write("<h1>Internal Server Error</h1>")
+        elif status_code == 400:
+            self.write('<h1>tornado.web.MissingArgumentError: HTTP 400: Bad Request (Missing argument retailerKey)</h1>')
+        elif status_code == 403:
+            self.write('<h1>sorry, request forbidden!</h1>')
+        else:
+            self.write('<h1>sorry, %s error occured!</h1>' % str(status_code))
+
+
+if __name__ == "__main__":
+    # tor_options.parse_command_line()
+    afm_app = tornado.web.Application(
+        [(r'/osa/afmsupport/process', AFMSupportHandler),
+         (r'/osa/schedulesupport/process', ScheduleSupportHandler)
+         ],
+        **settings
+    )
+    afm_app.listen(PORT)
+    tornado.ioloop.IOLoop.current().start()

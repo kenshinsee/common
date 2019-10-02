@@ -1,0 +1,137 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet author="hong.hu (generated)" id="1">
+        <sql>
+			INSERT INTO META_DIM_DEF(NAME, DESCRIPTION)
+			SELECT A.*
+			FROM (SELECT 'layoutTypes' AS NAME, 'different layout for different app' AS DESCRIPTION) A
+			LEFT JOIN META_DIM_DEF B ON A.NAME = B.NAME
+			WHERE B.ID IS NULL;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="2">
+        <sql>
+			INSERT INTO META_DIM_DTL(DEF_ID, ATTR_STR1, ATTR_STR2)
+			SELECT A.*
+			FROM (
+				SELECT (SELECT ID FROM META_DIM_DEF WHERE NAME='layoutTypes') AS DEF_ID, '1' AS ATTR_STR1, 'Alert Center' AS ATTR_STR2 UNION ALL
+				SELECT (SELECT ID FROM META_DIM_DEF WHERE NAME='layoutTypes') AS DEF_ID, '2' AS ATTR_STR1, 'Mobile' AS ATTR_STR2 UNION ALL
+				SELECT (SELECT ID FROM META_DIM_DEF WHERE NAME='layoutTypes') AS DEF_ID, '3' AS ATTR_STR1, 'File Delivery' AS ATTR_STR2
+			) A
+			LEFT JOIN META_DIM_DTL B ON A.DEF_ID = B.DEF_ID AND A.ATTR_STR1 = B.ATTR_STR1
+			WHERE B.ID IS NULL;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="3">
+        <sql>
+			INSERT INTO META_DIM_ATTR_DESC(DEF_ID, ATTR_COL_NAME, ATTR_DESC)
+			SELECT A.*
+			FROM (
+				SELECT (SELECT ID FROM META_DIM_DEF WHERE NAME='layoutTypes') AS DEF_ID, 'ATTR_STR1' AS ATTR_COL_NAME, 'LAYOUT_TYPE_KEY' AS ATTR_DESC UNION ALL
+				SELECT (SELECT ID FROM META_DIM_DEF WHERE NAME='layoutTypes') AS DEF_ID, 'ATTR_STR2' AS ATTR_COL_NAME, 'LAYOUT_TYPE_NAME' AS ATTR_DESC 
+			) A
+			LEFT JOIN META_DIM_ATTR_DESC B ON A.DEF_ID = B.DEF_ID AND A.ATTR_COL_NAME = B.ATTR_COL_NAME
+			WHERE B.ID IS NULL;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="4">
+        <sql>
+			delete from AP_CONFIG_META_ATTRIBUTE where Layout_key = -1 and KEY_COLUMN = 'ALERT_ID';
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="5">
+        <sql>
+			DELETE FROM AP_CONFIG_META_ATTRIBUTE WHERE LAYOUT_KEY = 0;
+			INSERT INTO AP_CONFIG_META_ATTRIBUTE
+			select 0 as LAYOUT_KEY, ATTRIBUTE_NAME, KEY_COLUMN, FOLDER, DIMENSION_TYPE, ATTRIBUTE_DATA_TYPE, ATTRIBUTE_SEQUENCE, DATA_ORDER, 'T' as SHOW_BY_DEFAULT, ALERT_VALUE_COLUMN from AP_CONFIG_META_ATTRIBUTE where LAYOUT_KEY in (-1, -2) AND KEY_COLUMN in ('ALERT_TYPE', 'ProjectedWeeklySalesGain', 'ITEM_DESCRIPTION', 'ALERTUPC', 'OSM_ITEM_NBR', 'DAYSSINCEPOS', 'STORE_ID', 'VENDOR_NAME', 'ON_HAND_CAO_COUNT', 'ON_HAND_PHYSICAL_COUNT', 'OSM_MAJOR_CATEGORY', 'FEEDBACK_DESCRIPTION')
+			UNION ALL
+			SELECT 0, 'Owner', 'OWNER', NULL, 5, 'String', NULL, NULL, 'T', 'F';
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="6">
+        <sql>
+			Alter table AP_LAYOUT_CYCLE_MAPPING add LAYOUT_TYPE_KEY INT NOT NULL DEFAULT 1;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="7">
+        <sql>
+			delete from AP_CONFIG_META_ATTRIBUTE where KEY_COLUMN = 'ALERT_ID';
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="8">
+        <sql>
+			delete from META_STATIC_HEADER_DEFINITION where header_type='delivery';
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="9">
+        <sql>
+			insert into META_STATIC_HEADER_DEFINITION (align, text, value, type, cast, visible, filtered ,header_type) 
+			values('center','Field','field','fix','string','true','true','delivery'),
+			('center','Display Name','display_name','fix','string','true','true','delivery'),
+			('center','Sequence','sequence','edit-not-duplicate','int','true','true','delivery'),
+			('center','Dimension','dimension','fix','string','true','true','delivery'),
+			('center','Sort By','sort_by','radio','string','true','true','delivery');
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="10">
+        <sql>
+			alter table AP_META_DELIVERIES drop column vendor_key;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="11">
+        <sql>
+            alter table AFM_SVR_RULE add CYCLE_KEY int;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="12">
+        <sql>
+            update AFM_SVR_RULE
+			set CYCLE_KEY = m.cycle_key
+			from (select vendor_key, retailer_key, min(cycle_key) as cycle_key from AP_ALERT_CYCLE_MAPPING group by vendor_key, retailer_key) m
+			where m.RETAILER_KEY = AFM_SVR_RULE.retailer_key and m.vendor_key = AFM_SVR_RULE.VENDOR_KEY;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="13">
+        <sql>
+            update META_STATIC_HEADER_DEFINITION
+			set value = 'Field'
+			where header_type = 'delivery' and value = 'field';
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="14">
+        <sql>
+            update AP_META_ENDPOINTS set DELIVERY_TYPE = 'rsi' where DELIVERY_TYPE = 'shared_folder';
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="15">
+        <sql>
+            insert into AP_META_ENDPOINTS (delivery_type, enabled)
+			select s.*
+			from (select 'rsi' delivery_type, 'T' enabled) s
+			left join AP_META_ENDPOINTS e on s.delivery_type = e.delivery_type
+			where e.delivery_type is null;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="16">
+        <sql>
+            update AP_META_ENDPOINTS set DELIVERY_TYPE = 'customer' where DELIVERY_TYPE = 'rsi';
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="17">
+        <sql>
+            alter table AP_META_DELIVERIES add LAYOUT_KEY INT;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="18">
+        <sql>
+            update META_STATIC_HEADER_DEFINITION set value = 'dimension_type' where HEADER_TYPE = 'delivery' and TEXT='Dimension';
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="19">
+        <sql>
+            update META_STATIC_HEADER_DEFINITION set TYPE = 'edit-string' where HEADER_TYPE = 'delivery' and TEXT='Display Name';
+        </sql>
+    </changeSet>
+</databaseChangeLog>
+
+

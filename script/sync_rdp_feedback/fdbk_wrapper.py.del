@@ -1,0 +1,196 @@
+import datetime, json, configparser, sys
+from mq.publisher import BasePublisher
+from log.logger import Logger
+from SyncFeedbackFromRDP import Feedback
+from common.step_status import StepStatus
+import traceback
+
+
+class FeedbackWrapper(BasePublisher):
+    """
+    Calling SyncFeedbackFromRDP module to sync all data from RDP to OSA db.
+    This job should be called routinely(daily or weekly or other schedule)
+    """
+    def __init__(self, meta=None, params=None, logger=None):
+        self._meta = meta
+        self._exchange_name = self._meta["mq_exchange_name"]
+        self._exchange_type = self._meta["mq_exchange_type"]
+        self._queue = self._meta["mq_queue_name"]
+        self._routing_key = self._meta["mq_routing_key"]
+
+        self._params = params
+        self._init_fdbk = False     # True is only for initial rdp feedback of new customer
+
+        __debug = self._params.get("debug", 'N')
+        __log_level = 'DEBUG' if str(__debug).upper() == 'Y' else 'INFO'
+        self._log_file = './log/feedback_%s.log' % datetime.datetime.now().strftime('%Y%m%d')
+        self._logger = logger if logger else Logger(log_level=__log_level, target="console|file",
+                                                    vendor_key=-1, retailer_key=-1,
+                                                    log_file=self._log_file, sql_conn=None)
+        self._logger.set_level(log_level=__log_level)
+
+        super(FeedbackWrapper, self).__init__(meta=meta, logger=self._logger)
+
+    def on_action(self, body):
+        self._logger.info("sync feedback is getting started at: %s" % datetime.datetime.now())
+        try:
+            self._app_id = 'FEEDBACK'
+            self._logger.info("Sync RDP Feedback body is: %s" % body)
+
+            body["status"] = StepStatus.RUNNING.value
+            # processing sync feedback main process.
+            run_sync = Feedback(meta=self._meta, params=self._params,
+                                init_flag=self._init_fdbk,
+                                logger=self._logger)
+            run_sync.main_process()
+
+            body["status"] = StepStatus.SUCCESS.value
+            body["message"] = "syncRDPfeedback is complete successfully"
+            body["timestamp"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            self._logger.info("Feedback body is: %s" % body)
+            self._body = json.dumps(body)
+
+        # warning will be treated as success
+        except Warning as msg:
+            self._logger.warning("Warning: %s" % msg)
+            body["status"] = StepStatus.ERROR.value
+            body["message"] = '%s' % msg
+            body["timestamp"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            self._logger.info("Sync feedback body is: %s" % body)
+            self._body = json.dumps(body)
+
+        except KeyError as msg:
+            self._logger.warning(traceback.format_exc())
+            body["status"] = StepStatus.ERROR.value
+            body["message"] = traceback.format_exc()
+            body["timestamp"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            self._logger.info("Sync feedback body is: %s" % body)
+            self._body = json.dumps(body)
+            self._logger.error("KeyError: %s" % msg)
+
+        except SystemExit as msg:
+            self._logger.debug("In except SystemExit with message: %s" % msg)
+            if msg.code == 2:   # CANCEL: job termination check.
+                body["status"] = StepStatus.CANCEL.value
+                body["message"] = 'sync_RDP_feedback Job get cancelled.'
+                body["timestamp"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                self._logger.info("Sync feedback body is: %s" % body)
+                self._body = json.dumps(body)
+            else:
+                body["status"] = msg.code
+                body["message"] = 'sync_RDP_feedback exits with code:%s' % msg
+                body["timestamp"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                self._logger.info("Sync feedback body is: %s" % body)
+                self._body = json.dumps(body)
+
+        except Exception as msg:
+            self._logger.debug("In except Exception with message: %s" % msg)
+            body["status"] = StepStatus.ERROR.value
+            body["message"] = '%s' % msg
+            body["timestamp"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            self._logger.info("Feedback body is: %s" % body)
+            self._body = json.dumps(body)
+            self._logger.error(msg)  # will raise RuntimeError
+
+        finally:
+            self._logger.info("sync RDP feedback is done at: %s" % datetime.datetime.now())
+            if self._logger:
+                self._logger.remove_handler()
+
+
+# Commented out below part as initialization is incorporated into the same handler FeedbackHandler.
+# And it will be triggered from common\deploy\0000.initial\03_script\01_init_feedback.py when initializing a new customer.
+# class InitialWrapper(BasePublisher):
+#     """
+#     sync feedback for new customer from RDP to OSA db.
+#     This is a one-time process to sync the given vendor&retailer for new customer.
+#     Once this is done, SyncFeedbackFromRDP module can handle this going forward.
+#     """
+#     def __init__(self, meta=None, params=None, logger=None):
+#         self._meta = meta
+#         self._exchange_name = self._meta["mq_exchange_name"]
+#         self._exchange_type = self._meta["mq_exchange_type"]
+#         self._queue = self._meta["mq_queue_name"]
+#         self._routing_key = self._meta["mq_routing_key"]
+#         self._params = params
+#         self._init_fdbk = True
+#         self._vendor_key = self._params.get("vendorKey", None)
+#         self._retailer_key = self._params.get("retailerKey", None)
+#
+#         self._curr_time = datetime.datetime.now().strftime('%Y%m%d')
+#         self._log_file = './log/init_feedback_%s.log' % self._curr_time
+#         self._logger = logger if logger else Logger(log_level="debug", target="console|file",
+#                                                     vendor_key=-1, retailer_key=-1,
+#                                                     log_file=self._log_file, sql_conn=None)
+#         super(InitialWrapper, self).__init__(exchange_name=self._exchange_name,
+#                                              exchange_type=self._exchange_type,
+#                                              queue=self._queue,
+#                                              routing_key=self._routing_key,
+#                                              logger=self._logger)
+#
+#     def on_action(self, body):
+#         self._logger.info("init feedback is getting started")
+#         try:
+#             self._app_id = 'FEEDBACK'
+#             self._logger.info("Feedback body is: %s" % body)
+#
+#             body["status"] = StepStatus.RUNNING.value
+#
+#             run_init = Feedback(meta=self._meta, params = self._params,
+#                                 init_flag=self._init_fdbk,
+#                                 logger=self._logger)
+#             run_init.main_process()
+#
+#             body["status"] = StepStatus.SUCCESS.value
+#             body["message"] = "Init feedback is complete successfully"
+#             body["timestamp"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+#             self._logger.info("Feedback body is: %s" % body)
+#             self._body = json.dumps(body)
+#
+#         except SystemExit as msg:
+#             # print(msg)
+#             if msg.code == 2:   # CANCEL: job termination check.
+#                 body["status"] = StepStatus.CANCEL.value
+#                 body["message"] = '%s' % msg
+#                 body["timestamp"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+#                 self._logger.info("Init feedback body is: %s" % body)
+#                 self._body = json.dumps(body)
+#             else:
+#                 body["status"] = StepStatus.ERROR.value
+#                 body["message"] = 'exit with code:%s' % msg
+#                 body["timestamp"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+#                 self._logger.info("Init feedback body is: %s" % body)
+#                 self._body = json.dumps(body)
+#
+#         except Exception as msg:
+#             body["status"] = StepStatus.ERROR.value
+#             body["message"] = '%s' % msg
+#             body["timestamp"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+#             self._logger.info("Feedback body is: %s" % body)
+#             self._body = json.dumps(body)
+#             self._logger.error(msg)  # will raise RuntimeError
+#
+#         finally:
+#             self._logger.info("init feedback is done")
+#             if self._logger:
+#                 self._logger.remove_handler()
+
+
+if __name__ == '__main__':
+    with open("{}/../../../common/config/config.properties".format(sys.argv[0])) as fp:
+        cp = configparser.ConfigParser()
+        cp.read_file(fp)
+        _meta = dict(cp.items("DEFAULT"))
+
+    afm = FeedbackWrapper(meta=_meta, params=None)
+
+    msg = {"app": "feedback", "vendor_key": 5, "retailer_key": 267, "status": "ready"}
+    # afm.on_action(json.dumps(msg))
+
+    try:
+        afm.on_action(msg)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        afm.run()
+        afm.stop()

@@ -1,0 +1,46 @@
+{
+  "mode": "release",
+  "rsi-services": "rsi-services",
+  "rsi-user": "rsi-user",
+  "cloud": "https://irisqa.rsicorp.local/",
+  "rsi-user-details": "rsi-user-details",
+  "tokenService": "https://irisqa.rsicorp.local/auth",
+  "client_id":"oauthclient_iris",
+  "redirectUri":"https://irisqa.rsicorp.local/iris",
+  "loginUri": 
+    "http://engv2hfssoqa1.eng.rsicorp.local:7901/sso/oauth2/authorize?response_type=code&client_id=oauthclient_iris&scope=profile&redirect_uri=https://irisqa.rsicorp.local/iris",
+  "logoutUri":
+    "http://engv2hfssoqa1.eng.rsicorp.local:7901/commonLogin/logout.action?goto=http://engv2hfssoqa1.eng.rsicorp.local:7901/sso/oauth2/authorize",
+  "tokenExpiry": 900000,
+  "pbi": {
+    "service_url": "pbi/embedTokenReport",
+    "reportDetails": {
+      "workspaceId": "e687deac-bcae-41f6-a3d3-f8ea4489f8e8",
+      "reportId": "86644780-0468-4586-b7ef-ec00cbb7a70d",
+      "datasetId": "b17380c7-76ae-42bc-abf3-8a27c43f4084",
+      "effectiveId": "pbiembedirissvc@retailsolutions.com",
+      "type": "report"
+    },
+    "txtEmbedUrl": "https://app.powerbi.com/reportEmbed?",
+    "config": {
+      "settings": {
+        "filterPaneEnabled": false,
+        "navContentPaneEnabled": true
+      }
+    },
+    "filters": {
+          "$schema": "http://powerbi.com/product/schema#basic",
+          "target": {
+            "table": "Sheet1",
+            "column": "MARKET_CLUSTER"
+          },
+          "operator": "In",
+          "values": ["CO", "CA"]
+        },
+    "reportIdObj": {
+       "id": "286033850474233842"
+     }
+  },
+  "env": "qa"
+}
+

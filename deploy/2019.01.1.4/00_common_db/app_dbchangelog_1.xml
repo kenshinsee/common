@@ -1,0 +1,35 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet author="hong.hu (generated)" id="1">
+        <sql>
+            alter table ALERT_CYCLE_STATUS add CREATE_TIME datetime null;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="2">
+        <sql>
+            INSERT INTO META_SCD_TABLE_DEF(TABLE_NAME, PK, DB_TYPE, TABLE_SCHEMA, CREATE_TIME) 
+            SELECT A.*
+            FROM (SELECT 'AP_ALERT_CYCLE_DEFINITION' AS TABLE_NAME, '["CYCLE_KEY"]' AS PK, 'MSSQL' AS DB_TYPE, '(COMMON)' AS TABLE_SCHEMA, GetDate() AS CREATE_TIME) A
+            LEFT JOIN META_SCD_TABLE_DEF B ON A.TABLE_NAME = B.TABLE_NAME AND A.DB_TYPE = B.DB_TYPE AND A.TABLE_SCHEMA = B.TABLE_SCHEMA
+            WHERE B.ID IS NULL;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="3">
+        <sql>
+            INSERT INTO META_SCD_TABLE_DEF(TABLE_NAME, PK, DB_TYPE, TABLE_SCHEMA, CREATE_TIME) 
+            SELECT A.*
+            FROM (SELECT 'AP_ALERT_CYCLE_MAPPING' AS TABLE_NAME, '["CYCLE_KEY", "VENDOR_KEY", "RETAILER_KEY"]' AS PK, 'MSSQL' AS DB_TYPE, '(COMMON)' AS TABLE_SCHEMA, GetDate() AS CREATE_TIME) A
+            LEFT JOIN META_SCD_TABLE_DEF B ON A.TABLE_NAME = B.TABLE_NAME AND A.DB_TYPE = B.DB_TYPE AND A.TABLE_SCHEMA = B.TABLE_SCHEMA
+            WHERE B.ID IS NULL;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="4">
+        <sql>
+            INSERT INTO META_SCD_TABLE_DEF(TABLE_NAME, PK, DB_TYPE, TABLE_SCHEMA, CREATE_TIME) 
+            SELECT A.*
+            FROM (SELECT 'AP_CONFIG_META_ATTRIBUTE' AS TABLE_NAME, '["LAYOUT_KEY", "KEY_COLUMN"]' AS PK, 'MSSQL' AS DB_TYPE, '(COMMON)' AS TABLE_SCHEMA, GetDate() AS CREATE_TIME) A
+            LEFT JOIN META_SCD_TABLE_DEF B ON A.TABLE_NAME = B.TABLE_NAME AND A.DB_TYPE = B.DB_TYPE AND A.TABLE_SCHEMA = B.TABLE_SCHEMA
+            WHERE B.ID IS NULL;
+        </sql>
+    </changeSet>
+</databaseChangeLog>

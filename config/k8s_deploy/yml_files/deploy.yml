@@ -1,0 +1,69 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: deploy
+  namespace: osa-suite
+  labels:
+    app: deploy
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: deploy
+        track: stable
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/master
+                    operator: DoesNotExist
+      containers:
+      - name: deploy
+        image: rsiiris/{{IMAGE_URL}}
+        ports:
+        - containerPort: 8000
+        volumeMounts:
+        - name: systemconf
+          mountPath: /tmp/common/config/config.properties
+          subPath: config.properties
+        - name: systemconf
+          mountPath: /tmp/common/config/mq_ssl
+        - name: tz-config
+          mountPath: /etc/localtime
+      volumes:
+      - name: tz-config
+        hostPath:
+          path: /usr/share/zoneinfo/America/New_York
+      - name: systemconf
+        configMap:
+          name: systemconf
+      imagePullSecrets:
+      - name: dockerhubsecret
+      dnsConfig:
+        options:
+        - name: single-request-reopen
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: deploy
+    track: stable
+  name: deploy
+  namespace: osa-suite
+  selfLink: /api/v1/namespaces/osa-suite/services/deploy
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8000
+  selector:
+    app: deploy
+    track: stable
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}

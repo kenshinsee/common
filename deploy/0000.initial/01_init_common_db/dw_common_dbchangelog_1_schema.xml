@@ -1,0 +1,1078 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet author="hong.hu (generated)" id="COMMON-1">
+        <createTable tableName="ALT_META_INTERVENTION">
+            <column name="INTERVENTION_KEY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROJECT_KEY" type="INT"/>
+            <column name="INTERVENTION_ENABLED" type="VARCHAR(10)"/>
+            <column name="INTERVENTION_NAME" type="VARCHAR(100)"/>
+            <column name="INTERVENTION_DESC" type="VARCHAR(200)"/>
+            <column name="INTERVENTION_PRIORITY" type="INT"/>
+            <column name="INTERVENTION_RANK" type="VARCHAR(100)"/>
+            <column name="INTERVENTION_TEMPLATE" type="VARCHAR(100)"/>
+            <column name="INTERVENTION_TYPE" type="INT"/>
+            <column name="INTERVENTION_UPDATED_BY" type="VARCHAR(100)"/>
+            <column name="INTERVENTION_UPDATED_TIME" type="TIMESTAMP"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" ORDER BY INTERVENTION_KEY UNSEGMENTED ALL NODES"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="COMMON-2">
+        <addPrimaryKey columnNames="INTERVENTION_KEY" constraintName="PK_ALT_META_INTERVENTION" tableName="ALT_META_INTERVENTION"/>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-3">
+        <createTable tableName="DIM_OSM_INCIDENTISSUANCE">
+            <column name="IssuanceId" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="AlertIssued" type="VARCHAR(50)"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED ALL NODES"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="COMMON-4">
+        <addPrimaryKey columnNames="IssuanceId" constraintName="PK_DIM_OSM_INCIDENTISSUANCE" tableName="DIM_OSM_INCIDENTISSUANCE"/>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-5">
+        <createTable tableName="DIM_OSM_VELOCITY_TIER">
+            <column name="ID" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VelocityTier" type="VARCHAR(20)"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED ALL NODES"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="COMMON-6">
+        <addPrimaryKey columnNames="ID" constraintName="PK_DIM_OSM_VELOCITY_TIER" tableName="DIM_OSM_VELOCITY_TIER"/>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-7">
+        <createTable tableName="DIM_OSM_CLASSIFICATION">
+            <column name="ClassificationCode" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Classification" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="OOSGroup" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RepOriented" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RetailerMeasured" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RootCause" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="StoreExec" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="T3OOS" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED ALL NODES"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="COMMON-8">
+        <addPrimaryKey columnNames="ClassificationCode" constraintName="PK_DIM_OSM_CLASSIFICATION" tableName="DIM_OSM_CLASSIFICATION"/>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-9">
+        <createTable tableName="DIM_OSM_INCIDENTCLOSURETYPE">
+            <column name="ClosureType" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ClosureDesc" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ClosureStatus" type="VARCHAR(50)"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED ALL NODES"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="COMMON-10">
+        <addPrimaryKey columnNames="ClosureType" constraintName="PK_DIM_OSM_INCIDENTCLOSURETYPE" tableName="DIM_OSM_INCIDENTCLOSURETYPE"/>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-11">
+        <createTable tableName="DIM_OSM_INCIDENTAPPLICATIONSTATUS">
+            <column name="ApplicationStatus" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ApplicationStatusDesc" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED ALL NODES"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="COMMON-12">
+        <addPrimaryKey columnNames="ApplicationStatus" constraintName="PK_DIM_OSM_INCIDENTAPPLICATIONSTATUS" tableName="DIM_OSM_INCIDENTAPPLICATIONSTATUS"/>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-14">
+        <createTable tableName="DIM_OSM_INCIDENTRESPONSE">
+            <column name="ResponseId" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="InterventionKey" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ResponseDesc" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MerchandizerResponse" type="VARCHAR(50)"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+             <replace replace="ResponseId INT " with="ResponseId IDENTITY(1,1) "/> <!-- identity -->
+        </modifySql>
+        <modifySql>
+             <append value=" ORDER BY InterventionKey  UNSEGMENTED ALL NODES"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="COMMON-15">
+        <addPrimaryKey columnNames="ResponseId" constraintName="PK_DIM_OSM_INCIDENTRESPONSE" tableName="DIM_OSM_INCIDENTRESPONSE"/>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-16">
+        <createTable tableName="DIM_OSM_EPISODELENGTH">
+            <column name="EpisodeLength" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EpisodeType" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EpisodeRanges" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EpisodeRangeOrder" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED ALL NODES"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="COMMON-17">
+        <addPrimaryKey columnNames="EpisodeLength" constraintName="PK_DIM_OSM_EPISODELENGTH" tableName="DIM_OSM_EPISODELENGTH"/>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-18">
+        <createTable tableName="DIM_OSM_TRAITED">
+            <column name="TraitedKey" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Value" type="VARCHAR(30)"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED ALL NODES"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="COMMON-19">
+        <addPrimaryKey columnNames="TraitedKey" constraintName="PK_DIM_OSM_TRAITED" tableName="DIM_OSM_TRAITED"/>
+    </changeSet>
+    
+
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-20">
+        <createTable tableName="DIM_OSM_VALID">
+            <column name="ValidKey" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Value" type="VARCHAR(30)"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED ALL NODES"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="COMMON-21">
+        <addPrimaryKey columnNames="ValidKey" constraintName="PK_DIM_OSM_VALID" tableName="DIM_OSM_VALID"/>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-22">
+        <createTable tableName="DIM_OSM_JOBTYPE">
+            <column name="ParamId" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Parameter" type="VARCHAR(255)"/>
+            <column name="Description" type="VARCHAR(255)"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED ALL NODES"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="COMMON-23">
+        <addPrimaryKey columnNames="ParamId" constraintName="PK_DIM_OSM_JOBTYPE" tableName="DIM_OSM_JOBTYPE"/>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-24">
+        <createTable tableName="DIM_PLANOGRAM">
+            <column name="PERIOD_KEY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPC" type="VARCHAR(15)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STOREID" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PLANOGRAM" type="VARCHAR(200)"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED ALL NODES"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="COMMON-25">
+        <addPrimaryKey columnNames="PERIOD_KEY,UPC,STOREID" constraintName="PK_DIM_PLANOGRAM" tableName="DIM_PLANOGRAM"/>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-26">
+        <createTable tableName="META_OSM_PP_FILES">
+            <column name="FILE_ID" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VENDOR_KEY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RETAILER_KEY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FILE_NAME" type="VARCHAR(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="VARCHAR(512)"/>
+            <column name="PUBLISH_DATE" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VERSION" type="VARCHAR(32)"/>
+            <column name="SAMPLE_START_PERIOD" type="INT"/>
+            <column name="SAMPLE_END_PERIOD" type="INT"/>
+            <column name="XML_CONTENTS" type="LONG"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+             <replace replace="XML_CONTENTS LONG" with="XML_CONTENTS LONG VARCHAR(8000000)"/>  <!-- LONG VARCHAR -->
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED ALL NODES"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="COMMON-27">
+        <addPrimaryKey columnNames="FILE_ID" constraintName="PK_META_OSM_PP_FILES" tableName="META_OSM_PP_FILES"/>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-28">
+        <createTable tableName="DIM_PROMO_TYPES">
+            <column name="RETAILER_KEY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROMO_TYPE_ID" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESCRIPTION" type="VARCHAR(50)"/>
+            <column name="PARAMS_NUM" type="INT"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED ALL NODES"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="COMMON-29">
+        <addPrimaryKey columnNames="RETAILER_KEY,PROMO_TYPE_ID" constraintName="PK_DIM_PROMO_TYPES" tableName="DIM_PROMO_TYPES"/>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-30">
+        <createTable tableName="DIM_PRODUCT">
+            <column name="RETAILER_KEY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VENDOR_KEY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ITEM_KEY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPC" type="VARCHAR(512)"/>
+            <column name="ITEM_GROUP" type="VARCHAR(512)"/>
+            <column name="ITEM_DESCRIPTION" type="VARCHAR(512)"/>
+            <column name="OSM_ITEM_NBR" type="VARCHAR(512)"/>
+            <column name="OSM_ITEM_STATUS" type="VARCHAR(512)"/>
+            <column name="OSM_ITEM_TYPE" type="VARCHAR(512)"/>
+            <column name="OSM_BRAND" type="VARCHAR(512)"/>
+            <column name="OSM_UNIT_PRICE" type="VARCHAR(512)"/>
+            <column name="OSM_CATEGORY" type="VARCHAR(512)"/>
+            <column name="OSM_MAJOR_CATEGORY_NO" type="VARCHAR(512)"/>
+            <column name="OSM_MAJOR_CATEGORY" type="VARCHAR(512)"/>
+            <column name="OSM_SUB_CATEGORY_NO" type="VARCHAR(512)"/>
+            <column name="OSM_SUB_CATEGORY" type="VARCHAR(512)"/>
+            <column name="OSM_VENDOR_STK_NBR" type="VARCHAR(512)"/>
+            <column name="OSM_VENDOR_PACK_COST" type="VARCHAR(512)"/>
+            <column name="VENDOR_PACK_QTY" type="VARCHAR(30)"/>
+            <column name="OSM_WHSE_PACK_COST" type="VARCHAR(512)"/>
+            <column name="OSM_WHSE_PACK_QTY" type="VARCHAR(512)"/>
+            <column name="DSD_IND" type="VARCHAR(1)"/>
+            <column name="VENDOR_NAME" type="VARCHAR(64)"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" ORDER BY RETAILER_KEY, ITEM_KEY SEGMENTED BY MODULARHASH (RETAILER_KEY, ITEM_KEY) ALL NODES PARTITION BY VENDOR_KEY"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="COMMON-31">
+        <addPrimaryKey columnNames="RETAILER_KEY,ITEM_KEY" constraintName="PK_DIM_PRODUCT" tableName="DIM_PRODUCT"/>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-32">
+        <createTable tableName="PRODUCT">
+            <column name="VENDOR_KEY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ITEM_KEY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPC" type="VARCHAR(512)"/>
+            <column name="ATTRIBNAME" type="VARCHAR(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ATTRIBVALUE" type="VARCHAR(512)"/>
+            <column name="ACTIVE" type="VARCHAR(1)"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" ORDER BY VENDOR_KEY, ITEM_KEY, ATTRIBNAME SEGMENTED BY MODULARHASH (VENDOR_KEY) ALL NODES PARTITION BY VENDOR_KEY"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="COMMON-33">
+        <addPrimaryKey columnNames="ITEM_KEY,ATTRIBNAME" constraintName="PK_PRODUCT" tableName="PRODUCT"/>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-34">
+        <createTable tableName="DIM_STORE">
+            <column name="RETAILER_KEY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VENDOR_KEY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STORE_KEY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STORE_ID" type="VARCHAR(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MARKET_CLUSTER" type="VARCHAR(512)"/>
+            <column name="STATE" type="VARCHAR(512)"/>
+            <column name="CITY" type="VARCHAR(512)"/>
+            <column name="ZIP" type="VARCHAR(512)"/>
+            <column name="OSM_REGION" type="VARCHAR(512)"/>
+            <column name="OSM_DISTRICT" type="VARCHAR(512)"/>
+            <column name="RSI_ALERT_TYPE" type="VARCHAR(512)"/>
+            <column name="RETAILER_NAME" type="VARCHAR(64)"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" ORDER BY STORE_KEY, VENDOR_KEY SEGMENTED BY MODULARHASH (STORE_KEY, VENDOR_KEY) ALL NODES PARTITION BY RETAILER_KEY"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="COMMON-35">
+        <addPrimaryKey columnNames="STORE_KEY,VENDOR_KEY" constraintName="PK_DIM_STORE" tableName="DIM_STORE"/>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-36">
+        <createTable tableName="STORE">
+            <column name="RETAILER_KEY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STORE_KEY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STOREID" type="VARCHAR(512)"/>
+            <column name="ATTRIBNAME" type="VARCHAR(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ATTRIBVALUE" type="VARCHAR(512)"/>
+            <column name="ACTIVE" type="VARCHAR(1)"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" ORDER BY RETAILER_KEY, STORE_KEY, ATTRIBNAME SEGMENTED BY MODULARHASH (RETAILER_KEY) ALL NODES PARTITION BY RETAILER_KEY"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="COMMON-37">
+        <addPrimaryKey columnNames="STORE_KEY,ATTRIBNAME" constraintName="PK_STORE" tableName="STORE"/>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-38">
+        <createTable tableName="DIM_STORE_CLOSURE">
+            <column name="RETAILER_KEY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STORE_KEY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PERIOD_KEY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" ORDER BY RETAILER_KEY, STORE_KEY, PERIOD_KEY UNSEGMENTED ALL NODES"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="COMMON-39">
+        <addPrimaryKey columnNames="RETAILER_KEY,STORE_KEY,PERIOD_KEY" constraintName="PK_DIM_STORE_CLOSURE" tableName="DIM_STORE_CLOSURE"/>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-40">
+        <createTable tableName="DIM_PRODUCT_NOSALESDATE">
+            <column name="VENDOR_KEY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ITEM_GROUP" type="VARCHAR(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PERIOD_KEY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" ORDER BY VENDOR_KEY, ITEM_GROUP, PERIOD_KEY UNSEGMENTED ALL NODES"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="COMMON-41">
+        <addPrimaryKey columnNames="VENDOR_KEY,ITEM_GROUP,PERIOD_KEY" constraintName="PK_DIM_PRODUCT_NOSALESDATE" tableName="DIM_PRODUCT_NOSALESDATE"/>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-42">
+        <createTable tableName="DIM_OSM_PRODUCT">
+            <column name="VENDOR_KEY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RETAILER_KEY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STORE_KEY" type="INT"/>
+            <column name="ITEM_GROUP" type="VARCHAR(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="StagingType" type="INT"/>
+            <column name="ShelfCapacity" type="INT"/>
+            <column name="ItemTransitionIndicator" type="INT"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" ORDER BY VENDOR_KEY, RETAILER_KEY, ITEM_GROUP UNSEGMENTED ALL NODES"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="COMMON-43">
+        <addPrimaryKey columnNames="VENDOR_KEY, RETAILER_KEY, ITEM_GROUP" constraintName="PK_DIM_OSM_PRODUCT" tableName="DIM_OSM_PRODUCT"/>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-44">
+        <createTable tableName="META_BASELINE">
+            <column name="BaselineLastWeeklyKey" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="BaselineLastPeriodKey" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="BaselinePromoAmount" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED ALL NODES"/>
+        </modifySql>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-45">
+        <createTable tableName="DIM_PROMO_FAMILY_HISTORY">
+            <column name="ITEM_KEY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROMO_FAMILIY_ID" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" ORDER BY ITEM_KEY UNSEGMENTED ALL NODES"/>
+        </modifySql>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-46">
+        <createTable tableName="DIM_OSM_SITEGROUP">
+            <column name="Retailer_Key" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Store_Key" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Store_Group" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Store_Group_Key" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" ORDER BY Retailer_Key, Store_Key UNSEGMENTED ALL NODES"/>
+        </modifySql>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-47">
+        <createTable tableName="DIM_NPIDV_ITEMS">
+            <column name="ALERT_TYPE" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPC" type="VARCHAR(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LAUNCH_DATE_KEY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED ALL NODES"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="COMMON-48">
+        <addPrimaryKey columnNames="ALERT_TYPE,UPC" constraintName="PK_DIM_NPIDV_ITEMS" tableName="DIM_NPIDV_ITEMS"/>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-49">
+        <createTable tableName="DIM_ITEM_KEY_MAPPING">
+            <column name="ITEM_KEY_OSM" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ITEM_KEY_WM" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED ALL NODES"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="COMMON-50">
+        <addPrimaryKey columnNames="ITEM_KEY_OSM,ITEM_KEY_WM" constraintName="PK_DIM_ITEM_KEY_MAPPING" tableName="DIM_ITEM_KEY_MAPPING"/>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-51">
+        <createTable tableName="DIM_STORE_KEY_MAPPING">
+            <column name="STORE_KEY_OSM" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STORE_KEY_WM" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED ALL NODES"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="COMMON-52">
+        <addPrimaryKey columnNames="STORE_KEY_OSM,STORE_KEY_WM" constraintName="PK_DIM_STORE_KEY_MAPPING" tableName="DIM_STORE_KEY_MAPPING"/>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-57">
+        <createTable tableName="DIM_FEEDBACK_ASSUMPTIONS">
+            <column name="Merchandiser" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FeedbackDesc" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="AcceptAdjustment" type="CHAR(1)"/>
+            <column name="EffectiveFeedback" type="CHAR(1)"/>
+            <column name="FeedbackRank" type="CHAR(1)"/>
+            <column name="FeedbackSubRank" type="CHAR(1)"/>
+            <column name="HasFeedback" type="CHAR(1)"/>
+            <column name="TrueAlert" type="CHAR(1)"/>
+            <column name="NotOnPlanogram" type="CHAR(1)"/>
+            <column name="alertTypeList" type="VARCHAR(512)"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" ORDER BY Merchandiser, FeedbackDesc SEGMENTED BY hash(Merchandiser, FeedbackDesc) ALL NODES"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="COMMON-58">
+        <addPrimaryKey columnNames="Merchandiser, FeedbackDesc" constraintName="PK_DIM_FEEDBACK_ASSUMPTIONS" tableName="DIM_FEEDBACK_ASSUMPTIONS"/>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-59">
+        <createTable tableName="AFM_RULES_SUB_LEVEL_FILTER_TEMPLATE">
+            <column name="RULE_ID" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RULE_SET_ID" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SUB_LEVEL_VALUE" type="VARCHAR(512)"/>
+            <column name="METRICS_VALUE" type="VARCHAR(512)"/>
+            <column name="PARAMETER2" type="VARCHAR(512)"/>
+            <column name="PARAMETER3" type="VARCHAR(512)"/>
+            <column name="CREATED_BY" type="VARCHAR(512)"/>
+            <column name="CREATED_DATE" type="TIMESTAMP"/>
+            <column name="UPDATED_BY" type="VARCHAR(512)"/>
+            <column name="UPDATED_DATE" type="TIMESTAMP"/>
+            <column name="SUB_LEVEL_CATEGORY" type="VARCHAR(512)"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED all nodes"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="COMMON-60">
+        <addPrimaryKey columnNames="RULE_ID,RULE_SET_ID,SUB_LEVEL_VALUE" constraintName="PK_AFM_RULES_SUB_LEVEL_FILTER_TEMPLATE" tableName="AFM_RULES_SUB_LEVEL_FILTER_TEMPLATE"/>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-61">
+        <createTable tableName="AFM_RULES_UPC_STORE_LIST_TEMPLATE">
+            <column name="FILE_ID" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPC" type="VARCHAR(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STOREID" type="VARCHAR(512)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED all nodes"/>
+        </modifySql>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-62">
+        <sql>
+            CREATE SEQUENCE $(common).SEQ_DIM_VENDOR_RETAILER
+            INCREMENT BY 1
+            MINVALUE 1
+            START WITH 1
+            NO CACHE
+        </sql>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-63">
+        <createTable tableName="DIM_VENDOR_RETAILER">
+            <column defaultValue="NEXTVAL('$(common).SEQ_DIM_VENDOR_RETAILER')" name="ID" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VENDOR_KEY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RETAILER_KEY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED all nodes"/>
+        </modifySql>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-64">
+        <createTable tableName="DIM_INCIDENT_ID_START">
+            <column name="VENDOR_KEY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RETAILER_KEY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PERIOD_KEY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="INCIDENT_ID_START" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED all nodes"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-65">
+        <createTable tableName="DIM_ALERT_OWNER">
+            <column name="VENDOR_KEY" type="INT"> <constraints nullable="false"/> </column>
+            <column name="RETAILER_KEY" type="INT"> <constraints nullable="false"/> </column>
+            <column name="OWNER_KEY" type="INT"> <constraints nullable="false"/> </column>
+            <column name="OWNER" type="varchar(1000)"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED all nodes"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-66">
+        <createTable tableName="DIM_ALERT_FEEDBACKDESC">
+            <column name="VENDOR_KEY" type="INT"> <constraints nullable="false"/> </column>
+            <column name="RETAILER_KEY" type="INT"> <constraints nullable="false"/> </column>
+            <column name="FeedbackDesc_KEY" type="INT"> <constraints nullable="false"/> </column>
+            <column name="FeedbackDesc" type="varchar(200)"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED all nodes"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-67">
+        <createTable tableName="DIM_ALERT_LASTPOSDATE">
+            <column name="VENDOR_KEY" type="INT"> <constraints nullable="false"/> </column>
+            <column name="RETAILER_KEY" type="INT"> <constraints nullable="false"/> </column>
+            <column name="LastPOSDateBeforeAlert" type="datetime"/>
+            <column name="LastPOSDateBeforeAlertName" type="date"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED all nodes"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-68">
+        <createTable tableName="DIM_ALERT_TYPE">
+            <column name="ALERT_TYPE_KEY" type="INT"> <constraints nullable="false"/> </column>
+            <column name="ALERT_TYPE" type="nchar(5)"/>
+            <column name="ALERT_TYPE_DESCRIPTION" type="varchar(30)"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED all nodes"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-69">
+        <createTable tableName="DIM_ALERT_FEEDBACKRANK">
+            <column name="feedbackrank_key" type="INT"> <constraints nullable="false"/> </column>
+            <column name="feedbackrank" type="varchar(20)"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED all nodes"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-70">
+        <createTable tableName="DIM_ALERT_CATEGORY">
+            <column name="AlertCategory_KEY" type="INT"> <constraints nullable="false"/> </column>
+            <column name="AlertCategory" type="varchar(100)"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED all nodes"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-71">
+        <createTable tableName="DIM_FEEDBACK_DESC_TRANS">
+            <column name="Merchandiser" type="varchar(64)"> <constraints nullable="false"/> </column>
+            <column name="Type" type="varchar(64)"> <constraints nullable="false"/> </column>
+            <column name="Source" type="varchar(512)"/>
+            <column name="Target" type="varchar(512)"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED all nodes"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-72">
+        <createTable tableName="DIM_SP_SEQUENCE">
+            <column name="VENDOR_KEY" type="int"> <constraints nullable="false"/> </column>
+            <column name="RETAILER_KEY" type="int"> <constraints nullable="false"/> </column>
+            <column name="PERIOD_KEY" type="int"> <constraints nullable="false"/> </column>
+            <column name="SEQ_NUM" type="bigint"> <constraints nullable="false"/> </column>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED all nodes"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-73">
+        <createTable tableName="DIM_ALERT_EFFECTIVENESS">
+            <column name="KEY" type="int"> <constraints nullable="false"/> </column>
+            <column name="VALUE" type="varchar(512)"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED all nodes"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-74">
+        <createTable tableName="DIM_ALERT_ACCURACY">
+            <column name="KEY" type="int"> <constraints nullable="false"/> </column>
+            <column name="DESCRIPTION" type="varchar(512)"/>
+            <column name="VALUE" type="varchar(512)"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED all nodes"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-75">
+        <createView fullDefinition="false" viewName="DIM_ALERT_INTFLAG">
+            select -1 AS flag, '' AS value UNION
+            select 0, '0' UNION
+            select 1, '1';
+        </createView>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-76">
+        <createTable tableName="FACT_SCORECARD">
+            <column name="VENDOR_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="RETAILER_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="ITEM_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="STORE_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="AlertID" type="INT"><constraints nullable="false"/></column>
+            <column name="AlertDate" type="varchar(20)"/>
+            <column name="period_key" type="int"><constraints nullable="false"/></column>
+            <column name="period_id" type="int"><constraints nullable="false"/></column>
+            <column name="OWNER_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="AlertCategory_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="FeedbackDesc" type="varchar(255)"/>
+            <column name="FeedbackDesc_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="FeedbackRank_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="EffectiveFeedback_key" type="int"><constraints nullable="false"/></column>
+            <column name="Cube_Alert_Type_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="AccurateAlert" type="int"><constraints nullable="false"/></column>
+            <column name="EstimatedAlertOpp" type="float"/>
+            <column name="WeekEnded" type="varchar(20)"/>
+            <column name="feedbackcnt" type="int"/>
+            <column name="storeweekwithfeedback" type="varchar(575)"/>
+            <column name="storeweek" type="varchar(575)"/>
+            <column name="StoreItemWeekEnded" type="varchar(1087)"/>
+            <column name="store_visited" type="int"/>
+            <column name="store visits" type="varchar(512)"/>
+            <column name="Recaptured Sales" type="float"/>
+            <column name="Resolutions" type="int"/>
+            <column name="Payback Period" type="int"/>
+            <column name="Physical Count" type="Numeric(12,2)"/>
+            <column name="CAO Count" type="Numeric(12,2)"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" ORDER BY ITEM_KEY, STORE_KEY, alertdate, RETAILER_KEY, VENDOR_KEY SEGMENTED BY MODULARHASH(Item_Key, Store_key) ALL NODES PARTITION BY (concat(concat((RETAILER_KEY)::varchar, '|'), (VENDOR_KEY)::varchar));"/>
+        </modifySql>
+    </changeSet>
+
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-77">
+        <createTable tableName="DIM_CALENDAR">
+            <column name="PERIOD_KEY" type="INT"><constraints nullable="false"/></column>
+            <column name="CALENDAR_KEY" type="INTEGER"><constraints nullable="false"/></column>
+            <column name="CALENDARNAME" type="VARCHAR(30)"/>
+            <column name="YEAR" type="INTEGER"/>
+            <column name="YEARNAME" type="VARCHAR(30)"/>
+            <column name="QUARTER" type="INTEGER"/>
+            <column name="QUARTERNAME" type="VARCHAR(30)"/>
+            <column name="MONTH" type="INTEGER"/>
+            <column name="MONTHNAME" type="VARCHAR(30)"/>
+            <column name="PERIOD" type="INTEGER"/>
+            <column name="PERIODNAME" type="VARCHAR(30)"/>
+            <column name="WEEKENDED" type="INTEGER"/>
+            <column name="WEEKENDEDNAME" type="VARCHAR(150)"/>
+            <column name="WEEKBEGIN" type="INTEGER"/>
+            <column name="WEEKBEGINNAME" type="VARCHAR(150)"/>
+            <column name="YEARWEEKNAME" type="VARCHAR(60)"/>
+            <column name="YEARWEEK" type="INTEGER"/>
+            <column name="YEARMONTHWEEKNAME" type="VARCHAR(60)"/>
+            <column name="LY_PERIOD_KEY" type="INTEGER"/>
+            <column name="NY_PERIOD_KEY" type="INTEGER"/>
+            <column name="DATE_NAME" type="VARCHAR(150)"/>
+            <column name="DATE_VALUE" type="DATE"/>
+            <column name="CAL_PERIOD_KEY" type="INTEGER"/>
+            <column name="2YA_PERIOD_KEY" type="INTEGER"/>
+            <column name="3YA_PERIOD_KEY" type="INTEGER"/>
+            <column name="4YA_PERIOD_KEY" type="INTEGER"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+            <append value=" ORDER BY CALENDAR_KEY, PERIOD_KEY"/>
+            <append value=" UNSEGMENTED all nodes"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="COMMON-78">
+        <addPrimaryKey columnNames="PERIOD_KEY, CALENDAR_KEY" constraintName="PK_DIM_CALENDAR" tableName="DIM_CALENDAR"/>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-79">
+        <createView fullDefinition="false" viewName="OLAP_CALENDAR_OSA">
+            SELECT PERIOD_KEY, CALENDAR_KEY, CALENDARNAME, YEAR, YEARNAME, QUARTER, QUARTERNAME, MONTH, MONTHNAME, PERIOD, 
+            PERIODNAME, WEEKENDED, WEEKENDEDNAME, WEEKBEGIN, WEEKBEGINNAME, YEARWEEKNAME, YEARWEEK, YEARMONTHWEEKNAME, 
+            LY_PERIOD_KEY, NY_PERIOD_KEY, DATE_NAME, DATE_VALUE, CAL_PERIOD_KEY, "2YA_PERIOD_KEY", "3YA_PERIOD_KEY", 
+            "4YA_PERIOD_KEY"
+            FROM $(common).DIM_CALENDAR
+            WHERE CALENDAR_KEY = 2 
+            AND PERIOD_KEY BETWEEN TO_CHAR(CURRENT_DATE() - DAYOFWEEK('TODAY') - INTERVAL '728 DAYS', 'YYYYMMDD')::INT
+            AND TO_CHAR(CURRENT_DATE() - DAYOFWEEK('TODAY') + INTERVAL '28 DAYS', 'YYYYMMDD')::INT
+        </createView>
+    </changeSet>
+    
+</databaseChangeLog>

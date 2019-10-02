@@ -1,0 +1,59 @@
+=================== 1 ==================
+deployMain/process
+"groupName": "$defid:deployMain"
+(1) 
+--> deploy/process
+--> "groupName": "$defid:deploy:common"
+--> {
+      "vendor_key": -1, 
+      "retailer_key": -1
+    }
+query status of $defid:deploy:common
+(2) 
+--> deploy/process
+--> "groupName": "$defid:deploy:$retailer_key"
+--> {
+      "vendor_key": -1, 
+      "retailer_key": $retailer_key
+    }
+query status of $defid:deploy:$retailer_key
+(3)
+--> deploy/process
+--> "groupName": "$defid:deploy:$retailer_key:$vendor_key"
+--> {
+      "vendor_key": $vendor_key,
+      "retailer_key": $retailer_key
+    }
+=================== 2 ==================
+deployMain/process
+"groupName": "$defid:deployMain:$cycle_key"
+{
+  "retailer_key": $retailer_key, 
+  "vendor_key_list": [...]
+}
+(2) 
+--> deploy/process
+--> "groupName": "$defid:deploy:$retailer_key"
+--> {
+      "vendor_key": -1, 
+      "retailer_key": $retailer_key
+    }
+query status of $defid:deploy:$retailer_key
+(3)
+--> deploy/process
+--> "groupName": "$defid:deploy:$retailer_key:$vendor_key"
+--> {
+      "vendor_key": $vendor_key,
+      "retailer_key": $retailer_key
+    }
+
+
+
+
+
+
+
+
+
+
+

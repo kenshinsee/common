@@ -1,0 +1,20 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet author="hong.hu (generated)" id="1">
+        <sql>
+            CREATE TABLE IF NOT EXISTS $(schema).ANL_OSM_SITEGROUP ( 
+                Retailer_Key INT NOT NULL ENCODING RLE, 
+                Vendor_Key INT NOT NULL ENCODING RLE,
+                Store_Key INT NOT NULL ENCODING RLE, 
+                Store_Group varchar(255) NOT NULL ENCODING RLE, 
+                Store_Group_Key INT NOT NULL ENCODING RLE, 
+                PRIMARY KEY(Retailer_Key, Vendor_Key, Store_Key) 
+            ) 
+            ORDER BY Retailer_Key, Store_Key 
+            UNSEGMENTED ALL NODES
+            Partition by Vendor_Key;
+        </sql>
+    </changeSet>
+    
+</databaseChangeLog>

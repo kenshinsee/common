@@ -1,0 +1,61 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet author="hong.hu (generated)" id="1">
+        <sql>
+        delete from META_DIM_DTL where DEF_ID = (select id from META_DIM_DEF where name='AFMdefaultParamApply') and ATTR_INT1 = 4;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="2">
+        <sql>
+        insert into META_DIM_DTL(DEF_ID,ATTR_INT1,ATTR_TEXT) 
+        values((select id from META_DIM_DEF where name='AFMdefaultParamApply'),4,'ProjectedWeeklySalesGain,ExpectedLostSalesUnits');
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="3">
+        <sql>
+        update META_DIM_ATTR_DESC
+        set ATTR_DESC = '1: AFMFormatWithDefaultValue, 2: AFMFormatWithOutDefaultValue, 3: AFMAttributeDefaultValue, 4: RankList'
+        where def_id = (select id from META_DIM_DEF where name='AFMdefaultParamApply');
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="4">
+        <sql>
+update META_DIM_DTL
+set ATTR_TEXT = '{
+    "feedback_suppression": {
+        "preselect": true,
+        "true_alerts": 7,
+        "false_alerts": 14,
+        "not_on_pog": 21,
+        "rule_id":32
+    },
+    "limit_alerts_by_store": { 
+        "preselect": true,
+        "alerts_per_store":10,
+        "rule_id":1
+    },
+    "pickup_rule": {
+        "preselect": false,
+        "text": null,
+        "rule_id":40
+    },
+    "filter_rule": { 
+        "preselect": false,
+        "text": null,
+        "rule_id":37
+    },
+    "limit_alerts_by_vendor": { 
+        "preselect":false,
+        "alerts_per_vendor":null,
+        "rule_id":65
+    },
+    "rank_by":"ProjectedWeeklySalesGain"
+}'
+where def_id = (select id from META_DIM_DEF where name='AFMdefaultParamApply')
+and ATTR_INT1 = 1
+        </sql>
+    </changeSet>
+
+    
+</databaseChangeLog>

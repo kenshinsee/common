@@ -1,0 +1,42 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet author="hong.hu (generated)" id="1">
+        <sql>
+            CREATE TABLE META_SCD_TABLE_DEF (
+              ID INT NOT NULL IDENTITY(1,1),
+              TABLE_NAME VARCHAR(128) NOT NULL,
+              PK VARCHAR(512) NOT NULL,
+              DB_TYPE VARCHAR(32) NOT NULL,
+              TABLE_SCHEMA VARCHAR(128) NOT NULL,
+              CREATE_TIME DATETIME,
+              PRIMARY KEY (ID),
+              CONSTRAINT AK_META_SCD_TABLE_DEF UNIQUE(TABLE_NAME, DB_TYPE, TABLE_SCHEMA)   
+            );
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="2">
+        <sql>
+            CREATE TABLE META_SCD_CHANGE_LOG (
+              ID INT NOT NULL IDENTITY(1,1),
+              TABLE_DEF_ID INT NOT NULL,
+              PK_VALUE VARCHAR(1024) NOT NULL,
+              ACTION VARCHAR(32),
+              RECORD NTEXT,
+              UPDATE_TIME DATETIME,
+              ACTIONER VARCHAR(256),
+              PRIMARY KEY (ID),
+              FOREIGN KEY (TABLE_DEF_ID) REFERENCES META_SCD_TABLE_DEF(ID)
+            );
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="3">
+        <sql>
+            CREATE INDEX IDX_META_SCD_CHANGE_LOG ON META_SCD_CHANGE_LOG(TABLE_DEF_ID, PK_VALUE);
+        </sql>
+    </changeSet>
+        <changeSet author="hong.hu (generated)" id="1522134024518-108">
+        <sql>
+            ALTER TABLE AP_META_DELIVERIES ADD OWNER VARCHAR(512);
+        </sql>
+    </changeSet>
+</databaseChangeLog>

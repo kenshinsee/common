@@ -1,0 +1,226 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet author="hong.hu (generated)" id="1">
+        <sql>
+            CREATE TABLE AP_DIM_FEEDBACK_TEMPLATE
+            (
+                ID int NOT NULL IDENTITY PRIMARY KEY,
+                NAME VARCHAR(128) NOT NULL UNIQUE, 
+                STATUS char(1) NOT NULL
+            );
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="4">
+        <sql>
+            CREATE TABLE AP_DIM_FEEDBACK_TEMPLATE_DETAIL
+            (
+                ID int NOT NULL IDENTITY PRIMARY KEY,
+                TEMPLATE_ID INTEGER NOT NULL CONSTRAINT FK_DIM_FEEDBACK_TEMPLATE_ID REFERENCES AP_DIM_FEEDBACK_TEMPLATE (ID), 
+                FeedbackDesc varchar(255) NOT NULL,
+                AcceptAdjustment char(1),
+                EffectiveFeedback char(1),
+                FeedbackRank char(1),
+                FeedbackSubRank char(1),
+                HasFeedback char(1),
+                TrueAlert char(1),
+                NotOnPlanogram char(1),
+                alertTypeList varchar(512), 
+                UNIQUE (TEMPLATE_ID, FeedbackDesc)
+            );
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="5">
+        <sql>
+            INSERT INTO AP_DIM_FEEDBACK_TEMPLATE(NAME, STATUS) VALUES('RSi Standard', 'A');
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="6">
+        <sql>
+            INSERT INTO AP_DIM_FEEDBACK_TEMPLATE_DETAIL(TEMPLATE_ID, FeedbackDesc, AcceptAdjustment, EffectiveFeedback, FeedbackRank, FeedbackSubRank, HasFeedback, TrueAlert, NotOnPlanogram, alertTypeList)
+            SELECT (SELECT ID FROM AP_DIM_FEEDBACK_TEMPLATE WHERE NAME='RSi Standard'), 'Item on shelf - Missing, Incorrect, or Damaged Tag', 'Y', 'Y', 'B', 'A', 'Y', 'Y', 'N', 'Phantom,D-Void,Shelf OOS,STO' UNION ALL
+            SELECT (SELECT ID FROM AP_DIM_FEEDBACK_TEMPLATE WHERE NAME='RSi Standard'), 'Item on shelf - Wrong Place or Obscured', 'Y', 'Y', 'B', 'C', 'Y', 'Y', 'N', 'Phantom,D-Void,Shelf OOS,STO' UNION ALL
+            SELECT (SELECT ID FROM AP_DIM_FEEDBACK_TEMPLATE WHERE NAME='RSi Standard'), 'Item on shelf - Inventory Discrepancy', 'Y', 'Y', 'B', 'B', 'Y', 'Y', 'N', 'Phantom,D-Void,Shelf OOS,STO' UNION ALL
+            SELECT (SELECT ID FROM AP_DIM_FEEDBACK_TEMPLATE WHERE NAME='RSi Standard'), 'Item on shelf - Other Issues', 'Y', 'Y', 'B', 'D', 'Y', 'Y', 'N', 'Phantom,D-Void,Shelf OOS,STO' UNION ALL
+            SELECT (SELECT ID FROM AP_DIM_FEEDBACK_TEMPLATE WHERE NAME='RSi Standard'), 'Item on shelf - No Issue or Inventory Discrepancy', 'N', 'N', 'D', 'B', 'Y', 'N', 'N', 'Phantom,D-Void,Shelf OOS,STO' UNION ALL
+            SELECT (SELECT ID FROM AP_DIM_FEEDBACK_TEMPLATE WHERE NAME='RSi Standard'), 'Item not on shelf - Inventory Discrepancy', 'Y', 'Y', 'A', 'A', 'Y', 'Y', 'N', 'Phantom,D-Void,Shelf OOS,STO' UNION ALL
+            SELECT (SELECT ID FROM AP_DIM_FEEDBACK_TEMPLATE WHERE NAME='RSi Standard'), 'Item not on shelf - No Inventory Discrepancy', 'Y', 'Y', 'A', 'C', 'Y', 'Y', 'N', 'Phantom,D-Void,Shelf OOS,STO' UNION ALL
+            SELECT (SELECT ID FROM AP_DIM_FEEDBACK_TEMPLATE WHERE NAME='RSi Standard'), 'Item not on shelf - Missing Tag', 'Y', 'Y', 'A', 'B', 'Y', 'Y', 'N', 'Phantom,D-Void,Shelf OOS,STO' UNION ALL
+            SELECT (SELECT ID FROM AP_DIM_FEEDBACK_TEMPLATE WHERE NAME='RSi Standard'), 'Item not on Planogram', 'N', 'N', 'E', 'I', 'Y', 'Y', 'Y', 'Phantom,D-Void,Shelf OOS,STO';
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="7">
+        <sql>
+            alter table ALT_META_INTERVENTION add APPLICATION varchar(50);
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="8">
+        <sql>
+            UPDATE ALT_META_INTERVENTION
+            SET APPLICATION = T.APPLICATION
+            FROM  (
+                SELECT 0 AS INTERVENTIONKEY, 'All' AS APPLICATION UNION ALL
+                SELECT 1 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 2 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 3 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 4 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 5 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 6 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 7 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 8 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 9 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 10 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 11 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 12 AS INTERVENTIONKEY, 'EPC' AS APPLICATION UNION ALL
+                SELECT 13 AS INTERVENTIONKEY, 'EPC' AS APPLICATION UNION ALL
+                SELECT 14 AS INTERVENTIONKEY, 'EPC' AS APPLICATION UNION ALL
+                SELECT 15 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 16 AS INTERVENTIONKEY, 'All' AS APPLICATION UNION ALL
+                SELECT 17 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 18 AS INTERVENTIONKEY, 'All' AS APPLICATION UNION ALL
+                SELECT 19 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 20 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 21 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 22 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 23 AS INTERVENTIONKEY, 'RR' AS APPLICATION UNION ALL
+                SELECT 24 AS INTERVENTIONKEY, 'RR' AS APPLICATION UNION ALL
+                SELECT 25 AS INTERVENTIONKEY, 'RR' AS APPLICATION UNION ALL
+                SELECT 26 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 30 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 31 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 32 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 33 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 34 AS INTERVENTIONKEY, 'OOS' AS APPLICATION UNION ALL
+                SELECT 35 AS INTERVENTIONKEY, 'AA' AS APPLICATION UNION ALL
+                SELECT 36 AS INTERVENTIONKEY, 'AA' AS APPLICATION UNION ALL
+                SELECT 37 AS INTERVENTIONKEY, 'AA' AS APPLICATION UNION ALL
+                SELECT 38 AS INTERVENTIONKEY, 'AA' AS APPLICATION UNION ALL
+                SELECT 39 AS INTERVENTIONKEY, 'All' AS APPLICATION 
+            ) T WHERE ALT_META_INTERVENTION.INTERVENTION_KEY = T.INTERVENTIONKEY;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="9">
+        <sql>
+            INSERT INTO META_DIM_DEF(NAME, DESCRIPTION) VALUES('AFMdefaultParamApply', 'AFM default values for pre-defined rules');
+            INSERT INTO META_DIM_DTL(DEF_ID,ATTR_TEXT) VALUES((select id from META_DIM_DEF where name='AFMdefaultParamApply'),'{"feedback_suppression": {"preselect": true,"true_alerts": 7,"false_alerts": 14,"not_on_pog": 21},"limit_alerts": {"preselect": true,"alerts_per_store":null},"pickup_rule": {"preselect": false,"text": null},"filter_rule": { "preselect": false,"text": null}}');
+            INSERT INTO META_DIM_ATTR_DESC(DEF_ID, ATTR_COL_NAME, ATTR_DESC) VALUES((SELECT ID FROM META_DIM_DEF WHERE NAME='AFMdefaultParamApply'), 'ATTR_TEXT', 'AFM default values for pre-defined rules');
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="10">
+        <sql>
+            alter table ap_dim_feedback_assumptions add template_id integer;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="11">
+        <sql>
+            delete from META_DIM_DTL where def_id in (select id from META_DIM_DEF where name = 'AFMdefaultParamApply');
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="12">
+        <sql>
+            insert into META_DIM_DTL(DEF_ID,ATTR_INT1,ATTR_TEXT) values((select id from META_DIM_DEF where name='AFMdefaultParamApply'), 1, '{"feedback_suppression": { "preselect": true, "true_alerts": 7, "false_alerts": 14, "not_on_pog": 21, "rule_id":32 }, "limit_alerts": { "preselect": true, "alerts_per_store":null, "rule_id":1 }, "pickup_rule": { "preselect": false, "text": null, "rule_id":40 }, "filter_rule": { "preselect": false, "text": null, "rule_id":37 } }' );
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="13">
+        <sql>
+            insert into META_DIM_DTL(DEF_ID,ATTR_INT1,ATTR_TEXT) values((select id from META_DIM_DEF where name='AFMdefaultParamApply'), 2, '{"feedback_suppression": { "preselect": false, "true_alerts": null, "false_alerts": null, "not_on_pog": null, "rule_id":32 }, "limit_alerts": { "preselect": false, "alerts_per_store":null, "rule_id":1 }, "pickup_rule": { "preselect": false, "text": null, "rule_id":40 }, "filter_rule": { "preselect": false, "text": null, "rule_id":37 } }' );
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="14">
+        <sql>
+            delete from META_DIM_ATTR_DESC where def_id = (select id from META_DIM_DEF where name='AFMdefaultParamApply');
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="15">
+        <sql>
+            insert into meta_dim_attr_desc (DEF_ID,ATTR_COL_NAME,ATTR_DESC) values (((select id from META_DIM_DEF where name='AFMdefaultParamApply')),'ATTR_INT1','1: AFMFormatWithDefaultValue, 2: AFMFormatWithOutDefaultValue');
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="16">
+        <sql>
+            delete from AP_LAYOUT_CYCLE_MAPPING where cycle_key=1 and layout_key=-3;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="17">
+        <sql>
+            insert into AP_LAYOUT_CYCLE_MAPPING values(-3,1,3);
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="18">
+        <sql>
+            delete from AP_CONFIG_META_ATTRIBUTE where layout_key=-3;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="19">
+        <sql>
+            insert into AP_CONFIG_META_ATTRIBUTE(LAYOUT_KEY,ATTRIBUTE_NAME,KEY_COLUMN,DIMENSION_TYPE,ATTRIBUTE_DATA_TYPE,ATTRIBUTE_SEQUENCE,SHOW_BY_DEFAULT,DATA_ORDER)
+			select -3,'Alert ID','ALERT_ID',5,'String',10,'T','false'
+			union all select -3,'Store','STORE_ID',2,'String',20,'T','false'
+			union all select -3,'UPC','ALERTUPC',5,'String',30,'T','false'
+			union all select -3,'Item Description','ITEM_DESCRIPTION',1,'String',40,'T','false'
+			union all select -3,'Category','OSM_CATEGORY',1,'String',50,'T','false'
+			union all select -3,'Alert Type','ALERT_TYPE',5,'String',60,'T','false'
+			union all select -3,'Days Since POS','DaysSincePOS',5,'String',70,'T','false'
+			union all select -3,'Proj. Weekly Sales','ProjectedWeeklySalesGain',5,'Currency',80,'T','true';
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="20">
+        <sql>
+			insert into AP_CONFIG_META_ATTRIBUTE(LAYOUT_KEY,ATTRIBUTE_NAME,KEY_COLUMN,DIMENSION_TYPE,ATTRIBUTE_DATA_TYPE,SHOW_BY_DEFAULT,DATA_ORDER)
+			select -3,'Alert Item Number','AlertItemNumber',5,'String','F','false'
+			union all select -3,'Lost Units to Date','AlertLostUnitsToDate',5,'Integer','F','false'
+			union all select -3,'Days Since Gross Shipments','DaysSinceGS',5,'Integer','F','false'
+			union all select -3,'Item Group','ITEM_GROUP',1,'String','F','false'
+			union all select -3,'Retail Price','OSM_UNIT_PRICE',1,'Currency','F','false'
+			union all select -3,'Pack Cost','OSM_VENDOR_PACK_COST',1,'Currency','F','false'
+			union all select -3,'Vendor Pack','VENDOR_PACK_QTY',1,'Integer','F','false'
+			union all select -3,'City','CITY',2,'String','F','false'
+			union all select -3,'Zip','ZIP',2,'String','F','false'
+			union all select -3,'Expected Lost Sales ','ExpectedLostSalesAmount',5,'Currency','F','false'
+			union all select -3,'Expected Lost Units','ExpectedLostSalesUnits',5,'Integer','F','false'
+			union all select -3,'System On Hand','RetailOnHand',5,'Integer','F','false'
+			union all select -3,'System Count','ON_HAND_CAO_COUNT',6,'Integer','F','false'
+			union all select -3,'Actual Store Count','ON_HAND_PHYSICAL_COUNT',6,'Integer','F','false'
+			union all select -3,'Feedback Description','FEEDBACK_DESCRIPTION',6,'String','F','false'
+			union all select -3,'Brand','OSM_BRAND',1,'String','F','false'
+			union all select -3,'Department','OSM_MAJOR_CATEGORY',1,'String','F','false'
+			union all select -3,'Class','OSM_SUB_CATEGORY',1,'String','F','false'
+			union all select -3,'Vendor Name','VENDOR_NAME',1,'String','F','false'
+			union all select -3,'Item Number','OSM_ITEM_NBR',1,'String','F','false'
+			union all select -3,'Market Cluster','MARKET_CLUSTER',2,'String','F','false'
+			union all select -3,'State','STATE',2,'String','F','false'
+			union all select -3,'Region','OSM_REGION',2,'String','F','false'
+			union all select -3,'Retailer Name','RETAILER_NAME',2,'String','F','false';
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="21">
+        <sql>
+			update ALT_META_INTERVENTION set Application='OOS' where application='AA';
+        </sql>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="22">
+        <sql>
+			INSERT INTO AFM_META_RULES (RULE_ID, PROVIDER_NAME, PROVIDER_SUB_TYPE, FILTER_NAME, METRICS_NAME, METRICS_CONDITION, PARAMETER1, PARAMETER2, PARAMETER3, METRICS_TYPE, METRICS_VALUE_TYPE, METRICS_ORDER, METRICS_REJECT_REASON, DEPEND_ON_PREVIOUS_RULE, RULE_HINTS, SUB_LEVEL_FILTERS, RULE_ACTION_TYPE, RULE_DESCRIPTION)
+            select 27, 'AFM', '*', 'Store-Product Filter', 'Store-Item Exclusion/Inclusion', 'controlled by lists in Store-Product Filters sheet', 'Default', 'Default', 'Default', 'Store-Product Filter', 'Excl Store_Item', 102, 'Excl Store_Item', 'T', 'controlled by lists in Store-Product Filters sheet', '', 'filter out', ''
+            union all
+            select 28, 'AFM', '*', 'Product Filter', 'Item Exclusion / Inclusion', 'controlled by lists in Product Filters sheet', 'Default', 'Default', 'Default', 'Product Filter', '', 103, 'Excl Item', 'T', 'controlled by lists in Product Filters sheet', '', 'filter out', ''
+            union all
+            select 29, 'AFM', '*', 'Store Filter', 'Store Exclusion / Inclusion', 'controlled by lists in Store Filters sheet', 'Default', 'Default', 'Default', 'Store Filter', '', 104, 'Excl Store', 'T', 'controlled by lists in Store Filters sheet', '', 'filter out', ''
+            union all
+            select 63, 'AFM', '*', 'Category Filter', 'Category Exclusion / Inclusion', 'controlled by lists in Category Filters sheet', 'Default', 'Default', 'Default', 'Category Filter', '', 105, 'Excl Category', 'T', 'controlled by lists in Category Filters sheet', '', 'filter out', ''
+            union all
+            select 64, 'AFM', '*', 'Region Filter', 'Region Exclusion / Inclusion', 'controlled by lists in Region Filters sheet', 'Default', 'Default', 'Default', 'Region Filter', '', 106, 'Excl Region', 'T', 'controlled by lists in Region Filters sheet', '', 'filter out', '';
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="23">
+        <sql>
+			CREATE TABLE AFM_RULES_ATTRIBUTE_LIST (
+                RULE_SET_ID int,
+                RULE_ID int,
+                ATTR_TYPE varchar(50),
+                ATTR_VALUE varchar(200)
+            )
+        </sql>
+    </changeSet>
+	
+</databaseChangeLog>

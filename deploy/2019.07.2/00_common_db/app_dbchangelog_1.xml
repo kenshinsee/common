@@ -1,0 +1,179 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+	
+    <changeSet author="hong.hu (generated)" id="1">
+        <sql>
+			delete from META_DIM_DTL where def_id in (select id from META_DIM_DEF where name = 'AFMdefaultParamApply') ;
+        </sql>
+    </changeSet>
+	
+    <changeSet author="hong.hu (generated)" id="2">
+        <sql>
+            insert into META_DIM_DTL(DEF_ID,ATTR_INT1,ATTR_TEXT) values((select id from META_DIM_DEF where name='AFMdefaultParamApply'),
+            1,
+            '{"feedback_suppression": {
+                        "preselect": true,
+                        "true_alerts": 7,
+                        "false_alerts": 14,
+                        "not_on_pog": 21,
+                        "rule_id":32
+                    },
+                    "limit_alerts_by_store": { 
+                        "preselect": true,
+                        "alerts_per_store":10,
+                        "rule_id":1
+                    },
+                    "pickup_rule": {
+                        "preselect": false,
+                        "text": null,
+                        "rule_id":40
+                    },
+                    "filter_rule": { 
+                        "preselect": false,
+                        "text": null,
+                        "rule_id":37
+                    },
+                    "limit_alerts_by_vendor": { 
+                        "preselect":false,
+                        "alerts_per_vendor":null,
+                        "rule_id":65
+                    }
+
+            }'
+            );
+        </sql>
+    </changeSet>
+	
+    <changeSet author="hong.hu (generated)" id="3">
+        <sql>
+            insert into META_DIM_DTL(DEF_ID,ATTR_INT1,ATTR_TEXT) values((select id from META_DIM_DEF where name='AFMdefaultParamApply'),
+            2,
+            '{"feedback_suppression": {
+                        "preselect": false,
+                        "true_alerts": null,
+                        "false_alerts": null,
+                        "not_on_pog": null,
+                        "rule_id":32
+                    },
+                    "limit_alerts_by_store": { 
+                        "preselect": false,
+                        "alerts_per_store":null,
+                        "rule_id":1
+                    },
+                    "pickup_rule": {
+                        "preselect": false,
+                        "text": null,
+                        "rule_id":40
+                    },
+                    "filter_rule": { 
+                        "preselect": false,
+                        "text": null,
+                        "rule_id":37
+                    },
+                    "limit_alerts_by_vendor": { 
+                        "preselect": false,
+                        "alerts_per_vendor":null,
+                        "rule_id":65
+                    }
+            }'
+            );
+        </sql>
+    </changeSet>
+	
+    <changeSet author="hong.hu (generated)" id="4">
+        <sql>
+            insert into META_DIM_DTL(DEF_ID,ATTR_INT1,ATTR_TEXT) values((select id from META_DIM_DEF where name='AFMdefaultParamApply'),
+            3,
+            '[{"name": "item", "preselect": false,"rule_id":28},
+            {"name": "store", "preselect": false,"rule_id":29},
+            {"name": "category", "preselect": false,"rule_id":63},
+            {"name": "region", "preselect": false,"rule_id":64}]'
+            );
+        </sql>
+    </changeSet>
+	
+    <changeSet author="hong.hu (generated)" id="5">
+        <sql>
+			INSERT INTO META_DIM_DEF(NAME, DESCRIPTION)
+			SELECT A.*
+			FROM (SELECT 'alertKeyAttributes' AS NAME, 'key attributes for alert center' AS DESCRIPTION) A
+			LEFT JOIN META_DIM_DEF B ON A.NAME = B.NAME
+			WHERE B.ID IS NULL;
+        </sql>
+    </changeSet>
+	
+    <changeSet author="hong.hu (generated)" id="6">
+        <sql>
+			INSERT INTO META_DIM_DTL(DEF_ID, ATTR_STR1, ATTR_STR2, ATTR_STR3)
+			SELECT A.*
+			FROM (
+                select (SELECT ID FROM META_DIM_DEF WHERE NAME='alertKeyAttributes') AS DEF_ID, 'ALERT_ID' AS ATTR_STR1, 'Alert Id' AS ATTR_STR2, 'Long' AS ATTR_STR3
+                union all
+                select (SELECT ID FROM META_DIM_DEF WHERE NAME='alertKeyAttributes') AS DEF_ID, 'VENDOR_KEY', 'Vendor Key', 'Integer'
+                union all
+                select (SELECT ID FROM META_DIM_DEF WHERE NAME='alertKeyAttributes') AS DEF_ID, 'RETAILER_KEY', 'Retailer Key', 'Integer'
+                union all
+                select (SELECT ID FROM META_DIM_DEF WHERE NAME='alertKeyAttributes') AS DEF_ID, 'ITEM_KEY', 'Item Key', 'Integer'
+                union all
+                select (SELECT ID FROM META_DIM_DEF WHERE NAME='alertKeyAttributes') AS DEF_ID, 'STORE_KEY', 'Store Key', 'Integer'
+                union all
+                select (SELECT ID FROM META_DIM_DEF WHERE NAME='alertKeyAttributes') AS DEF_ID, 'PERIOD_KEY', 'Alert Date', 'Date'
+                union all
+                select (SELECT ID FROM META_DIM_DEF WHERE NAME='alertKeyAttributes') AS DEF_ID, 'OWNER', 'Owner', 'String'
+			) A
+			LEFT JOIN META_DIM_DTL B ON A.DEF_ID = B.DEF_ID AND A.ATTR_STR1 = B.ATTR_STR1
+			WHERE B.ID IS NULL;
+        </sql>
+    </changeSet>
+	
+    <changeSet author="hong.hu (generated)" id="8">
+        <sql>
+			INSERT INTO META_DIM_DEF(NAME, DESCRIPTION)
+            SELECT A.*
+            FROM (SELECT 'algorithmType' AS NAME, 'hardcode algorithm Legacy OSM' AS DESCRIPTION) A
+            LEFT JOIN META_DIM_DEF B ON A.NAME = B.NAME
+            WHERE B.ID IS NULL;
+        </sql>
+    </changeSet>
+	
+    <changeSet author="hong.hu (generated)" id="9">
+        <sql>
+			INSERT INTO META_DIM_DTL(DEF_ID, ATTR_TEXT)
+			SELECT A.*
+			FROM (
+                select (SELECT ID FROM META_DIM_DEF WHERE NAME='algorithmType') AS DEF_ID, '["Legacy OSM"]' AS ATTR_TEXT
+			) A
+			LEFT JOIN META_DIM_DTL B ON A.DEF_ID = B.DEF_ID AND A.ATTR_TEXT = cast(B.ATTR_TEXT as char)
+			WHERE B.ID IS NULL;
+        </sql>
+    </changeSet>
+	
+    <changeSet author="hong.hu (generated)" id="10">
+        <sql>
+            alter table AP_ALERT_CYCLE_MAPPING add ALGORITHM_TYPE nvarchar(512) not null default('Legacy OSM');
+        </sql>
+    </changeSet>
+	
+    <changeSet author="hong.hu (generated)" id="11">
+        <sql>
+            UPDATE AFM_META_RULES SET METRICS_REJECT_REASON='AlertRank PerStore' WHERE RULE_ID=1;
+        </sql>
+    </changeSet>
+            
+    <changeSet author="hong.hu (generated)" id="12">
+        <sql>
+            INSERT INTO AFM_META_RULES (RULE_ID, PROVIDER_NAME, PROVIDER_SUB_TYPE, FILTER_NAME, METRICS_NAME, METRICS_CONDITION, PARAMETER1, PARAMETER2, PARAMETER3, METRICS_TYPE, 
+            METRICS_VALUE_TYPE, METRICS_ORDER, METRICS_REJECT_REASON, DEPEND_ON_PREVIOUS_RULE, RULE_HINTS, SUB_LEVEL_FILTERS, RULE_ACTION_TYPE, RULE_DESCRIPTION) 
+            select a.*
+            from (
+              select 65 as RULE_ID, 'AFM' PROVIDER_NAME, 'D-Void,Shelf OOS,Phantom,STO' PROVIDER_SUB_TYPE, 'Number of Alerts/Supplier' FILTER_NAME, 'Supplier Rank' METRICS_NAME, 
+              'Supplier Rank> PARAMETER1' METRICS_CONDITION, 'Default' PARAMETER1, 'Default' PARAMETER2, 'Default' PARAMETER3, 'Volume Limit' METRICS_TYPE, 'INT' METRICS_VALUE_TYPE, 
+              201 METRICS_ORDER, 'AlertRank PerSupplier' METRICS_REJECT_REASON, 'T' DEPEND_ON_PREVIOUS_RULE, 'Supplier Rank> PARAMETER1' RULE_HINTS, 'OSM_MAJOR_CATEGORY' SUB_LEVEL_FILTERS, 
+              'filter out' RULE_ACTION_TYPE, 'Limit the number of alerts to [PARAMETER1] per Supplier [SUB_LEVEL_FILTERS], and rank by [PARAMETER3](dropdownlist)' RULE_DESCRIPTION
+            ) a
+            LEFT JOIN AFM_META_RULES B ON A.RULE_ID = B.RULE_ID
+            WHERE B.RULE_ID IS NULL;
+        </sql>
+    </changeSet>
+    
+</databaseChangeLog>

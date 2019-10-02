@@ -1,0 +1,134 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet author="hong.hu (generated)" id="1">
+        <sql>
+        CREATE TABLE AP_ALERT_CYCLE_RC_MAPPING(
+            CYCLE_KEY int NOT NULL,
+            VENDOR_KEY int NOT NULL,
+            RETAILER_KEY int NOT NULL,
+            DATA_RANGE nvarchar(512) NULL,
+            CONSTRAINT PK_AP_ALERT_CYCLE_RC_MAPPING PRIMARY KEY CLUSTERED 
+            (
+                CYCLE_KEY ASC,
+                VENDOR_KEY ASC,
+                RETAILER_KEY ASC
+            )
+        )
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="2">
+        <sql>
+		CREATE TABLE ALERT_CYCLE_RC_STATUS (
+           ID INT IDENTITY(1,1),
+           OSA_DATA_RANGE_START INT, 
+           OSA_DATA_RANGE_END INT, 
+           RC_START_TS DATETIME, 
+           RC_END_TS DATETIME, 
+           UPDATE_TIME DATETIME, 
+           JOB_ID INTEGER
+        )
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="3">
+        <sql>
+		ALTER TABLE ALERT_CYCLE_STATUS ADD RC_ID INT;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="5">
+        <sql>
+        INSERT INTO META_SCD_TABLE_DEF(TABLE_NAME, PK, DB_TYPE, TABLE_SCHEMA, CREATE_TIME) 
+        SELECT A.*
+        FROM (SELECT 'AP_ALERT_CYCLE_RC_MAPPING' AS TABLE_NAME, '["CYCLE_KEY", "VENDOR_KEY", "RETAILER_KEY"]' AS PK, 'MSSQL' AS DB_TYPE, '(COMMON)' AS TABLE_SCHEMA, GetDate() AS CREATE_TIME) A
+        LEFT JOIN META_SCD_TABLE_DEF B ON A.TABLE_NAME = B.TABLE_NAME AND A.DB_TYPE = B.DB_TYPE AND A.TABLE_SCHEMA = B.TABLE_SCHEMA
+        WHERE B.ID IS NULL;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="6">
+        <sql>
+            alter table AP_ALERT_CYCLE_RC_MAPPING add ALGORITHM_TYPE nvarchar(512) not null default('Legacy OSM');
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="8">
+        <sql>
+		ALTER TABLE ALERT_CYCLE_STATUS ADD RC_ONLY INT NOT NULL DEFAULT 0;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="10">
+        <sql>
+		ALTER TABLE ALERT_CYCLE_RC_STATUS ADD CREATE_TIME DATETIME;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="11">
+        <sql>
+		update META_DIM_DTL set ATTR_STR1 = 'Legacy OSM' where DEF_ID = (select ID from META_DIM_DEF where NAME = 'defaultParamCategory');
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="12">
+        <sql>
+		ALTER TABLE ALERT_CYCLE_RC_STATUS ADD NOTIFIED CHAR(1) DEFAULT '0';
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="13">
+        <sql>
+		delete from META_SCD_TABLE_DEF where TABLE_NAME in ('AP_META_DELIVERIES', 'AFM_RULE_SET', 'AP_DIM_FEEDBACK_ASSUMPTIONS', 'DIM_FEEDBACK_ASSUMPTIONS', 'AFM_RULES');
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="14">
+        <sql>
+		insert into META_SCD_TABLE_DEF(TABLE_NAME,PK,DB_TYPE,TABLE_SCHEMA,CREATE_TIME)
+        values ('AP_META_DELIVERIES','["CYCLE_KEY", "VENDOR_KEY", "RETAILER_KEY","DELIVERY_NAME"]','MSSQL','(COMMON)',GETDATE()),
+        ('AFM_RULE_SET','["RULE_SET_ID"]','MSSQL','(COMMON)',GETDATE()), 
+        ('AP_DIM_FEEDBACK_ASSUMPTIONS','["MERCHANDISER","FEEDBACK_DESC"]','MSSQL','(COMMON)',GETDATE()),
+        ('DIM_FEEDBACK_ASSUMPTIONS','["Merchandiser","FeedbackDesc"]','VERTICA','(COMMON)',GETDATE()),
+        ('AFM_RULES','["RULE_ID", "RULE_SET_ID"]','MSSQL','(COMMON)',GETDATE());
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="15">
+        <sql>
+		alter table AP_ALERT_CYCLE_DEFINITION alter column FEEDBACK_CUTOFF_TIME nvarchar(512) null;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="16">
+        <sql>
+		delete from META_STATIC_HEADER_DEFINITION where header_type = 'JOB' and value = 'rc_flag';
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="17">
+        <sql>
+		insert into META_STATIC_HEADER_DEFINITION(header_type,align, text, value, type, cast, visible, filtered)
+		values('JOB','center','RC Enabled','rc_flag','fix','boolean','true','true');
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="18">
+        <sql>
+		delete from META_STATIC_HEADER_DEFINITION where HEADER_TYPE = 'JOB';
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="19">
+        <sql>
+		insert into META_STATIC_HEADER_DEFINITION(header_type,align, text, value, type, cast, visible, filtered) values 
+		('JOB', 'center', 'Status', 'active_status', 'fix', 'string', 'true', 'true'),
+		('JOB', 'center', 'Monitor','monitor','fix', 'boolean','false','true'),
+		('JOB', 'center', 'Cycle Key',  'cycle_key',  'fix', 'int', 'false','true'),
+		('JOB', 'center', 'Retailer',   'retailer',   'fix', 'string', 'true', 'true'),
+		('JOB', 'center', 'Vendors','vendors','list-of-list','string', 'true', 'true'),
+		('JOB', 'center', 'Alert Types', 'alert_types', 'item-of-list','string', 'true', 'true'),
+		('JOB', 'center', 'RC Enabled', 'rc_flag','fix', 'boolean','true', 'true'),
+		('JOB', 'center', 'Alert Cycle', 'alert_cycle', 'fix', 'string', 'false', 'true'),
+		('JOB', 'center', 'Schedule',   'schedule',   'fix', 'string', 'true', 'true'),
+		('JOB', 'center', 'Data Range', 'data_range', 'list', 'string', 'true', 'true'),
+		('JOB', 'center', 'Last Updated','last_updated','fix', 'string', 'true', 'true'),
+		('JOB', 'center', 'ETA', 'alert_end_time','fix', 'string', 'true', 'true'),
+		('JOB', 'center', 'SLA', 'sla_time',   'fix', 'string', 'true', 'true'),
+		('JOB', 'center', 'Run Status', 'run_status', 'job-run-status','string', 'true', 'true'),
+		('JOB', 'center', 'Edit', 'edit', 'crud', 'string', 'true', 'false');
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="20">
+        <sql>
+		update META_STATIC_HEADER_DEFINITION set text = 'RC Measure' where header_type = 'JOB' and value = 'rc_flag';
+        </sql>
+    </changeSet>
+    
+</databaseChangeLog>

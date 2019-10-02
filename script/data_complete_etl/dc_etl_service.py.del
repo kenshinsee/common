@@ -1,0 +1,84 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+import time
+import json
+from tornado.web import RequestHandler
+from concurrent.futures import ThreadPoolExecutor
+from tornado.concurrent import run_on_executor
+from log.logger import Logger
+from common.step_status import StepStatus
+from DataCompleteETL import DCWrapperETL, DataCompleteETL
+
+MAX_WORKERS = 123
+logger = Logger(log_level="INFO", target="console", module_name="dc_etl_service")
+
+
+class DataCompleteETLHandler(RequestHandler):
+    """
+    Schedule will send POST request to this to get payload from Available Cycles API,
+    then loop the return to call DataCompleteETLVRHandler for each vendor retailer pair
+    POST body like
+    {
+        "jobId": 1234567,
+        "stepId": 1,
+        "batchId": 1,
+        "retry": 0,
+        "log_level": 20,
+        "parameter_json": {"availableCycles":{"status":"success","data":{"payload":[{"cycle_key":2,"time_zone":"US/Eastern","period_key":20180911,"period_key_est":20180910,"sla_time":"2018-09-11 10:00:00","sla_time_est":"2018-09-10 10:00:00","afm_action":"RUN","vendor_retailer_pair":[{"vendor_key":300,"retailer_key":5240,"check_extra_days":null,"data_complete_action":"SKIP","previous_data_complete_status":"RED","job_id":12345},{"vendor_key":664,"retailer_key":5240,"check_extra_days":[20180906,20180909],"data_complete_action":"RUN","previous_data_complete_status":"RED","job_id":null}]}],"error":null}},"schedule":{"1:2:300:5240":[{"id":3,"parametersContext":{"JobSteps":[{"StepName":"OSADataCompleteness","StepID":"2","DefaultSetting":{"paraDataCompleteETL":"eyJjaGVja09uIjpbInBvcyIsIm9uSGFuZCIsInBvZyJdLCJtYXhQb2dFeHRyYXBvbGF0ZURheXMiOjE0LCJwb3MiOnsiZ3JlZW4iOltbMC44LDEuMl1dLCJ5ZWxsb3ciOltbMC4zLDAuOF0sWzEuMiwxLjddXSwicHJlV2VlayI6MTN9LCJpdGVtQ291bnQiOnsieWVsbG93IjpbWzAuOCwxLjJdXSwicHJlV2VlayI6MTN9LCJzdG9yZUNvdW50Ijp7InllbGxvdyI6W1swLjgsMS4yXV0sInByZVdlZWsiOjEzfSwib25IYW5kIjp7ImdyZWVuIjpbWzAuOCwxLjJdXSwieWVsbG93IjpbWzAuMywwLjhdLFsxLjIsMS43XV0sInByZVdlZWsiOjR9LCJwb2ciOnsiZ3JlZW4iOltbMC44LDEuMl1dLCJ5ZWxsb3ciOltbMC4zLDAuOF0sWzEuMiwxLjddXX0sInJlY2VpcHQiOnsiZ3JlZW4iOjUsInllbGxvdyI6OX0sImZlZWRiYWNrIjp7ImdyZWVuIjo1LCJ5ZWxsb3ciOjl9fQ=="}}]}}],"1:2:664:5240":[{"id":3,"parametersContext":{"JobSteps":[{"StepName":"OSADataCompleteness","StepID":"2","DefaultSetting":{"paraDataCompleteETL":"eyJsYXN0QXZhaWxhYmxlRGF0ZURhdGEiOnsiZW5hYmxlIjoiRmFsc2UiLCJkYXlzIjozfSwiY2hlY2tPbiI6WyJwb3MiLCJvbkhhbmQiLCJwb2ciXSwibWF4UG9nRXh0cmFwb2xhdGVEYXlzIjoxNCwicG9zIjp7ImdyZWVuIjpbWzAuOCwxLjJdXSwieWVsbG93IjpbWzAuMywwLjhdLFsxLjIsMS43XV0sInByZVdlZWsiOjEzfSwiaXRlbUNvdW50Ijp7InllbGxvdyI6W1swLjgsMS4yXV0sInByZVdlZWsiOjEzfSwic3RvcmVDb3VudCI6eyJ5ZWxsb3ciOltbMC44LDEuMl1dLCJwcmVXZWVrIjoxM30sIm9uSGFuZCI6eyJncmVlbiI6W1swLjgsMS4yXV0sInllbGxvdyI6W1swLjMsMC44XSxbMS4yLDEuN11dLCJwcmVXZWVrIjo0fSwicG9nIjp7ImdyZWVuIjpbWzAuOCwxLjJdXSwieWVsbG93IjpbWzAuMywwLjhdLFsxLjIsMS43XV19LCJyZWNlaXB0Ijp7ImdyZWVuIjo1LCJ5ZWxsb3ciOjl9LCJmZWVkYmFjayI6eyJncmVlbiI6NSwieWVsbG93Ijo5fX0="}}]}}]}}
+    }
+    log_level: optional default 20 AS Info, refer logging level
+    parameter_json: optional mock data for API which request in this service
+    """
+    executor = ThreadPoolExecutor(max_workers=MAX_WORKERS)
+
+    def initialize(self, meta):
+        self._logger = logger
+        self._meta = meta.copy()
+        self._request_body = json.loads(self.request.body.decode('utf-8'))
+        self._request_body["log_level"] = self._request_body.get("log_level", 20)
+        self._logger.set_level(self._request_body["log_level"])
+        self._logger.set_keys(log_id="{}_{}".format(self._request_body["jobId"], self._request_body["stepId"]))
+        self._logger.debug(self._request_body)
+        self._request_body["header"] = {"Content-Type": "application/json", "hour_offset": "-6",
+                                        "module_name": self._logger.format_dict["module_name"]}
+        self._request_body["parameter_json"] = self._request_body.get("parameter_json", {})
+
+    @run_on_executor
+    def data_complete(self):
+        dc = DCWrapperETL({**self._meta, **{"logger": self._logger}})
+        dc.on_action(self._request_body.copy())
+
+    def post(self, *args, **kwargs):
+        self.data_complete()
+        self.set_header('Content-Type', 'application/json')
+        self._request_body["status"] = StepStatus.RUNNING.value
+        self._request_body["message"] = '{}: Data complete is processing with parameters {}'.format(
+            time.asctime(time.localtime(time.time())), self._request_body)
+        self.write(json.dumps(self._request_body))
+        self.flush()
+
+
+class DataCompleteETLVRHandler(RequestHandler):
+    """
+    Check SVR ETL data completeness, if checking result meet the condition, create new OSA core job
+    """
+    executor = ThreadPoolExecutor(max_workers=MAX_WORKERS)
+
+    def initialize(self, meta):
+        self._logger = logger
+        self._request_body = json.loads(self.request.body.decode('utf-8'))
+        self._request_body["meta"] = meta.copy()
+        self._request_body["log_level"] = self._request_body.get("log_level", 20)
+        self._logger.set_level(self._request_body["log_level"])
+        self._logger.set_keys(log_id="{}_{}".format(self._request_body["jobId"], self._request_body["stepId"]))
+        self._logger.info(self._request_body)
+
+    @run_on_executor
+    def data_complete(self):
+        DataCompleteETL({**self._request_body, **{"logger": self._logger}}).process()
+
+    def post(self, *args, **kwargs):
+        self.data_complete()
+        self.set_header('Content-Type', 'application/json')
+        self.write(json.dumps(self._request_body))
+        self.flush()

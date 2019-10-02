@@ -1,0 +1,113 @@
+#!/usr/bin/env python
+# coding=utf-8
+
+import json, datetime, configparser, sys, time, os, copy
+import tornado.web
+import tornado.ioloop
+import tornado.autoreload
+from tornado.concurrent import run_on_executor
+from concurrent.futures import ThreadPoolExecutor
+from db.db_operation import MSOperation
+from log.logger import Logger
+from common.step_status import StepStatus
+from dump_wrapper import DumpWrapper
+
+
+# how many threads can be run at the same time. could trigger multi AFM based on vendor&retailer
+MAX_WORKERS = 100
+PORT = 8000
+TIMER = 1   # if job failed, then rerun 1 time automatically. this could fix some system issue.
+settings = {'debug': False, 'autoreload': False}
+
+# getting generic config file and main script
+# SEP = os.path.sep
+# cwd = os.path.dirname(os.path.realpath(__file__))
+# generic_main_file = cwd + SEP + '..' + SEP + '..' + SEP + 'script' + SEP + 'main.py'
+# CONFIG_FILE = cwd + SEP + '..' + SEP + '..' + SEP + 'config' + SEP + 'config.properties'
+# meta = {}
+# exec(open(generic_main_file).read())    # fill meta argument
+
+_logger = Logger(log_level="INFO", target="console", module_name="dumpservice",
+                 vendor_key=-1, retailer_key=-1, sql_conn=None)
+
+
+class DumperHandler(tornado.web.RequestHandler):
+    executor = ThreadPoolExecutor(max_workers=MAX_WORKERS)
+
+    def initialize(self, meta):
+        self.meta = meta
+
+    # get action will be only used for testing purpose. we will be using post action going forward.
+    def get(self, *args, **kwargs):
+        """
+        http://localhost:8000/osa_bundle/dumper/process
+        """
+        self.write("Please trigger dumpservice via post action")
+
+    def post(self, *args, **kwargs):
+        """
+        http://localhost:8000/osa_bundle/dumper/process
+        json data with post action
+        {"jobId": 1234,           # mandatory. passed from JobScheduler
+         "stepId": 3,             # mandatory. passed from JobScheduler
+         "batchId": 0,            # mandatory. passed from JobScheduler
+         "retry": 0,              # mandatory. passed from JobScheduler
+         "groupName": "7:2",      # mandatory. passed from JobScheduler [jobDefinitionId:cycleKey or jobDefinitionId:cycleKey:vendorKey:retailerKey]
+         "debug":"N",             # char: optional [Y|N(default)]. debug model will keep most of staging tables and generate more log.
+         "defaultFileExtractColumns": base64_str  # Only for issued alerts delivery, This can be ignored once the UI is ready.
+                                                  # The base64_str is like: "payload": [{}, {}, {}]
+        }
+        """
+        self.set_header('Content-Type', 'application/json')
+        tornado.web.RequestHandler.write_error = self.write_error
+        params = json.loads(self.request.body.decode('utf-8'))
+        _logger.info("input json data is: %s" % params)
+
+        self.trigger_dump(params)
+
+        params["status"] = StepStatus.RUNNING.value  # running
+        _logger.info("Dump service is being called at: %s with below parameters: %s" % (datetime.datetime.now(), params))
+        self.write(params)
+        self.flush()
+
+    @run_on_executor
+    def trigger_dump(self, params):
+        dumpper = DumpWrapper(meta=self.meta, params=params, logger=_logger)
+
+        msg = copy.deepcopy(params)
+        msg["status"] = StepStatus.RUNNING.value
+        msg["message"] = ""
+        msg["timestamp"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        try:
+            dumpper.on_action(msg)
+
+        except Exception as e:
+            _logger.debug("In final except Exception with message: %s" % e)
+
+        finally:
+            dumpper.run()
+            dumpper.stop()
+            if _logger:
+                _logger.remove_handler()
+
+    def write_error(self, status_code, **kwargs):
+        if status_code == 500:
+            self.write("<h1>Internal Server Error</h1>")
+        elif status_code == 400:
+            self.write('<h1>tornado.web.MissingArgumentError: HTTP 400: Bad Request (Missing argument retailerKey)</h1>')
+        elif status_code == 403:
+            self.write('<h1>sorry, request forbidden!</h1>')
+        else:
+            self.write('<h1>sorry, %s error occured!</h1>' % str(status_code))
+
+
+if __name__ == "__main__":
+    # tor_options.parse_command_line()
+    dumper_app = tornado.web.Application(
+        [(r'/osa/dumper/process', DumperHandler)
+         ],
+        **settings
+    )
+    dumper_app.listen(PORT)
+    tornado.ioloop.IOLoop.current().start()

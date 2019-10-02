@@ -1,0 +1,1115 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-1">
+        <createTable tableName="FACT_AA_STOREPRODUCT">
+            <column name="VENDOR_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="SUBVENDOR_ID_KEY" type="int"/>
+            <column name="RETAILER_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="ITEMNUMBER" type="varchar(512)"><constraints nullable="false"/></column>
+            <column name="STORE_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="PERIOD_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="ITEM_KEY" type="int"/>
+            <column name="DC_KEY" type="int"/>
+            <column name="DC_RETAILER_KEY" type="int"/>
+            <column name="POSUNITS" type="int"/>
+            <column name="POSSALES" type="numeric(14,4)"><constraints nullable="false"/></column>
+            <column name="IDP" type="numeric(14,4)"/>
+            <column name="LDP" type="numeric(14,4)"/>
+            <column name="SSH" type="numeric(14,4)"/>
+            <column name="SC" type="numeric(14,4)"/>
+            <column name="ZSD" type="numeric(14,4)"/>
+            <column name="STO" type="numeric(14,4)"/>
+            <column name="OS" type="numeric(14,4)"/>
+            <column name="NS" type="numeric(14,4)"/>
+            <column name="POTENTIALSALES" type="numeric(14,4)"/>
+            <column name="RSP" type="numeric(14,4)"/>
+            <column name="FINALINDEXVALUE" type="float"/>
+            <column name="BASETOTALVOLUME" type="int"/>
+            <column name="BASEAVGVOLUME" type="int"/>
+            <column name="LEAGUESCORETOTALVOLUME" type="int"/>
+            <column name="LEAGUESCOREAVGVOLUME" type="int"/>
+            <column name="RANGEDFLAG" type="boolean"/>
+			<column name="SEQ_NUM" type="int"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" order by VENDOR_KEY,RETAILER_KEY,ITEMNUMBER,STORE_KEY,PERIOD_KEY,ITEM_KEY SEGMENTED BY MODULARHASH (ITEM_KEY, STORE_KEY) ALL NODES PARTITION BY VENDOR_KEY;"/>
+        </modifySql>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-7">
+        <createTable tableName="FACT_FEEDBACK">
+            <column name="EVENT_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="RETAILER_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="VENDOR_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="STORE_VISITED_PERIOD_KEY" type="int"/>
+            <column name="PERIOD_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="ALERT_ID" type="int"/>
+            <column name="STORE_KEY" type="int"/>
+            <column name="MERCHANDISER_STORE_NUMBER" type="varchar(512)"/>
+            <column name="STORE_ID" type="varchar(512)"/>
+            <column name="ITEM_KEY" type="int"/>
+            <column name="MERCHANDISER_UPC" type="varchar(512)"/>
+            <column name="UPC" type="varchar(512)"/>
+            <column name="MERCHANDISER" type="varchar(100)"/>
+            <column name="STORE_REP" type="varchar(1000)"/>
+            <column name="SOURCE" type="varchar(1000)"/>
+            <column name="BEGIN_STATUS" type="varchar(255)"/>
+            <column name="ACTION" type="varchar(255)"/>
+            <column name="FEEDBACK_DESCRIPTION" type="varchar(255)"/>
+            <column name="ON_HAND_PHYSICAL_COUNT" type="numeric(12,2)"/>
+            <column name="ON_HAND_CAO_COUNT" type="numeric(12,2)"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" ORDER BY EVENT_KEY, PERIOD_KEY, RETAILER_KEY, VENDOR_KEY SEGMENTED BY MODULARHASH (ALERT_ID) ALL NODES PARTITION BY VENDOR_KEY;"/>
+        </modifySql>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-8">
+        <createTable tableName="FACT_GROUPSALES_REFERENCE">
+            <column name="VENDOR_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="RETAILER_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="ITEM_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="STORE_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="REGR_AVG" type="numeric(10,2)"/>
+            <column name="PROMO_AVG" type="numeric(10,2)"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" ORDER BY VENDOR_KEY,RETAILER_KEY,ITEM_KEY,STORE_KEY SEGMENTED BY MODULARHASH (ITEM_KEY,STORE_KEY) ALL NODES PARTITION BY VENDOR_KEY;"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-9">
+        <addPrimaryKey columnNames="VENDOR_KEY,RETAILER_KEY,ITEM_KEY,STORE_KEY" constraintName="PK_FACT_GROUPSALES_REFERENCE" tableName="FACT_GROUPSALES_REFERENCE"/>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-12">
+        <createTable tableName="FACT_OSM_SP_AUDIT">
+            <column name="Vendor_key" type="int"><constraints nullable="false"/></column>
+            <column name="Retailer_Key" type="int"><constraints nullable="false"/></column>
+            <column name="ItemNumber" type="varchar(512)"><constraints nullable="false"/></column>
+            <column name="Store_Key" type="int"><constraints nullable="false"/></column>
+            <column name="ReasonCode" type="int"><constraints nullable="false"/></column>
+            <column name="Reason" type="varchar(512)"/>
+			<column name="SEQ_NUM" type="int"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" ORDER BY Vendor_key, Retailer_key,ItemNumber, Store_key,ReasonCode UNSEGMENTED ALL NODES PARTITION BY VENDOR_KEY;"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-13">
+        <addPrimaryKey columnNames="Vendor_key, Retailer_Key, ItemNumber, Store_key,ReasonCode" constraintName="PK_FACT_OSM_SP_AUDIT" tableName="FACT_OSM_SP_AUDIT"/>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-14">
+        <createTable tableName="FACT_OSM_UNHSEASONALITY_PROFILE">
+            <column name="Vendor_key" type="int"><constraints nullable="false"/></column>
+            <column name="Retailer_Key" type="int"><constraints nullable="false"/></column>
+            <column name="ItemNumber" type="varchar(512)"><constraints nullable="false"/></column>
+            <column name="Period_Key" type="int"><constraints nullable="false"/></column>
+            <column name="posQty" type="int"><constraints nullable="false"/></column>
+            <column name="grossShipQty" type="int"/>
+            <column name="lostUnits" type="float"><constraints nullable="false"/></column>
+            <column name="storeCount" type="int"><constraints nullable="false"/></column>
+            <column name="posSeasonalityIndex" type="float"><constraints nullable="false"/></column>
+            <column name="grossShipSeasonalityIndex" type="float"/>
+            <column name="Shrink" type="int"/>
+            <column name="Reclaim" type="int"/>
+            <column name="SiteGrp" type="varchar(64)"><constraints nullable="false"/></column>
+			<column name="SEQ_NUM" type="int"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" ORDER BY Vendor_key, Retailer_key,ItemNumber, Period_Key,SiteGrp UNSEGMENTED ALL NODES PARTITION BY VENDOR_KEY;"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-15">
+        <addPrimaryKey columnNames="Vendor_key, Retailer_Key, ItemNumber, Period_key,SiteGrp" constraintName="PK_FACT_OSM_UNHSEASONALITY_PROFILE" tableName="FACT_OSM_UNHSEASONALITY_PROFILE"/>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-16">
+        <createTable tableName="FACT_OSM_STOREPRODUCT">
+            <column name="Vendor_key" type="int"><constraints nullable="false"/></column>
+            <column name="Retailer_Key" type="int"><constraints nullable="false"/></column>
+            <column name="ItemNumber" type="varchar(512)"><constraints nullable="false"/></column>
+            <column name="Store_Key" type="int"><constraints nullable="false"/></column>
+            <column name="Item_Key" type="int"><constraints nullable="false"/></column>
+            <column name="SPName" type="varchar(512)"/>
+            <column name="SPCurrRSPIIsMax" type="int"/>
+            <column name="SPCurrTraitedStoreItemComb" type="varchar(50)"><constraints nullable="false"/></column>
+            <column name="SPCurrValidStoreItemComb" type="varchar(50)"><constraints nullable="false"/></column>
+            <column name="SPCurrDD" type="float"/>
+            <column name="SPCurrRetailOnHand" type="int"/>
+            <column name="SPCurrRSInventory" type="int"/>
+            <column name="SpCurrMaxShelfQty" type="int"/>
+            <column name="SPCurrSafetyStockQty" type="float"/>
+            <column name="SPCurrTotalPosQty" type="int"/>
+            <column name="SPCurrTotalPosDays" type="int"/>
+            <column name="SPCurrAvgPosPerDay" type="float"/>
+            <column name="SPCurrAvgShelfSellThroughDays" type="float"/>
+            <column name="SPCurrAvgCaseSellThroughDays" type="float"/>
+            <column name="SPCurrAvgCasePackOut" type="float"/>
+            <column name="SPCurrAvgRSDemand" type="float"/>
+            <column name="SPCurrAvgPrice" type="float"/>
+            <column name="SPCurrGapProbability" type="float"/>
+            <column name="spCurrEpisodeType" type="int"/>
+            <column name="SPCurrClassificationCode" type="int"/>
+            <column name="SPCurrSupplyChainCondition" type="int"/>
+            <column name="SPCurrInvErr" type="int"/>
+            <column name="DaysSinceBottom" type="int"/>
+            <column name="AccumAdjUnConfirmed" type="int"/>
+            <column name="SPCurrRecordStartDate" type="timestamp"/>
+            <column name="SPCurrRecordEndDate" type="timestamp"/>
+            <column name="SPCurrPosStartDate" type="timestamp"/>
+            <column name="SPCurrPosEndDate" type="timestamp"/>
+            <column name="LastPOSDay" type="timestamp"/>
+            <column name="FirstPOSDay" type="timestamp"/>
+            <column name="LastGrossShipDay" type="timestamp"/>
+            <column name="FirstGrossShipDay" type="timestamp"/>
+            <column name="DaysSincePOS" type="int"/>
+            <column name="DaysSinceGrossShip" type="int"/>
+            <column name="SumGrossShip" type="int"/>
+            <column name="SumRetailAdjustment" type="int"/>
+            <column name="SumUnexplainedAdjustment" type="int"/>
+            <column name="DaysSincePositiveRetailAdj" type="int"/>
+            <column name="DaysSincePositiveUnexplainedAdj" type="int"/>
+            <column name="DaysSinceShrink" type="int"/>
+            <column name="LostSalesToDate" type="float"/>
+            <column name="LostUnitsToDate" type="float"/>
+            <column name="ConditionLength" type="int"/>
+            <column name="ZeroScanDays" type="int"/>
+            <column name="RSInventory" type="int"/>
+            <column name="RSPI" type="int"/>
+            <column name="RetailOnHandAverage" type="int"/>
+            <column name="RSInventoryAverage" type="int"/>
+            <column name="DaysSinceNegativeRetailAdjustment" type="int"/>
+            <column name="RSDemand" type="float"/>
+            <column name="ConditionSales" type="float"/>
+            <column name="ConditionDays" type="int"/>
+            <column name="DefaultSales" type="float"/>
+            <column name="DefaultDays" type="int"/>
+            <column name="salesRate13weeks" type="float"/>
+            <column name="zeroScanRate13weeks" type="float"/>
+            <column name="onHandAvg13weeks" type="float"/>
+            <column name="MaxAdjustment" type="int"/>
+            <column name="MinAdjustment" type="int"/>
+            <column name="MaxUnexpAdjustment" type="int"/>
+            <column name="MinUnexpAdjustment" type="int"/>
+            <column name="supplyChainConditionDemand" type="float"/>
+            <column name="salesLastWeek" type="float"/>
+            <column name="maxDaysZeroStock" type="int"/>
+            <column name="binomial" type="int"/>
+            <column name="ProductFreshnessProfile" type="float"/>
+            <column name="EffectiveDate" type="timestamp"/>
+            <column name="AvgPOSQtyWeekly" type="float"/>
+            <column name="AvgRSDemandWeekly" type="float"/>
+            <column name="AvgDDWeekly" type="float"/>
+            <column name="VelocityTierUnits" type="int"/>
+            <column name="IncrGoodDayStartDate" type="timestamp"/>
+            <column name="IncrEpisodeType" type="int"/>
+            <column name="IncrConditionLength" type="int"/>
+            <column name="IncrZeroScanDays" type="int"/>
+            <column name="IncrSupplyChainCondition" type="int"/>
+            <column name="IncrDaysSincePOS" type="int"/>
+            <column name="IncrNoneOOSTotalDays" type="int"/>
+            <column name="IncrNoneOOSTotalQty" type="float"/>
+            <column name="IncrAccumRSDemandPoisson" type="float"/>
+            <column name="IncrLastValue4EMA" type="float"/>
+            <column name="IncrSalesDays" type="int"/>
+            <column name="IncrSalesTotalDays" type="int"/>
+            <column name="IncrTotalDays" type="int"/>
+            <column name="IncrGapDaysCount" type="int"/>
+            <column name="IncrGapDaysMax" type="int"/>
+            <column name="IncrGapProbability" type="float"/>
+            <column name="IncrTotalPosQty" type="int"/>
+            <column name="IncrTotalPosSales" type="float"/>
+            <column name="IncrTotalPosDays" type="int"/>
+            <column name="IncrSumAdjOrig" type="int"/>
+            <column name="IncrSumUnexpAdj" type="int"/>
+            <column name="IncrSumGrossShip" type="int"/>
+            <column name="IncrConditionLostUnits" type="float"/>
+            <column name="IncrConditionRSDemands" type="float"/>
+            <column name="lastSubvendorIDKey" type="int"/>
+            <column name="codeLifeExpiringAge" type="int"/>
+            <column name="codeLifeExpiringQty" type="int"/>
+            <column name="codeLifeExpiringSales" type="float"/>
+            <column name="peak3DaysSales" type="int"/>
+            <column name="peak7DaysSales" type="int"/>
+            <column name="LastPeak3DaysSales" type="int"/>
+            <column name="LastPeak7DaysSales" type="int"/>
+            <column name="LastWeekRSDemand" type="float"/>
+            <column name="LastExcessRSDemand" type="float"/>
+            <column name="LastOrderKey" type="int"/>
+            <column name="LastReceiptKey" type="int"/>
+            <column name="LastOrderQty" type="int"/>
+            <column name="LastReceiptQty" type="int"/>
+            <column name="SecondLastOrderKey" type="int"/>
+            <column name="SecondLastReceiptKey" type="int"/>
+            <column name="SecondLastOrderQty" type="int"/>
+            <column name="SecondLastReceiptQty" type="int"/>
+            <column name="DSD_IND" type="int"/>
+            <column name="POG_IND" type="int"/>
+            <column name="AlertITEMKey" type="int"/>
+            <column name="PROMO_IND" type="int"/>
+            <column name="AlertLostUnitsToDate" type="float"/>
+            <column name="AlertLostSalesToDate" type="float"/>
+            <column name="AlertLostUnitsToDate2" type="float"/>
+            <column name="PromoType" type="int"/>
+            <column name="RegularSalesRate" type="float"/>
+            <column name="PromoSalesRate" type="float"/>
+            <column name="DaysSincePromo" type="int"/>
+            <column name="AlertItemNumber" type="varchar(512)"/>
+            <column name="SEQ_NUM" type="int"><constraints nullable="false"/></column>
+            <column name="DC_RETAILER_KEY" type="int" defaultValueNumeric="-1"><constraints nullable="false"/></column>
+            <column name="DC_KEY" type="int" defaultValueNumeric="-1"><constraints nullable="false"/></column>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" ORDER BY Vendor_key, Retailer_key,ITEM_KEY, Store_Key SEGMENTED BY MODULARHASH(ITEM_KEY,STORE_KEY) ALL NODES PARTITION BY VENDOR_KEY;"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-17">
+        <addPrimaryKey columnNames="Vendor_key, Retailer_Key, ITEM_KEY, Store_Key, SEQ_NUM" constraintName="PK_FACT_OSM_STOREPRODUCT" tableName="FACT_OSM_STOREPRODUCT"/>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-18">
+        <createTable tableName="FACT_RAW_ALERT">
+            <column name="Vendor_key" type="int"><constraints nullable="false"/></column>
+            <column name="Retailer_Key" type="int"><constraints nullable="false"/></column>
+            <column name="ItemNumber" type="varchar(512)"><constraints nullable="false"/></column>
+            <column name="Store_Key" type="int"><constraints nullable="false"/></column>
+            <column name="Period_Key" type="int"><constraints nullable="false"/></column>
+            <column name="InterventionKey" type="int"><constraints nullable="false"/></column>
+            <column name="FirstPublishDate" type="timestamp"><constraints nullable="false"/></column>
+            <column name="LastPublishDate" type="timestamp"><constraints nullable="false"/></column>
+            <column name="SEQ_NUM" type="int"><constraints nullable="false"/></column>
+            <column name="ACTUAL_DAY_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="MerchandizerAccessibleValue" type="int"/>
+            <column name="IncidentDetails" type="varchar(250)"/>
+            <column name="ClosureDate" type="timestamp"/>
+            <column name="ClosureType" type="int"><constraints nullable="false"/></column>
+            <column name="AppReportedStatus" type="int"/>
+            <column name="AppDetectedClosureDate" type="timestamp"/>
+            <column name="ResponseDate" type="timestamp"/>
+            <column name="ResponseId" type="int"><constraints nullable="false"/></column>
+            <column name="IssuanceId" type="int"><constraints nullable="false"/></column>
+            <column name="IncidentID" type="bigint"><constraints nullable="false"/></column>
+            <column name="ResponseComments" type="varchar(300)"/>
+            <column name="RSInventory" type="int"/>
+            <column name="RSPI" type="int"/>
+            <column name="RetailOnHandAverage" type="int"/>
+            <column name="RSInventoryAverage" type="int"/>
+            <column name="RetailOnHand" type="int"/>
+            <column name="DaysSincePOS" type="int"/>
+            <column name="RSPIIsMax" type="int"/>
+            <column name="LostSalesToDate" type="float"/>
+            <column name="LostUnitsToDate" type="float"/>
+            <column name="ConditionLength" type="int"/>
+            <column name="ZeroScanDays" type="int"/>
+            <column name="SalesRate13weeks" type="float"/>
+            <column name="SalesLastWeek" type="float"/>
+            <column name="MaxDaysZeroStock" type="int"/>
+            <column name="AvgRSDemand" type="float"/>
+            <column name="AvgPrice" type="float"/>
+            <column name="ITEM_KEY" type="int"/>
+            <column name="SUBVENDOR_ID_KEY" type="int"/>
+            <column name="ExpectedLostSalesUnits" type="float"/>
+            <column name="ExpectedLostSalesAmount" type="float"/>
+            <column name="LastPOSScanPeriod" type="int"/>
+            <column name="UPC" type="varchar(512)"/>
+            <column name="STOREID" type="varchar(512)"/>
+            <column name="ITEM_DESCRIPTION" type="varchar(512)"/>
+            <column name="MAJOR_CATEGORY_NO" type="varchar(20)"/>
+            <column name="MAJOR_CATEGORY" type="varchar(100)"/>
+            <column name="CATEGORY" type="varchar(100)"/>
+            <column name="SUB_CATEGORY" type="varchar(100)"/>
+            <column name="BRAND" type="varchar(100)"/>
+            <column name="UNIT_PRICE" type="float"/>
+            <column name="VENDOR_PACK_QTY" type="varchar(30)"/>
+            <column name="WHSE_PACK_QTY" type="varchar(30)"/>
+            <column name="STATE" type="varchar(512)"/>
+            <column name="REGION" type="varchar(512)"/>
+            <column name="DISTRICT" type="varchar(100)"/>
+            <column name="Owner" type="varchar(64)"/>
+            <column name="RejectReasons" type="varchar(512)"/>
+            <column name="ClassificationCode" type="int"/>
+            <column name="GapProbability" type="float"/>
+            <column name="AvgPOSPerDay" type="float"/>
+            <column name="DaysSincePositiveRetailAdj" type="int"/>
+            <column name="DaysSinceNegativeRetailAdj" type="int"/>
+            <column name="DaysSincePositiveUnexplainedAdj" type="int"/>
+            <column name="DaysSinceShrink" type="int"/>
+            <column name="DaysSinceGS" type="int"/>
+            <column name="CurrInvErr" type="int"/>
+            <column name="ConditionSales" type="int"/>
+            <column name="ConditionDays" type="int"/>
+            <column name="DefaultSales" type="int"/>
+            <column name="DefaultDays" type="int"/>
+            <column name="DefaultConditionRate" type="float"/>
+            <column name="SupplyChainConditionRate" type="float"/>
+            <column name="MaxAdjustment" type="int"/>
+            <column name="MinAdjustment" type="int"/>
+            <column name="MaxUnexpAdjustment" type="int"/>
+            <column name="MinUnexpAdjustment" type="int"/>
+            <column name="TVFlip" type="int"/>
+            <column name="DSD_Ind" type="int"/>
+            <column name="RatesofSalesChange" type="float"/>
+            <column name="RSDaysOH" type="float"/>
+            <column name="POG_Ind" type="int"/>
+            <column name="AlertUPC" type="varchar(512)"/>
+            <column name="PROMO_Ind" type="int"/>
+            <column name="ShelfCapacity" type="int"/>
+            <column name="CasePack" type="int"/>
+            <column name="ProjectedWeeklySalesGain" type="float"/>
+            <column name="AlertLostUnitsToDate" type="float"/>
+            <column name="AlertLostSalesToDate" type="float"/>
+            <column name="POSUNITS" type="int"/>
+            <column name="POSSALES" type="numeric(9,2)"/>
+            <column name="Inactive Distribution Point Lost Sales Volume Units" type="numeric(9,2)"/>
+            <column name="Lost Distribution Point Lost Sales Volume Units" type="numeric(9,2)"/>
+            <column name="Zero Sales Day Lost Sales Volume Units" type="numeric(9,2)"/>
+            <column name="Short Term Offsale Lost Sales Volume Units" type="numeric(9,2)"/>
+            <column name="Regular Selling Price" type="numeric(9,2)"/>
+            <column name="Expected Sales Volume Units" type="numeric(9,2)"/>
+            <column name="Zero Sales Day Lost Sales Amount" type="numeric(9,2)"/>
+            <column name="Short Term Offsale Lost Sales Amount" type="numeric(9,2)"/>
+            <column name="Lost Distribution Point Lost Sales Amount" type="numeric(9,2)"/>
+            <column name="Inactive Distribution Point Lost Sales Amount" type="numeric(9,2)"/>
+            <column name="Total Availability Lost Sales Amount" type="numeric(9,2)"/>
+            <column name="Total Availability Lost Sales Volume Units" type="numeric(9,2)"/>
+            <column name="Total Distribution Lost Sales Amount" type="numeric(9,2)"/>
+            <column name="Total Distribution Lost Sales Volume Units" type="numeric(9,2)"/>
+            <column name="Total Lost Sales Amount" type="numeric(9,2)"/>
+            <column name="Total Lost Sales Volume Units" type="numeric(9,2)"/>
+            <column name="AlertLostUnitsToDate2" type="float"/>
+            <column name="PromoType" type="int"/>
+            <column name="RegularSalesRate" type="float"/>
+            <column name="PromoSalesRate" type="float"/>
+            <column name="DaysSincePromo" type="int"/>
+            <column name="AlertItemNumber" type="varchar(512)"/>
+            <column name="Attributes" type="varchar(40000)"/>
+            <column name="Alert0DayAgoStatus" type="varchar(32)"/>
+            <column name="Alert1DayAgoStatus" type="varchar(32)"/>
+            <column name="Alert2DaysAgoStatus" type="varchar(32)"/>
+            <column name="Alert3DaysAgoStatus" type="varchar(32)"/>
+            <column name="Alert4DaysAgoStatus" type="varchar(32)"/>
+            <column name="Alert5DaysAgoStatus" type="varchar(32)"/>
+            <column name="Alert6DaysAgoStatus" type="varchar(32)"/>
+            <column name="Alert7DaysAgoStatus" type="varchar(32)"/>
+            <column name="Alert8DaysAgoStatus" type="varchar(32)"/>
+            <column name="Alert9DaysAgoStatus" type="varchar(32)"/>
+            <column name="Alert10DaysAgoStatus" type="varchar(32)"/>
+            <column name="Alert11DaysAgoStatus" type="varchar(32)"/>
+            <column name="Alert12DaysAgoStatus" type="varchar(32)"/>
+            <column name="Alert13DaysAgoStatus" type="varchar(32)"/>
+            <column name="RANK_VALUE" type="float"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <regExpReplace replace="\)$" with=", UNIQUE (IncidentID))"/>  <!--add check-->
+        </modifySql>
+        <modifySql>
+             <append value=" ORDER BY VENDOR_KEY,RETAILER_KEY,Period_Key,itemNumber,STORE_KEY,InterventionKey SEGMENTED BY MODULARHASH(Period_Key,ITEM_KEY,STORE_KEY,InterventionKey) ALL NODES PARTITION BY VENDOR_KEY;"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-19">
+        <addPrimaryKey columnNames="VENDOR_KEY,RETAILER_KEY,Period_Key,itemNumber,STORE_KEY,SEQ_NUM" constraintName="PK_FACT_RAW_ALERT" tableName="FACT_RAW_ALERT"/>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-20">
+        <createTable tableName="FACT_PROCESSED_ALERT">
+            <column name="SEQ_NUM" type="int"><constraints nullable="false"/></column>
+            <column name="VENDOR_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="RETAILER_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="ITEM_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="ItemNumber" type="varchar(512)"><constraints nullable="false"/></column>
+            <column name="ALERT_ID" type="int"><constraints nullable="false"/></column>
+            <column name="STORE_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="PERIOD_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="InterventionKey" type="int"><constraints nullable="false"/></column>
+            <column name="SUBVENDOR_ID_KEY" type="int"/>
+            <column name="FIRST_PUBLISH_DATE_PERIOD_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="LAST_PUBLISH_DATE_PERIOD_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="IncidentDetails" type="varchar(250)"/>
+            <column name="IssuanceId" type="int"><constraints nullable="false"/></column>
+            <column name="Owner" type="varchar(64)"/>
+            <column name="RejectReasons" type="varchar(512)"/>
+            <column name="MerchandizerAccessibleValue" type="int"/>
+            <column name="RSInventory" type="int"/>
+            <column name="RSPI" type="int"/>
+            <column name="RetailOnHand" type="int"/>
+            <column name="DaysSincePOS" type="int"/>
+            <column name="RSPIIsMax" type="int"/>
+            <column name="LostSalesToDate" type="float"/>
+            <column name="LostUnitsToDate" type="float"/>
+            <column name="ConditionLength" type="int"/>
+            <column name="ZeroScanDays" type="int"/>
+            <column name="SalesRate13weeks" type="float"/>
+            <column name="SalesLastWeek" type="float"/>
+            <column name="MaxDaysZeroStock" type="int"/>
+            <column name="AvgRSDemand" type="float"/>
+            <column name="AvgPrice" type="float"/>
+            <column name="ExpectedLostSalesUnits" type="float"/>
+            <column name="ExpectedLostSalesAmount" type="float"/>
+            <column name="LastPOSScanPeriod" type="int"/>
+            <column name="UPC" type="varchar(512)"/>
+            <column name="STOREID" type="varchar(512)"/>
+            <column name="ITEM_DESCRIPTION" type="varchar(512)"/>
+            <column name="MAJOR_CATEGORY_NO" type="varchar(20)"/>
+            <column name="MAJOR_CATEGORY" type="varchar(100)"/>
+            <column name="CATEGORY" type="varchar(100)"/>
+            <column name="SUB_CATEGORY" type="varchar(100)"/>
+            <column name="BRAND" type="varchar(100)"/>
+            <column name="UNIT_PRICE" type="float"/>
+            <column name="VENDOR_PACK_QTY" type="varchar(30)"/>
+            <column name="WHSE_PACK_QTY" type="varchar(30)"/>
+            <column name="STATE" type="varchar(512)"/>
+            <column name="REGION" type="varchar(512)"/>
+            <column name="DISTRICT" type="varchar(100)"/>
+            <column name="ClassificationCode" type="int"/>
+            <column name="GapProbability" type="float"/>
+            <column name="AvgPOSPerDay" type="float"/>
+            <column name="DaysSincePositiveRetailAdj" type="int"/>
+            <column name="DaysSinceNegativeRetailAdj" type="int"/>
+            <column name="DaysSincePositiveUnexplainedAdj" type="int"/>
+            <column name="DaysSinceShrink" type="int"/>
+            <column name="DaysSinceGS" type="int"/>
+            <column name="CurrInvErr" type="int"/>
+            <column name="ConditionSales" type="int"/>
+            <column name="ConditionDays" type="int"/>
+            <column name="DefaultSales" type="int"/>
+            <column name="DefaultDays" type="int"/>
+            <column name="DefaultConditionRate" type="float"/>
+            <column name="SupplyChainConditionRate" type="float"/>
+            <column name="MaxAdjustment" type="int"/>
+            <column name="MinAdjustment" type="int"/>
+            <column name="MaxUnexpAdjustment" type="int"/>
+            <column name="MinUnexpAdjustment" type="int"/>
+            <column name="TVFlip" type="int"/>
+            <column name="DSD_Ind" type="int"/>
+            <column name="RatesofSalesChange" type="float"/>
+            <column name="RSDaysOH" type="float"/>
+            <column name="POG_Ind" type="int"/>
+            <column name="AlertUPC" type="varchar(512)"/>
+            <column name="ShelfCapacity" type="int"/>
+            <column name="PROMO_IND" type="int"/>
+            <column name="POG_LOCATION" type="varchar(1024)"/>
+            <column name="POG_DESCRIPTION" type="varchar(1024)"/>
+            <column name="NUMBER_OF_FACINGS" type="float"/>
+            <column name="CasePack" type="int"/>
+            <column name="ProjectedWeeklySalesGain" type="float"/>
+            <column name="AlertLostUnitsToDate" type="float"/>
+            <column name="AlertLostSalesToDate" type="float"/>
+            <column name="Attributes" type="varchar(40000)"/>
+            <column name="POSUNITS" type="int"/>
+            <column name="POSSALES" type="numeric(9,2)"/>
+            <column name="Inactive Distribution Point Lost Sales Volume Units" type="numeric(9,2)"/>
+            <column name="Lost Distribution Point Lost Sales Volume Units" type="numeric(9,2)"/>
+            <column name="Zero Sales Day Lost Sales Volume Units" type="numeric(9,2)"/>
+            <column name="Short Term Offsale Lost Sales Volume Units" type="numeric(9,2)"/>
+            <column name="Regular Selling Price" type="numeric(9,2)"/>
+            <column name="Expected Sales Volume Units" type="numeric(9,2)"/>
+            <column name="Zero Sales Day Lost Sales Amount" type="numeric(9,2)"/>
+            <column name="Short Term Offsale Lost Sales Amount" type="numeric(9,2)"/>
+            <column name="Lost Distribution Point Lost Sales Amount" type="numeric(9,2)"/>
+            <column name="Inactive Distribution Point Lost Sales Amount" type="numeric(9,2)"/>
+            <column name="Total Availability Lost Sales Amount" type="numeric(9,2)"/>
+            <column name="Total Availability Lost Sales Volume Units" type="numeric(9,2)"/>
+            <column name="Total Distribution Lost Sales Amount" type="numeric(9,2)"/>
+            <column name="Total Distribution Lost Sales Volume Units" type="numeric(9,2)"/>
+            <column name="Total Lost Sales Amount" type="numeric(9,2)"/>
+            <column name="Total Lost Sales Volume Units" type="numeric(9,2)"/>
+            <column name="AlertLostUnitsToDate2" type="float"/>
+            <column name="PromoType" type="int"/>
+            <column name="RegularSalesRate" type="float"/>
+            <column name="PromoSalesRate" type="float"/>
+            <column name="DaysSincePromo" type="int"/>
+            <column name="AlertItemNumber" type="varchar(512)"/>
+            <column name="Alert0DayAgoStatus" type="varchar(32)"/>
+            <column name="Alert1DayAgoStatus" type="varchar(32)"/>
+            <column name="Alert2DaysAgoStatus" type="varchar(32)"/>
+            <column name="Alert3DaysAgoStatus" type="varchar(32)"/>
+            <column name="Alert4DaysAgoStatus" type="varchar(32)"/>
+            <column name="Alert5DaysAgoStatus" type="varchar(32)"/>
+            <column name="Alert6DaysAgoStatus" type="varchar(32)"/>
+            <column name="Alert7DaysAgoStatus" type="varchar(32)"/>
+            <column name="Alert8DaysAgoStatus" type="varchar(32)"/>
+            <column name="Alert9DaysAgoStatus" type="varchar(32)"/>
+            <column name="Alert10DaysAgoStatus" type="varchar(32)"/>
+            <column name="Alert11DaysAgoStatus" type="varchar(32)"/>
+            <column name="Alert12DaysAgoStatus" type="varchar(32)"/>
+            <column name="Alert13DaysAgoStatus" type="varchar(32)"/>
+            <column name="rank_value" type="float"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" ORDER BY ITEM_KEY, STORE_KEY, SUBVENDOR_ID_KEY, PERIOD_KEY, RETAILER_KEY, VENDOR_KEY SEGMENTED BY MODULARHASH(ITEM_KEY,STORE_KEY) ALL NODES PARTITION BY VENDOR_KEY;"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-21">
+        <addPrimaryKey columnNames="VENDOR_KEY,RETAILER_KEY,Period_Key,itemNumber,STORE_KEY" constraintName="PK_FACT_PROCESSED_ALERT" tableName="FACT_PROCESSED_ALERT"/>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-24">
+        <createTable tableName="FACT_OSM_CONDITION">
+            <column name="Vendor_key" type="int"><constraints nullable="false"/></column>
+            <column name="Retailer_Key" type="int"><constraints nullable="false"/></column>
+            <column name="Item_Key" type="varchar(512)"><constraints nullable="false"/></column>
+            <column name="Store_key" type="int"><constraints nullable="false"/></column>
+            <column name="Period_key" type="int"><constraints nullable="false"/></column>
+            <column name="SupplyChainCondition" type="int"/>
+            <column name="ConditionLength" type="int"/>
+            <column name="accumLostUnits" type="float"/>
+            <column name="accumRSDemand" type="float"/>
+			<column name="SEQ_NUM" type="int"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" ORDER BY Vendor_key, Retailer_key,Item_Key, Store_key,Period_Key SEGMENTED BY MODULARHASH(Item_Key, Store_key) ALL NODES PARTITION BY VENDOR_KEY;"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-25">
+        <addPrimaryKey columnNames="Vendor_key, Retailer_Key, Item_Key, Store_key,Period_Key" constraintName="PK_FACT_OSM_CONDITION" tableName="FACT_OSM_CONDITION"/>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-26">
+        <createView fullDefinition="false" viewName="ORDER_INFO">
+            SELECT 
+                sp.Vendor_key, Retailer_key, Store_key, sp.Item_key, 
+                sp.LastOrderKey, sp.LastReceiptKey, LastOrderQty,
+                LastReceiptQty, sp.SecondLastOrderKey, sp.SecondLastReceiptKey,
+                SecondLastOrderQty, SecondLastReceiptQty, im1.MAJOR_CATEGORY as Department
+            FROM 
+                $(schema).FACT_OSM_STOREPRODUCT sp
+                INNER JOIN
+                (
+                    SELECT b.vendor_key, b.ITEM_GROUP, b.MAJOR_CATEGORY
+                    FROM 
+                        (
+                            SELECT vendor_key,ITEM_GROUP, MAJOR_CATEGORY
+                                , ROW_NUMBER() OVER (PARTITION BY ITEM_GROUP ORDER BY "DeptsCount" DESC) AS "rank"
+                            FROM 
+                                (
+                                    SELECT ITEM_GROUP, vendor_key, OSM_MAJOR_CATEGORY AS MAJOR_CATEGORY
+                                        , COUNT (DISTINCT ITEM_KEY) "DeptsCount"
+                                    FROM $(common).DIM_PRODUCT
+                                    WHERE OSM_MAJOR_CATEGORY IS NOT NULL
+                                    GROUP BY vendor_key, ITEM_GROUP, OSM_MAJOR_CATEGORY
+                                ) a
+                        ) b
+                    WHERE
+                        b."rank" = 1
+                ) im1
+                ON sp.vendor_key = im1.vendor_key AND sp.ItemNumber = im1.ITEM_GROUP;
+        </createView>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-27">
+        <createTable tableName="FACT_OSM_DC_PRODUCTDAY">
+            <column name="VENDOR_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="RETAILER_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="ITEM_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="DC_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="PERIOD_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="OOSClassification" type="int"><constraints nullable="false"/></column>
+            <column name="SupplierOrderBacklog" type="int"><constraints nullable="false"/></column>
+            <column name="SupplierOrderBacklogMoreThanReq" type="int"><constraints nullable="false"/></column>
+            <column name="SupplierShortShip" type="int"><constraints nullable="false"/></column>
+            <column name="StoreShipmentBacklog" type="int"><constraints nullable="false"/></column>
+            <column name="StoreShipmentBacklogQty" type="int"><constraints nullable="false"/></column>
+            <column name="StoreAccumShipmentBacklogQty" type="int"><constraints nullable="false"/></column>
+            <column name="SupplierDCCaseOrdQty" type="int"><constraints nullable="false"/></column>
+            <column name="SupplierDCCaseReceivedQty" type="int"><constraints nullable="false"/></column>
+            <column name="SupplierDCCaseShortShipQty" type="int"><constraints nullable="false"/></column>
+            <column name="DCT3EpisodeId" type="int"><constraints nullable="false"/></column>
+            <column name="DCT3EpisodeType" type="int"><constraints nullable="false"/></column>
+            <column name="DCT3Episode" type="int"><constraints nullable="false"/></column>
+            <column name="DCT3EpisodeStart" type="int"/>
+            <column name="DCT3EpisodeEnd" type="int"/>
+            <column name="DaysSinceLastShortShip" type="int"/>
+            <column name="LastOrderQtyShortShipped" type="int"/>
+			<column name="SEQ_NUM" type="int"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" ORDER BY Vendor_key, Retailer_Key, Item_Key,DC_Key, Period_Key SEGMENTED BY MODULARHASH(Item_Key, DC_Key) ALL NODES PARTITION BY Vendor_Key;"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-28">
+        <addPrimaryKey columnNames="Vendor_key, Retailer_Key, Item_Key,DC_Key, Period_Key" constraintName="PK_FACT_OSM_DC_PRODUCTDAY" tableName="FACT_OSM_DC_PRODUCTDAY"/>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-30">
+        <createTable tableName="SCORECARD_REPORT">
+            <column name="vendor_key" type="int"><constraints nullable="false"/></column>
+            <column name="retailer_key" type="int"><constraints nullable="false"/></column>
+            <column name="alertid" type="INT"><constraints nullable="false"/></column>
+            <column name="alertdate" type="datetime"><constraints nullable="false"/></column>
+            <column name="period_key" type="int"><constraints nullable="false"/></column>
+            <column name="instoredate" type="datetime"/>
+            <column name="itemnumber" type="varchar(512)"><constraints nullable="false"/></column>
+            <column name="itemdesc" type="varchar(512)"/>
+            <column name="upc" type="varchar(512)"/>
+            <column name="deptnumber" type="varchar(512)"/>
+            <column name="deptdesc" type="varchar(512)"/>
+            <column name="finelinedesc" type="varchar(512)"/>
+            <column name="category" type="varchar(512)"/>
+            <column name="avgprice" type="float"/>
+            <column name="storeid" type="varchar(512)"><constraints nullable="false"/></column>
+            <column name="region" type="varchar(512)"/>
+            <column name="state" type="varchar(512)"/>
+            <column name="district" type="varchar(512)"/>
+            <column name="avgrsdemand" type="float"/>
+            <column name="expectedlostsalesamount" type="float"/>
+            <column name="lastposdatebeforealert" type="datetime"/>
+            <column name="firstposdateafteralert" type="datetime"/>
+            <column name="daysofzerosales" type="int"/>
+            <column name="conditionlength" type="int"/>
+            <column name="storevisitdate" type="datetime"/>
+            <column name="weekended" type="datetime"/>
+            <column name="feedbackdesc" type="varchar(255)"/>
+            <column name="feedbackrank" type="char(1)"/>
+            <column name="feedbacksubrank" type="char(1)"/>
+            <column name="effectivefeedback" type="char(1)"/>
+            <column name="actualfeedbackdesc" type="varchar(255)"/>
+            <column name="mindaysofissue" type="int"/>
+            <column name="resolvedissue" type="int"/>
+            <column name="storerep" type="varchar(255)"/>
+            <column name="source" type="varchar(255)"/>
+            <column name="alerttype" type="varchar(150)"/>
+            <column name="store_key" type="int"><constraints nullable="false"/></column>
+            <column name="brand" type="varchar(512)"/>
+            <column name="exceptionalert" type="varchar(250)"/>
+            <column name="acceptadjustment" type="char(1)"/>
+            <column name="validadjustment" type="int"/>
+            <column name="completefeedback" type="int"/>
+            <column name="item_key" type="int"/>
+            <column name="owner" type="varchar(64)"/>
+            <column name="interventionkey" type="int"/>
+            <column name="consecutivecount" type="int"/>
+            <column name="consecutivecountwofdbk" type="int"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" ORDER BY ITEM_KEY, STORE_KEY, alertdate, RETAILER_KEY, VENDOR_KEY SEGMENTED BY MODULARHASH(alertid) ALL NODES PARTITION BY VENDOR_KEY;"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-31">
+        <addPrimaryKey columnNames="ITEM_KEY, STORE_KEY, alertdate, RETAILER_KEY, VENDOR_KEY" constraintName="UK_SCOREARD_REPORT" tableName="SCORECARD_REPORT"/>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-32">
+        <createTable tableName="FACT_SCORECARD">
+            <column name="VENDOR_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="RETAILER_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="ITEM_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="STORE_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="OWNER" type="varchar(64)"/>
+            <column name="OWNER_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="AlertID" type="INT"><constraints nullable="false"/></column>
+            <column name="AlertDate" type="varchar(20)"/>
+            <column name="period_key" type="int"><constraints nullable="false"/></column>
+            <column name="period_id" type="int"><constraints nullable="false"/></column>
+            <column name="storeid" type="varchar(512)"/>
+            <column name="avgprice" type="float"/>
+            <column name="InStoreDate" type="varchar(20)"/>
+            <column name="ResolveDate" type="varchar(20)"/>
+            <column name="ItemNumber" type="varchar(512)"/>
+            <column name="ItemDesc" type="varchar(512)"/>
+            <column name="DeptNumber" type="varchar(512)"/>
+            <column name="DeptDesc" type="varchar(512)"/>
+            <column name="FinelineDesc" type="varchar(512)"/>
+            <column name="Category" type="varchar(512)"/>
+            <column name="Brand" type="varchar(512)"/>
+            <column name="UPC" type="varchar(512)"/>
+            <column name="UnitRetail" type="float"/>
+            <column name="AvgRSDemand" type="float"/>
+            <column name="StoreNumber" type="varchar(512)"/>
+            <column name="Region" type="varchar(512)"/>
+            <column name="District" type="varchar(512)"/>
+            <column name="State" type="varchar(512)"/>
+            <column name="ExceptionAlert" type="varchar(250)"/>
+            <column name="AlertCategory" type="varchar(150)"/>
+            <column name="AlertCategory_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="ConditionLength" type="int"/>
+            <column name="LostDollars" type="int"/>
+            <column name="StoreVisitDate" type="varchar(30)"/>
+            <column name="IsInInventory" type="int"/>
+            <column name="FeedbackDesc" type="varchar(255)"/>
+            <column name="FeedbackDesc_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="ActualFeedbackDesc" type="varchar(80)"/>
+            <column name="FeedbackRank" type="char(1)"/>
+            <column name="FeedbackRank_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="FeedbackSubRank" type="char(1)"/>
+            <column name="EffectiveFeedback" type="varchar(1)"/>
+            <column name="EffectiveFeedback_key" type="int"><constraints nullable="false"/></column>
+            <column name="CompleteFeedback" type="int"/>
+            <column name="CompleteFeedback_key" type="int"><constraints nullable="false"/></column>
+            <column name="ResolvedIssue" type="int"/>
+            <column name="ResolvedIssue_key" type="int"><constraints nullable="false"/></column>
+            <column name="AcceptAdjustment" type="varchar(1)"/>
+            <column name="ValidAdjustment" type="int"/>
+            <column name="ValidAdjustment_key" type="int"><constraints nullable="false"/></column>
+            <column name="EstimatedAlertOpp" type="float"/>
+            <column name="LastPOSDateBeforeAlert" type="varchar(20)"/>
+            <column name="FirstPOSDateAfterAlert" type="varchar(20)"/>
+            <column name="DaysOfZeroSales" type="int"/>
+            <column name="SumPOSQtyAfter" type="int"/>
+            <column name="SumPOSSalesAfter" type="int"/>
+            <column name="NumberOfDaysOfSalesAfter" type="int"/>
+            <column name="FeedbackRep" type="varchar(255)"/>
+            <column name="WeekEnded" type="varchar(20)"/>
+            <column name="Cube_Alert_Type" type="varchar(1)"/>
+            <column name="Cube_Alert_Type_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="AccurateAlert" type="int"><constraints nullable="false"/></column>
+            <column name="feedbackcnt" type="int"/>
+            <column name="alertstores" type="int"/>
+            <column name="storeweekwithfeedback" type="varchar(575)"/>
+            <column name="storeweek" type="varchar(575)"/>
+            <column name="StoreItemWeekEnded" type="varchar(1087)"/>
+            <column name="store_visited" type="int"/>
+            <column name="storeweekwithfeedback negative flag" type="int"/>
+            <column name="alert rank-ABC" type="int"/>
+            <column name="alert rank-ABC Resolved" type="int"/>
+            <column name="store visits" type="varchar(512)"/>
+            <column name="store visits negative flag" type="int"/>
+            <column name="Recaptured Sales" type="float"/>
+            <column name="IZS Actual POS Starts" type="int"/>
+            <column name="IZS Accurate Alerts" type="int"/>
+            <column name="Phantom Accurate Alerts" type="int"/>
+            <column name="Adjustment Value" type="float"/>
+            <column name="Phantom Actual POS Starts" type="int"/>
+            <column name="Effectiveness (as reported by Rep)Internal" type="int"/>
+            <column name="Effectiveness (as reported by Rep)Internal1" type="int"/>
+            <column name="Resolutions" type="int"/>
+            <column name="ConsecutiveCountWOFdbk" type="int"/>
+            <column name="ConsecutiveCount" type="int"/>
+            <column name="AlertUPC" type="varchar(512)"/>
+            <column name="PROMO_IND" type="int"/>
+            <column name="ProjectedWeeklySalesGain" type="float"/>
+            <column name="AlertLostUnitsToDate" type="float"/>
+            <column name="AlertLostSalesToDate" type="float"/>
+            <column name="POSUNITS" type="int"/>
+            <column name="POSSALES" type="numeric(9,2)"/>
+            <column name="Inactive Distribution Point Lost Sales Volume Units" type="numeric(9,2)"/>
+            <column name="Lost Distribution Point Lost Sales Volume Units" type="numeric(9,2)"/>
+            <column name="Zero Sales Day Lost Sales Volume Units" type="numeric(9,2)"/>
+            <column name="Short Term Offsale Lost Sales Volume Units" type="numeric(9,2)"/>
+            <column name="Regular Selling Price" type="numeric(9,2)"/>
+            <column name="Expected Sales Volume Units" type="numeric(9,2)"/>
+            <column name="Zero Sales Day Lost Sales Amount" type="numeric(9,2)"/>
+            <column name="Short Term Offsale Lost Sales Amount" type="numeric(9,2)"/>
+            <column name="Lost Distribution Point Lost Sales Amount" type="numeric(9,2)"/>
+            <column name="Inactive Distribution Point Lost Sales Amount" type="numeric(9,2)"/>
+            <column name="Total Availability Lost Sales Amount" type="numeric(9,2)"/>
+            <column name="Total Availability Lost Sales Volume Units" type="numeric(9,2)"/>
+            <column name="Total Distribution Lost Sales Amount" type="numeric(9,2)"/>
+            <column name="Total Distribution Lost Sales Volume Units" type="numeric(9,2)"/>
+            <column name="Total Lost Sales Amount" type="numeric(9,2)"/>
+            <column name="Total Lost Sales Volume Units" type="numeric(9,2)"/>
+            <column name="AlertLostUnitsToDate2" type="float"/>
+            <column name="PromoType" type="int"/>
+            <column name="RegularSalesRate" type="float"/>
+            <column name="PromoSalesRate" type="float"/>
+            <column name="DaysSincePromo" type="int"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" ORDER BY ITEM_KEY, STORE_KEY, alertdate, RETAILER_KEY, VENDOR_KEY SEGMENTED BY MODULARHASH(Item_Key, Store_key) ALL NODES PARTITION BY VENDOR_KEY;"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-33">
+        <createTable tableName="FACT_OSM_PRODUCT">
+            <column name="VENDOR_KEY" type="int"> <constraints nullable="false"/> </column>
+            <column name="RETAILER_KEY" type="int"> <constraints nullable="false"/> </column>
+            <column name="ItemNumber" type="varchar(512)"> <constraints nullable="false"/> </column>
+            <column name="SEQ_NUM" type="bigint"> <constraints nullable="false"/> </column>
+			<column name="ItemCurrTotalPosQty" type="int"/>
+			<column name="ItemCurrPosDays" type="int"/>
+			<column name="ItemCurrPosStartDate" type="TIMESTAMP"/>
+			<column name="ItemCurrPosEndDate" type="TIMESTAMP"/>
+			<column name="ItemCurrAvgPosPerDay" type="float"/>
+			<column name="ItemCurrAvgShelfSellThroughDays" type="float"/>
+			<column name="ItemCurrAvgCaseSellThroughDays" type="float"/>
+			<column name="ItemCurrAvgCasePackOut" type="float"/>
+			<column name="ProductFreshnessProfile" type="float"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED all nodes"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-34">
+        <addPrimaryKey columnNames="Vendor_key,Retailer_Key,ItemNumber" constraintName="PK_FACT_OSM_PRODUCT" tableName="FACT_OSM_PRODUCT"/>
+    </changeSet>
+	
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-35">
+        <createTable tableName="FACT_OSM_STORE">
+            <column name="VENDOR_KEY" type="int"> <constraints nullable="false"/> </column>
+            <column name="RETAILER_KEY" type="int"> <constraints nullable="false"/> </column>
+            <column name="Store_Key" type="int"> <constraints nullable="false"/> </column>
+            <column name="SEQ_NUM" type="bigint"> <constraints nullable="false"/> </column>
+			<column name="StoreCurrTotalPosQty" type="int"/>
+			<column name="StoreCurrPosDays" type="int"/>
+			<column name="StoreCurrPosStartDate" type="TIMESTAMP"/>
+			<column name="StoreCurrPosEndDate" type="TIMESTAMP"/>
+			<column name="StoreCurrAvgPosPerDay" type="float"/>
+			<column name="StoreCurrAvgShelfSellThroughDays" type="float"/>
+			<column name="StoreCurrAvgCaseSellThroughDays" type="float"/>
+			<column name="StoreCurrAvgCasePackOut" type="float"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" UNSEGMENTED all nodes"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-36">
+        <addPrimaryKey columnNames="Vendor_key,Retailer_Key,Store_Key" constraintName="PK_FACT_OSM_STORE" tableName="FACT_OSM_STORE"/>
+    </changeSet>
+	
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-37">
+        <createTable tableName="DIM_FEEDBACK_IZS_CONDITION_SAVINGS">
+            <column name="Vendor_key" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="deptdesc" type="VARCHAR(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="finelinedesc" type="VARCHAR(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ConditionLength" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="AvgConditionLength" type="INT"/>
+            <column name="AvgConditionLengthDiff" type="INT"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" order by Vendor_key,deptdesc,finelinedesc,ConditionLength UNSEGMENTED all nodes PARTITION BY VENDOR_KEY;"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-38">
+        <addPrimaryKey columnNames="Vendor_key,deptdesc,finelinedesc,ConditionLength" constraintName="PK_DIM_FEEDBACK_IZS_CONDITION_SAVINGS" tableName="DIM_FEEDBACK_IZS_CONDITION_SAVINGS"/>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-39">
+        <createTable tableName="DIM_FEEDBACK_PHANTOM_CONDITION_SAVINGS">
+            <column name="Vendor_key" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="deptdesc" type="VARCHAR(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="finelinedesc" type="VARCHAR(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ConditionLength" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="AvgConditionLength" type="INT"/>
+            <column name="AvgConditionLengthDiff" type="INT"/>
+            <column name="PhantomLostProportion" type="FLOAT"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" order by Vendor_key,deptdesc,finelinedesc,ConditionLength UNSEGMENTED all nodes PARTITION BY VENDOR_KEY;"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-40">
+        <addPrimaryKey columnNames="Vendor_key,deptdesc,finelinedesc,ConditionLength" constraintName="PK_DIM_FEEDBACK_PHANTOM_CONDITION_SAVINGS" tableName="DIM_FEEDBACK_PHANTOM_CONDITION_SAVINGS"/>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-41">
+        <sql>
+			ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN IssuanceId;
+			ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN Owner;
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN RejectReasons;
+			ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN ClosureDate;
+			ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN ClosureType;
+			ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN AppReportedStatus;
+			ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN AppDetectedClosureDate;
+			ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN ResponseDate;
+			ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN ResponseId;
+			ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN ResponseComments;
+			ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN RSPI;
+			ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN MaxDaysZeroStock;
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN ITEM_DESCRIPTION;
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN MAJOR_CATEGORY_NO;
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN MAJOR_CATEGORY;
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN CATEGORY;
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN SUB_CATEGORY;
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN BRAND;
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN UNIT_PRICE;
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN VENDOR_PACK_QTY;
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN WHSE_PACK_QTY;
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN STATE;
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN REGION;
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN DISTRICT;
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN TVFlip;
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN "Inactive Distribution Point Lost Sales Volume Units";
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN "Lost Distribution Point Lost Sales Volume Units";
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN "Zero Sales Day Lost Sales Volume Units";
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN "Short Term Offsale Lost Sales Volume Units";
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN "Regular Selling Price";
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN "Expected Sales Volume Units";
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN "Zero Sales Day Lost Sales Amount";
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN "Short Term Offsale Lost Sales Amount";
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN "Lost Distribution Point Lost Sales Amount";
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN "Inactive Distribution Point Lost Sales Amount";
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN "Total Availability Lost Sales Amount";
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN "Total Availability Lost Sales Volume Units";
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN "Total Distribution Lost Sales Amount";
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN "Total Distribution Lost Sales Volume Units";
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN "Total Lost Sales Amount";
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN "Total Lost Sales Volume Units";
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN Alert0DayAgoStatus;
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN Alert1DayAgoStatus;
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN Alert2DaysAgoStatus;
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN Alert3DaysAgoStatus;
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN Alert4DaysAgoStatus;
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN Alert5DaysAgoStatus;
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN Alert6DaysAgoStatus;
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN Alert7DaysAgoStatus;
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN Alert8DaysAgoStatus;
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN Alert9DaysAgoStatus;
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN Alert10DaysAgoStatus;
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN Alert11DaysAgoStatus;
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN Alert12DaysAgoStatus;
+            ALTER TABLE $(schema).FACT_RAW_ALERT DROP COLUMN Alert13DaysAgoStatus;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-42">
+        <sql>
+			ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN RSPI;
+			ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN MaxDaysZeroStock;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN ITEM_DESCRIPTION;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN MAJOR_CATEGORY_NO;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN MAJOR_CATEGORY;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN CATEGORY;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN SUB_CATEGORY;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN BRAND;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN UNIT_PRICE;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN VENDOR_PACK_QTY;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN WHSE_PACK_QTY;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN STATE;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN REGION;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN DISTRICT;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN TVFlip;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN "Inactive Distribution Point Lost Sales Volume Units";
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN "Lost Distribution Point Lost Sales Volume Units";
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN "Zero Sales Day Lost Sales Volume Units";
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN "Short Term Offsale Lost Sales Volume Units";
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN "Regular Selling Price";
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN "Expected Sales Volume Units";
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN "Zero Sales Day Lost Sales Amount";
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN "Short Term Offsale Lost Sales Amount";
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN "Lost Distribution Point Lost Sales Amount";
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN "Inactive Distribution Point Lost Sales Amount";
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN "Total Availability Lost Sales Amount";
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN "Total Availability Lost Sales Volume Units";
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN "Total Distribution Lost Sales Amount";
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN "Total Distribution Lost Sales Volume Units";
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN "Total Lost Sales Amount";
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN "Total Lost Sales Volume Units";
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN Alert0DayAgoStatus;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN Alert1DayAgoStatus;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN Alert2DaysAgoStatus;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN Alert3DaysAgoStatus;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN Alert4DaysAgoStatus;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN Alert5DaysAgoStatus;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN Alert6DaysAgoStatus;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN Alert7DaysAgoStatus;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN Alert8DaysAgoStatus;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN Alert9DaysAgoStatus;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN Alert10DaysAgoStatus;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN Alert11DaysAgoStatus;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN Alert12DaysAgoStatus;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN Alert13DaysAgoStatus;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-43">
+        <sql>
+            ALTER TABLE $(schema).FACT_AA_STOREPRODUCT ADD COLUMN RetailOnHand int;
+            ALTER TABLE $(schema).FACT_AA_STOREPRODUCT ADD COLUMN DaysSincePOS int;
+        </sql>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-45">
+        <sql>
+			ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN NUMBER_OF_FACINGS;
+			ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN POG_DESCRIPTION;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT DROP COLUMN POG_LOCATION;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="VERTICA-SCHEMA-46">
+        <sql>
+            ALTER TABLE $(schema).FACT_SCORECARD DROP COLUMN "Inactive Distribution Point Lost Sales Volume Units";
+            ALTER TABLE $(schema).FACT_SCORECARD DROP COLUMN "Lost Distribution Point Lost Sales Volume Units";
+            ALTER TABLE $(schema).FACT_SCORECARD DROP COLUMN "Zero Sales Day Lost Sales Volume Units";
+            ALTER TABLE $(schema).FACT_SCORECARD DROP COLUMN "Short Term Offsale Lost Sales Volume Units";
+            ALTER TABLE $(schema).FACT_SCORECARD DROP COLUMN "Regular Selling Price";
+            ALTER TABLE $(schema).FACT_SCORECARD DROP COLUMN "Expected Sales Volume Units";
+            ALTER TABLE $(schema).FACT_SCORECARD DROP COLUMN "Zero Sales Day Lost Sales Amount";
+            ALTER TABLE $(schema).FACT_SCORECARD DROP COLUMN "Short Term Offsale Lost Sales Amount";
+            ALTER TABLE $(schema).FACT_SCORECARD DROP COLUMN "Lost Distribution Point Lost Sales Amount";
+            ALTER TABLE $(schema).FACT_SCORECARD DROP COLUMN "Inactive Distribution Point Lost Sales Amount";
+            ALTER TABLE $(schema).FACT_SCORECARD DROP COLUMN "Total Availability Lost Sales Amount";
+            ALTER TABLE $(schema).FACT_SCORECARD DROP COLUMN "Total Availability Lost Sales Volume Units";
+            ALTER TABLE $(schema).FACT_SCORECARD DROP COLUMN "Total Distribution Lost Sales Amount";
+            ALTER TABLE $(schema).FACT_SCORECARD DROP COLUMN "Total Distribution Lost Sales Volume Units";
+            ALTER TABLE $(schema).FACT_SCORECARD DROP COLUMN "Total Lost Sales Amount";
+            ALTER TABLE $(schema).FACT_SCORECARD DROP COLUMN "Total Lost Sales Volume Units";
+        </sql>
+    </changeSet>
+</databaseChangeLog>

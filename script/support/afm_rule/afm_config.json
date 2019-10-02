@@ -1,0 +1,49 @@
+{
+    "ruleType":"RETAILER",
+    "cycleKey":6,
+    "vendorKey":5,
+    "retailerKey":5003,
+    "owner":"General",
+    "itemScope":"",
+    "storeScope":"",
+    "typeList":"D-Void,Shelf OOS,Phantom,STO",
+    "createdBy":"support@rsicorp.local",
+    "rules":[{
+        "ruleId":1,
+        "subLevelMetrics":"",
+        "parameter1":"15",
+        "parameter2":"STOREID",
+        "parameter3":"ProjectedWeeklySalesGain"
+    },{
+        "ruleId":32,
+        "subLevelMetrics":"",
+        "parameter1":"10",
+        "parameter2":"14",
+        "parameter3":"10"
+    },{
+        "ruleId":37,
+        "subLevelMetrics":"",
+        "parameter1":"RetailOnHand <= 0 OR (STORE_KEY IN (SELECT STORE_KEY FROM COMMON.DIM_STORE WHERE STORE_ID = ''8944''))",
+        "parameter2":"",
+        "parameter3":""
+    },{
+        "ruleId":40,
+        "subLevelMetrics":"",
+        "parameter1":"(AlertLostSalesToDate >= 4 AND (AlertLostUnitsToDate >= 0.7 OR (AlertLostUnitsToDate < 0.7 AND DaysSincePOS >= 85)))",
+        "parameter2":"",
+        "parameter3":""
+    },{
+        "ruleId":61,
+        "subLevelMetrics":"",
+        "parameter1":"",
+        "parameter2":"",
+        "parameter3":""
+    },{
+        "ruleId":62,
+        "subLevelMetrics":"",
+        "parameter1":"",
+        "parameter2":"",
+        "parameter3":""
+    }
+    ]
+}

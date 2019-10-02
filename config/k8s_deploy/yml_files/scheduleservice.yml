@@ -1,0 +1,79 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: scheduleservice
+  namespace: rsicommon
+  labels:
+    app: scheduleservice
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: scheduleservice
+        track: stable
+    spec:
+      dnsConfig:
+        options:
+          - name: single-request-reopen
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/master
+                    operator: DoesNotExist
+      containers:
+      - name: scheduleservice
+        image: rsiiris/{{IMAGE_URL}}
+        command: ["/bin/bash", "-c"]
+        args:
+        - source /config/env.properties;
+          java
+           -Duser.timezone=America/New_York
+           -Dspring.datasource.url="jdbc:sqlserver://${MSSQLDBHOST}:${MSSQLDBPORT};database=${MSSQLJOBDB}"
+           -Dspring.datasource.username=${MSSQLDBUSER}
+           -Dspring.datasource.password=${MSSQLDBPASS}
+           -Dcom.rsi.service.jobservice=jobservice.rsicommon
+           -Drsi.sso.authentication.service=authenticationservice.rsicommon
+           -Dserver.pmp.servername=${PMPSERVERNAME}
+           -Dserver.pmp.tokenid=${PMPTOKENID}
+           -Dserver.pmp.key=${PMPKEY}
+           -jar scheduleservice.jar;
+        ports:
+        - containerPort: 8833
+        volumeMounts:
+        - mountPath: /etc/localtime
+          name: tz-config
+        - mountPath: /config
+          name: systemconf
+      imagePullSecrets:
+      - name: dockerhubsecret
+      volumes:
+      - name: tz-config
+        hostPath:
+          path: /usr/share/zoneinfo/America/New_York
+      - name: systemconf
+        configMap:
+          name: systemconf
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: scheduleservice
+    track: stable
+  name: scheduleservice
+  namespace: rsicommon
+  selfLink: /api/v1/namespaces/rsicommon/services/scheduleservice
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8833
+  selector:
+    app: scheduleservice
+    track: stable
+  sessionAffinity: None
+  type: ClusterIP

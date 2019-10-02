@@ -1,0 +1,54 @@
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  name: ingress
+  namespace: rsicommon
+spec:
+  rules:
+  - host: uatz1k8mas001.rsicorp.local
+    http:
+      paths:
+      - path: "/common/schedule"
+        backend:
+          serviceName: scheduleservice
+          servicePort: 80
+      - path: "/common/job"
+        backend:
+          serviceName: jobservice
+          servicePort: 80
+      - path: "/usermetadata"
+        backend:
+          serviceName: usermetadataservice
+          servicePort: 80
+      - path: "/auth"
+        backend:
+          serviceName: authenticationservice
+          servicePort: 80
+      - path: "/config"
+        backend:
+          serviceName: configurationservice
+          servicePort: 80
+  - host: irisuat.rsicorp.local
+    http:
+      paths:
+      - path: "/common/schedule"
+        backend:
+          serviceName: scheduleservice
+          servicePort: 80
+      - path: "/common/job"
+        backend:
+          serviceName: jobservice
+          servicePort: 80
+      - path: "/usermetadata"
+        backend:
+          serviceName: usermetadataservice
+          servicePort: 80
+      - path: "/auth"
+        backend:
+          serviceName: authenticationservice
+          servicePort: 80
+      - path: "/config"
+        backend:
+          serviceName: configurationservice
+          servicePort: 80

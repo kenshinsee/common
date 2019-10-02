@@ -1,0 +1,74 @@
+---
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: powerbiembeddedservice
+  namespace: osa-suite
+  labels:
+    app: powerbiembeddedservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: powerbiembeddedservice
+      track: stable
+  template:
+    metadata:
+      creationTimestamp: 
+      labels:
+        app: powerbiembeddedservice
+        track: stable
+    spec:
+      containers:
+      - name: powerbiembeddedservice
+        image: rsiiris/{{IMAGE_URL}}
+        command:
+        - java
+        args:
+        - "-jar"
+        - PowerBiEmbeddedService-1.0.jar
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: "/dev/termination-log"
+        terminationMessagePolicy: File
+        imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      imagePullSecrets:
+      - name: dockerhubsecret
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: DoesNotExist
+      schedulerName: default-scheduler
+      dnsConfig:
+        options:
+        - name: single-request-reopen
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: powerbiembeddedservice
+  namespace: osa-suite
+  labels:
+    app: powerbiembeddedservice
+    track: stable
+spec:
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+  selector:
+    app: powerbiembeddedservice
+    track: stable
+  type: ClusterIP
+  sessionAffinity: None
+status:
+  loadBalancer: {}

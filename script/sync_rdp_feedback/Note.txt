@@ -1,0 +1,213 @@
+### Powershell Env & Process: ###
+QA: 
+Vertica(RDP): REGRESSION_AUX
+MSSQL(SILO):
+HUB: HUB_FUNCTION_BETA (ENGV2HHDBQA1)
+Silo: JNJ_TARGET_JOYCE (ENGV2HSDBQA1\DB6)  vendor: 52, retailer: 15
+DW: QAVERTICANXG
+
+## testing
+select * from etl.RSI_TRANSFER_SET 
+where for_computation like '%fdbk%' and etl_type='RDP2NXG'
+and silo_id = 'JNJ_TARGET_JOYCE'
+
+## etl.transfer_info (view)
+select dim_name,transfer_set_status, reference_type, transfer_detail_status,* 
+from etl.transfer_info 
+where reference_type = 'FACT' and etl_type = 'RDP2NXG' 
+and dim_name like '%fdbk%'
+and silo_id = 'JNJ_TARGET_JOYCE'
+and transfer_set_key = 15480
+
+## etl.transfer_info definition
+SELECT ts.transfer_set_status, td.transfer_detail_status, ...
+FROM  etl.RSI_transfer_set ts 
+LEFT OUTER JOIN    etl.rsi_transfer_detail td
+ON ts.transfer_set_key = td.transfer_set_key
+
+update etl.RSI_transfer_set
+set transfer_set_status = 'READY'
+where transfer_set_key = 15480
+
+update etl.rsi_transfer_detail
+set transfer_detail_status = 'READY'
+where transfer_set_key = 15480
+### Powershell Env & Process: ###
+
+Can load feedback data in incremental via event_key.  ★★★★★
+--可以通过下面的sql来验证, Event_key是自增的, 所以可以通过event_Key来增量抽取feedback数据
+--不能用period_key， 因为不同的vendor&retailer 上传的时间可能会差好几天。
+--具体的实现，可以通过variables表存放上次的event_key，然后抽取更大的event_key。
+
+--order by event_key first
+SELECT EVENT_KEY as EVENT_KEY1, CREATE_DATE FROM [RDP_AUX].[dbo].[TRANSFORMER_EVENT]
+where DATASTREAM = 'fdbk'
+order by EVENT_KEY desc, CREATE_DATE desc
+--order by create_date first. but result same as above sql. means event_key is incremental. also confirmed RDP logic.
+SELECT EVENT_KEY as EVENT_KEY2, CREATE_DATE FROM [RDP_AUX].[dbo].[TRANSFORMER_EVENT]
+where DATASTREAM = 'fdbk'
+order by CREATE_DATE desc, EVENT_KEY desc
+
+
+## old logic
+Silo FactETL job会被调起来，然后根据transfer & transfer set去从rdp上面拿DS_FACT_FEEDBACK里面这个Silo的数据。
+放到一张staging表里面: STAGE_FACT_FEEDBACK .
+然后: delete from anl_fact_feedback where period_key in ()
+然后: insert into anl_fact_feedback from STAGE_FACT_FEEDBACK where period_key in ()
+
+## new logic (跟老的逻辑对比差异很大, 因为完全用不到transfer相关的表)
+1, 新建一张 common.STAGE_FACT_FEEDBACK 来存放增量的feedback的数据.
+2, 增量的逻辑根据 event_key 来抽取, 因为rdp里面 event_key是自增的.
+3, 这样就需要新建一个 variables 表来存放上一次最大的 event_key . 
+	因为RDP可能有多个数据库(e.g RDP_AUX for hosted, WM有多个rdp), 所以这里需要多个变量(rdpId is the variable name)
+4, 根据表 common.STAGE_FACT_FEEDBACK 里面的 vendor & retailer 来insert 到对应的schema里面去。
+5, 所以这里只需要传入: rdpId / rdpId list.
+   不需要传入vendor_key & retailer_key 等参数, 每次增量抽取所有的feedback过来.
+
+Related tables: VARIABLES(incremental event_key), AP_ALERT_CYCLE_MAPPING(registered users), ANL_FEEDBACK_DESC_TRANS(Vertica)
+# we are having 2 APIs here. 1. sync all data for registered customers from RDP. 2, sync new customers for given vendorKey&retailerKey
+## 1, Sync RDP Feedback data.
+API(post action): http://localhost:8000/osa_bundle/syncrdpfdbk/process
+how to pass parameters:
+case1: pass rdpId, then sync all data for registered used from this RDP. But rdpId is not mandatory.
+case2: 不指定rdp的话会通过http://10.172.36.75/config/properties/rdps?factType=fdbk 来拿到所有的rdp的信息，然后循环抽取数据
+case3: 既然是增量的，那么如何保证失败后可以重跑？
+       a, 如果数据已经到osa数据库里面, 但是variables表里面的event_key没有更新，怎么办？  
+	      可以支持重跑，当然也可以手动去更新这个表(不建议)。关键看是否有报错，解决错误后重跑
+	   b, 如果数据已经到osa数据库里面, 而且variables表里面的event_key也是最新的, 但是数据没有成功process到osa的schema下面，怎么办?
+	      两种方法： 1，增加delete逻辑。 2，在最后面去update variables表
+	   c, 如果有多个rdp，假如中间的rdp跑失败了怎么办？这样就存在上面的a, b两种情况
+	   d, 空跑会如何呢？
+	      不会跑出任何数据，但是variables表里面的值不会更新，因为没有数据
+
+issues:
+1, RDP有hosted & WM的, 应该要传哪些参数? 
+   所有fdbk相关的RDP list以及相关的配置信息放到json文件里面？ 然后循环遍历？
+   那是不是hosted & WM的都放到一起？ 还是分两个表？
+2, 怎么获取这些参数? 新增一个config API? 
+3, 如何循环insert 数据？ by vendor&retailer or by retailer?
+   如果要取silo的信息，那么是否还得知道hubId?
+
+
+## 2, Init RDP feedback data for given vendorKey&retailerKey
+API(get action): http://localhost:8000/osa_bundle/syncrdpfdbk/init?vendorKey=684&retailerKey=158
+
+
+
+tables:
+--STAGE_FACT_FEEDBACK_RDP (same stucture as DS_FACT_FEEDBACK)
+CREATE TABLE common.STAGE_FACT_FEEDBACK_RDP
+(
+    EVENT_KEY int NOT NULL,
+    RETAILER_KEY int,
+    VENDOR_KEY int,
+    STORE_VISIT_DATE date,
+    PERIOD_KEY int NOT NULL,
+    TYPE varchar(1),
+    TYPE_DATE varchar(10),
+    ALERT_ID int,
+    ALERT_TYPE varchar(64),
+    MERCHANDISER_STORE_NUMBER varchar(512),
+    STORE_ID varchar(512),
+    MERCHANDISER_UPC varchar(512),
+    INNER_UPC varchar(512),
+    MERCHANDISER varchar(100),
+    STORE_REP varchar(1000),
+    SOURCE varchar(1000),
+    BEGIN_STATUS varchar(255),
+    ACTION varchar(255),
+    FEEDBACK_DESCRIPTION varchar(255),
+    FEEDBACK_HOTLINEREPORTDATE date,
+    FEEDBACK_ISININVENTORY varchar(5),
+    ZIP_CODE varchar(64),
+    ARTS_CHAIN_NAME varchar(255),
+    UPC_STATUS varchar(255),
+    MSI varchar(255)
+)
+UNSEGMENTED ALL NODES;
+
+--STAGE_FACT_FEEDBACK_PROCESSED (same as ahold.fact_feedback)
+CREATE TABLE common.STAGE_FACT_FEEDBACK_PROCESSED
+(
+    EVENT_KEY int NOT NULL,
+    RETAILER_KEY int NOT NULL,
+    VENDOR_KEY int NOT NULL,
+    STORE_VISIT_DATE timestamp,
+    PERIOD_KEY int NOT NULL,
+    TYPE varchar(1) NOT NULL,
+    TYPE_DATE varchar(10),
+    ALERT_ID int,
+    ALERT_TYPE varchar(64),
+    MERCHANDISER_STORE_NUMBER varchar(512),
+    STORE_ID varchar(512),
+    MERCHANDISER_UPC varchar(512),
+    INNER_UPC varchar(512),
+    MERCHANDISER varchar(100),
+    STORE_REP varchar(1000),
+    SOURCE varchar(1000),
+    BEGIN_STATUS varchar(255),
+    ACTION varchar(255),
+    FEEDBACK_DESCRIPTION varchar(255),
+    FEEDBACK_HOTLINEREPORTDATE timestamp,
+    FEEDBACK_ISININVENTORY varchar(5),
+    UPC_STATUS varchar(10),
+    MSI varchar(255)
+)
+UNSEGMENTED ALL NODES;
+
+
+
+--
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[VARIABLES]') AND type in (N'U'))
+CREATE TABLE [dbo].[VARIABLES] (
+	VARIABLE_NAME varchar(50) not null,
+	VARIABLE_VALUE nvarchar(100) null,
+	PREVIOUS_VALUE nvarchar(100) null,	--reserve this column
+	INSERT_TIME datetime NULL,
+	UPDATE_TIME datetime NULL,
+CONSTRAINT [PK_RSI_VARIABLES] PRIMARY KEY CLUSTERED
+(
+	VARIABLE_NAME ASC
+)
+)ON [PRIMARY]
+GO
+
+--
+CREATE TABLE OSA_REGISTERED_USERS 
+(    RETAILER_KEY int NOT NULL,
+    VENDOR_KEY int NOT NULL,
+	TYPE varchar(10) NOT NULL,	--WM / SVR
+    ACTIVE char(1) NOT NULL
+)
+
+
+ANL_FACT_CUSTOM_INCIDENTS
+
+drop table if exists common.ANL_FEEDBACK_DESC_TRANS;
+CREATE TABLE if not exists common.ANL_FEEDBACK_DESC_TRANS
+(
+ Merchandiser VARCHAR(54) NOT NULL  ENCODING RLE,
+ Type VARCHAR(64) NOT NULL  ENCODING RLE,
+ Source VARCHAR(512)  ENCODING RLE,
+ Target VARCHAR(512) ENCODING RLE,
+ CONSTRAINT  UK_ANL_FEEDBACK_DESC_TRANS UNIQUE (Merchandiser,Type,Source)
+)
+UNSEGMENTED ALL NODES;
+insert into common.ANL_FEEDBACK_DESC_TRANS
+SELECT 'ADVANTAGE','BeginStatus','DV','Distribution Void' UNION ALL
+SELECT 'ADVANTAGE','BeginStatus','NA','Not Authorized' UNION ALL
+SELECT 'ADVANTAGE','BeginStatus','NT','No Tag' UNION ALL
+SELECT 'ADVANTAGE','BeginStatus','OOS','OOS' UNION ALL
+SELECT 'ADVANTAGE','BeginStatus','SH','On Shelf' UNION ALL
+SELECT 'ADVANTAGE','Action','AI','Adjusted Inventory' UNION ALL
+SELECT 'ADVANTAGE','Action','CF','Confirmed' UNION ALL
+SELECT 'ADVANTAGE','Action','CI','Cut In' UNION ALL
+SELECT 'ADVANTAGE','Action','F','Filled' UNION ALL
+SELECT 'ADVANTAGE','Action','ORP','Order Placed' UNION ALL
+SELECT 'ADVANTAGE','Action','TG','Tag Placed' UNION ALL
+SELECT 'ADVANTAGE','Action','WO','Confirmed' UNION ALL
+SELECT 'ADVANTAGE','Action','NOP','Not On Planogram' UNION ALL
+SELECT 'ADVANTAGE','Action','ORC','Confirmed Product in Transit' UNION ALL
+SELECT 'ADVANTAGE','Action','R','Rotated' UNION ALL
+SELECT 'ADVANTAGE','Action','OR','Ordered' UNION ALL
+SELECT 'ADVANTAGE','Action','S','Scanned';

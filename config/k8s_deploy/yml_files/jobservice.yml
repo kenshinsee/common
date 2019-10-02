@@ -1,0 +1,108 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: jobservice
+  namespace: rsicommon
+  labels:
+    app: jobservice
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: jobservice
+        track: stable
+    spec:
+      dnsConfig:
+        options:
+          - name: single-request-reopen
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/master
+                    operator: DoesNotExist
+      volumes:
+      - name: tz-config
+        hostPath:
+          path: /usr/share/zoneinfo/America/New_York
+      - name: systemconf
+        configMap:
+          name: systemconf
+      - name: configkeystore
+        emptyDir: {}
+      containers:
+      - name: jobservice
+        image: rsiiris/{{IMAGE_URL}}
+        command: ["/bin/bash", "-c"]
+        args:
+        - source /config/env.properties;
+          java 
+           -Duser.timezone=America/New_York
+           -Dspring.rabbitmq.host=${RABBITHOST}
+           -Dspring.rabbitmq.port=${RABBITPORT}
+           -Dspring.rabbitmq.username=${RABBITUSER}
+           -Dspring.rabbitmq.pmpuser=${PMPRABBITUSER}
+           -Dspring.rabbitmq.password=${RABBITPASS}
+           -Dspring.rabbitmq.listener.simple.max-concurrency=2
+           -Dspring.rabbitmq.listener.simple.concurrency=2
+           -Dspring.rabbitmq.ssl.enabled=true
+           -Dspring.rabbitmq.ssl.verify-hostname=false
+           -Dspring.rabbitmq.ssl.algorithm=TLSv1.2
+           -Dspring.rabbitmq.ssl.trust-store=file:/config/keystore/rabbitstore
+           -Dspring.rabbitmq.ssl.trust-store-password=T3ciT3ci2
+           -Dspring.rabbitmq.ssl.trust-store-type=JKS
+           -Dspring.rabbitmq.ssl.key-store=file:/config/keystore/keycert.p12
+           -Dspring.rabbitmq.ssl.key-store-password=T3ciT3ci2
+           -Dspring.rabbitmq.ssl.key-store-type=PKCS12
+           -Dspring.datasource.url="jdbc:sqlserver://${MSSQLDBHOST}:${MSSQLDBPORT};database=${MSSQLJOBDB}"
+           -Dspring.datasource.username=${MSSQLDBUSER}
+           -Dspring.datasource.password=${MSSQLDBPASS}
+           -Dserver.pmp.servername=${PMPSERVERNAME}
+           -Dserver.pmp.tokenid=${PMPTOKENID}
+           -Dserver.pmp.key=${PMPKEY}
+           -jar jobservice.jar;
+        ports:
+        - containerPort: 8844
+        volumeMounts:
+        - name: tz-config
+          mountPath: /etc/localtime
+        - name: systemconf
+          mountPath: /config
+        - name: configkeystore
+          mountPath: /config/keystore
+      initContainers:
+      - name: initpod
+        image: busybox
+        command:
+        - sh
+        - /config/gen.sh
+        volumeMounts:
+        - name: systemconf
+          mountPath: /config
+        - name: configkeystore
+          mountPath: /config/keystore
+      imagePullSecrets:
+      - name: dockerhubsecret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: jobservice
+    track: stable
+  name: jobservice
+  namespace: rsicommon
+  selfLink: /api/v1/namespaces/rsicommon/services/jobservice
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8844
+  selector:
+    app: jobservice
+    track: stable
+  type: ClusterIP
+status:
+  loadBalancer: {}

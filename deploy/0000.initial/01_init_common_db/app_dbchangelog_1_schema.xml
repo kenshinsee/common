@@ -1,0 +1,946 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet author="hong.hu (generated)" id="1522134024518-1">
+        <createTable tableName="AFM_META_PROVIDERS">
+            <column name="PROVIDER_NAME" type="nvarchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROVIDER_PRE_PROCESSING_SP" type="nvarchar(512)"/>
+            <column name="PROVIDER_POST_PROCESSING_SP" type="nvarchar(512)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-2">
+        <createTable tableName="ALT_META_PROJECT">
+            <column name="PROJECT_KEY" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROJECT_ENABLED" type="nvarchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROJECT_NAME" type="nvarchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROJECT_DESC" type="nvarchar(200)"/>
+            <column name="PROJECT_PRE_SCRIPT" type="nvarchar(100)"/>
+            <column name="PROJECT_POST_SCRIPT" type="nvarchar(100)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-3">
+        <createTable tableName="AFM_META_RULES">
+            <column name="RULE_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROVIDER_NAME" type="nvarchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROVIDER_SUB_TYPE" type="nvarchar(512)"/>
+            <column name="FILTER_NAME" type="nvarchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="METRICS_NAME" type="nvarchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="METRICS_CONDITION" type="nvarchar(MAX)"/>
+            <column defaultValue="Default" name="PARAMETER1" type="nvarchar(512)"/>
+            <column defaultValue="Default" name="PARAMETER2" type="nvarchar(512)"/>
+            <column defaultValue="Default" name="PARAMETER3" type="nvarchar(512)"/>
+            <column name="METRICS_TYPE" type="nvarchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="METRICS_VALUE_TYPE" type="nvarchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="METRICS_ORDER" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="METRICS_REJECT_REASON" type="nvarchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DEPEND_ON_PREVIOUS_RULE" type="char(1)"/>
+            <column name="RULE_HINTS" type="nvarchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SUB_LEVEL_FILTERS" type="nvarchar(100)"/>
+            <column name="RULE_ACTION_TYPE" type="nvarchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RULE_DESCRIPTION" type="nvarchar(MAX)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-4">
+        <createTable tableName="AG_META_MEASURE_GROUP">
+            <column autoIncrement="true" name="MEASURE_GROUP_KEY" startWith="10000" type="int">
+                <constraints primaryKey="true" primaryKeyName="PK_AG_META_MEASURE_GROUP"/>
+            </column>
+            <column name="MEASURE_GROUP" type="nvarchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MEASURE_FILTER" type="nvarchar(MAX)"/>
+            <column name="MEASURE_AGG_BY_ITEM" type="nvarchar(100)"/>
+            <column name="MEASURE_AGG_BY_STORE" type="nvarchar(100)"/>
+            <column name="MEASURE_AGG_BY_DC" type="nvarchar(100)"/>
+            <column name="MEASURE_GROUP_FILTER" type="nvarchar(MAX)"/>
+            <column name="MEASURE_GROUP_SOURCE" type="nvarchar(100)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-5">
+        <createTable tableName="AG_META_DEFINITION">
+            <column autoIncrement="true" name="DEFINITION_KEY" startWith="10000" type="int">
+                <constraints primaryKey="true" primaryKeyName="PK_AG_META_DEFINITION"/>
+            </column>
+            <column name="INTERVENTION_KEY" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DEFINITION_ENABLED" type="nvarchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DEFINITION_DESC" type="nvarchar(200)"/>
+            <column name="PERIOD_KEY_ALGORITHM" type="nvarchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DEFINITION_PRE_SCRIPT" type="nvarchar(100)"/>
+            <column name="DEFINITION_POST_SCRIPT" type="nvarchar(100)"/>
+            <column name="DEFINITION_UPDATED_BY" type="nvarchar(100)"/>
+            <column name="DEFINITION_UPDATED_TIME" type="datetime"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-6">
+        <createTable tableName="AFM_META_DATA_PROVIDERS">
+            <column name="DATA_PROVIDER_NAME" type="nvarchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROVIDER_BASE_TABLE_NAME" type="nvarchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROVIDER_PRE_PROCESSING_SP" type="nvarchar(512)"/>
+            <column defaultValue="RejectReaons" name="PROVIDER_BASE_TABLE_REJECT_REASON_COLUMN" type="nvarchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="OWNER" name="PROVIDER_BASE_TABLE_OWNER_COLUMN" type="nvarchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROVIDER_BASE_TABLE_PK_COLUMN" type="nvarchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROVIDER_POST_PROCESSING_SP" type="nvarchar(512)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-7">
+        <createTable tableName="AFM_RULES">
+            <column name="RULE_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RULE_SET_ID" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SUB_LEVEL_METRICS" type="nvarchar(512)"/>
+            <column name="PARAMETER1" type="nvarchar(MAX)"/>
+            <column name="PARAMETER2" type="nvarchar(MAX)"/>
+            <column name="PARAMETER3" type="nvarchar(MAX)"/>
+            <column defaultValue="T" name="ENABLED" type="char(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="nvarchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_DATE" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="nvarchar(512)"/>
+            <column name="UPDATED_DATE" type="datetime"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-10">
+        <createTable tableName="AFM_RULE_SET">
+            <column autoIncrement="true" name="RULE_SET_ID" startWith="1" type="int">
+                <constraints primaryKey="true" primaryKeyName="PK_AFM_RULE_SET"/>
+            </column>
+            <column name="RULE_SET_NAME" type="nvarchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ENGINE_PROVIDER_NAME" type="nvarchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DATA_PROVIDER_NAME" type="nvarchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="OWNER" type="nvarchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ITEM_SCOPE" type="nvarchar(512)"/>
+            <column name="STORE_SCOPE" type="nvarchar(512)"/>
+            <column name="TYPES_LIST" type="nvarchar(512)"/>
+            <column name="ENABLED" type="char(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="nvarchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_DATE" type="datetime"/>
+            <column name="UPDATED_BY" type="nvarchar(512)"/>
+            <column name="UPDATED_DATE" type="datetime"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-11">
+        <createTable tableName="AFM_RULES_SUB_LEVEL_FILTER">
+            <column name="RULE_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RULE_SET_ID" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SUB_LEVEL_VALUE" type="nvarchar(512)"/>
+            <column name="METRICS_VALUE" type="nvarchar(512)"/>
+            <column name="PARAMETER2" type="nvarchar(512)"/>
+            <column name="PARAMETER3" type="nvarchar(512)"/>
+            <column name="CREATED_BY" type="nvarchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_DATE" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="nvarchar(512)"/>
+            <column name="UPDATED_DATE" type="datetime"/>
+            <column name="SUB_LEVEL_CATEGORY" type="nvarchar(512)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-15">
+        <createTable tableName="AFM_RULES_UPC_STORE_LIST">
+            <column autoIncrement="true" name="ID" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FILE_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPC" type="nvarchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STOREID" type="nvarchar(512)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-37">
+        <createSequence cycle="false" incrementBy="1" maxValue="9223372036854775807" minValue="-9223372036854775808" sequenceName="SEQ_RSI_LOG" startValue="1"/>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-19">
+        <createTable tableName="RSI_LOG">
+            <column defaultValueComputed="NEXT VALUE FOR [SEQ_RSI_LOG]" name="ID" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="APP_NAME" type="varchar(100)"/>
+            <column name="LOG_TIMESTAMP" type="datetime"/>
+            <column name="LOG_LEVEL" type="varchar(32)"/>
+            <column name="RECORD" type="varchar(1024)"/>
+            <column name="VENDOR_KEY" type="int"/>
+            <column name="RETAILER_KEY" type="int"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-25">
+        <createTable tableName="AG_META_DEFINITION_USER">
+            <column name="VENDOR_KEY" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RETAILER_KEY" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DEFINITION_KEY" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DU_ALERT_ORDER" type="int"/>
+            <column name="DU_ENABLED" type="nvarchar(10)"/>
+            <column name="DU_PARAMETER" type="nvarchar(MAX)"/>
+            <column name="DU_ITEM_KEY_LOGIC" type="nvarchar(100)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-27">
+        <createTable tableName="AG_META_DEFINITION_USER_HISTORY">
+            <column name="VENDOR_KEY" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RETAILER_KEY" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DEFINITION_KEY" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TIMESTAMP" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DU_ALERT_ORDER" type="int"/>
+            <column name="DU_ENABLED" type="nvarchar(10)"/>
+            <column name="DU_PARAMETER" type="nvarchar(MAX)"/>
+            <column name="DU_ITEM_KEY_LOGIC" type="nvarchar(100)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-28">
+        <createTable tableName="AG_META_STEP">
+            <column name="DEFINITION_KEY" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STEP_ORDER" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STEP_DESC" type="nvarchar(100)"/>
+            <column name="STEP_PARAMETER" type="nvarchar(MAX)"/>
+            <column name="FUNC_KEY" type="int"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-29">
+        <createTable tableName="ALT_META_FUNC">
+            <column autoIncrement="true" name="FUNC_KEY" startWith="10000" type="int">
+                <constraints primaryKey="true" primaryKeyName="PK_AG_META_FUNC_1"/>
+            </column>
+            <column name="MODULE_KEY" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FUNC_NAME" type="nvarchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FUNC_DESC" type="nvarchar(100)"/>
+            <column name="FUNC_PARAMETER" type="nvarchar(100)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-33">
+        <createTable tableName="AG_META_MEASURE">
+            <column autoIncrement="true" name="MEASURE_KEY" startWith="10000" type="int">
+                <constraints primaryKey="true" primaryKeyName="PK_AG_META_MEASURE"/>
+            </column>
+            <column name="MEASURE_GROUP_KEY" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MEASURE_TYPE" type="nvarchar(10)"/>
+            <column name="MEASURE_NAME" type="nvarchar(100)"/>
+            <column name="MEASURE_AGGREGATION" type="nvarchar(100)"/>
+            <column name="MEASURE_DEFINITION" type="nvarchar(MAX)"/>
+            <column name="COLUMN_NAME" type="nvarchar(100)"/>
+            <column name="DEPEND_MEASURE_KEYS" type="nvarchar(100)"/>
+            <column name="FUNC_NAME" type="nvarchar(100)"/>
+            <column name="FUNC_PARAMETER" type="nvarchar(MAX)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-34">
+        <createTable tableName="ALT_META_MODULE">
+            <column autoIncrement="true" name="MODULE_KEY" startWith="10000" type="int">
+                <constraints primaryKey="true" primaryKeyName="PK_ALT_META_MODULE"/>
+            </column>
+            <column name="MODULE_NAME" type="nvarchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MODULE_PATH" type="nvarchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MODULE_DESC" type="nvarchar(100)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-35">
+        <createTable tableName="AG_META_MEASURE_GROUP_MERGE">
+            <column name="DEFINITION_KEY" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MEASURE_GROUP_KEY" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MERGE_ORDER" type="int"/>
+            <column name="MERGE_JOIN" type="nvarchar(100)"/>
+            <column name="MERGE_LEFT_ON" type="nvarchar(100)"/>
+            <column name="MERGE_RIGHT_ON" type="nvarchar(100)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-36">
+        <createTable tableName="AG_META_MEASURE_MAPPING">
+            <column name="DEFINITION_KEY" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MEASURE_KEY" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SAVE_TO_TABLE" type="nvarchar(100)"/>
+            <column name="SAVE_TO_COLUMN" type="nvarchar(100)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-39">
+        <createTable tableName="ALT_META_INTERVENTION">
+            <column name="INTERVENTION_KEY" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROJECT_KEY" type="int"/>
+            <column name="INTERVENTION_ENABLED" type="nvarchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="INTERVENTION_NAME" type="nvarchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="INTERVENTION_DESC" type="nvarchar(200)"/>
+            <column name="INTERVENTION_PRIORITY" type="int"/>
+            <column name="INTERVENTION_RANK" type="nvarchar(100)"/>
+            <column name="INTERVENTION_TEMPLATE" type="nvarchar(100)"/>
+            <column name="INTERVENTION_TYPE" type="int"/>
+            <column name="INTERVENTION_UPDATED_BY" type="nvarchar(100)"/>
+            <column name="INTERVENTION_UPDATED_TIME" type="datetime"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-40">
+        <createTable tableName="AG_META_DEFINITION_TEMPLATE">
+            <column name="VENDOR_KEY" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RETAILER_KEY" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DEFINITION_KEY" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DT_PARAMETER" type="nvarchar(MAX)"/>
+            <column name="DT_ITEM_KEY_LOGIC" type="nvarchar(100)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-41">
+        <createTable tableName="VARIABLES">
+            <column name="VARIABLE_NAME" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VARIABLE_VALUE" type="nvarchar(100)"/>
+            <column name="PREVIOUS_VALUE" type="nvarchar(100)"/>
+            <column name="INSERT_TIME" type="datetime"/>
+            <column name="UPDATE_TIME" type="datetime"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-43">
+        <createTable tableName="RSI_META_ATTRIBUTE">
+            <column name="VENDOR_KEY" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RETAILER_KEY" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DIMENSION_TYPE" type="tinyint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ATTRIBUTE_NAME" type="nvarchar(125)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FOLDER" type="nvarchar(250)"/>
+            <column name="KEY_COLUMN" type="nvarchar(250)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME_COLUMN" type="nvarchar(250)"/>
+            <column name="VALUE_COLUMN" type="nvarchar(250)"/>
+            <column name="STANDALONE" type="bit">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IS_VISIBLE" type="bit">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STATUS" type="char(1)"/>
+            <column name="CREATE_DT" type="datetime"/>
+            <column name="UPDATE_DT" type="datetime"/>
+            <column name="APPLIED_DT" type="datetime"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-44">
+        <addPrimaryKey columnNames="PROVIDER_NAME" constraintName="PK__AFM_META__495BE54919459B02" tableName="AFM_META_PROVIDERS"/>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-45">
+        <addPrimaryKey columnNames="PROJECT_KEY" constraintName="PK_ALT_META_PROJECT" tableName="ALT_META_PROJECT"/>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-46">
+        <createView fullDefinition="false" viewName="V_AG_META_PROJECT_USER">SELECT        dbo.AG_META_DEFINITION_USER.VENDOR_KEY, dbo.AG_META_DEFINITION_USER.RETAILER_KEY, dbo.AG_META_DEFINITION_USER.DEFINITION_KEY, dbo.ALT_META_INTERVENTION.INTERVENTION_KEY, 
+                         dbo.ALT_META_INTERVENTION.INTERVENTION_NAME, dbo.ALT_META_INTERVENTION.INTERVENTION_PRIORITY, dbo.ALT_META_INTERVENTION.INTERVENTION_RANK, 
+                         dbo.ALT_META_INTERVENTION.INTERVENTION_TEMPLATE, dbo.ALT_META_INTERVENTION.INTERVENTION_TYPE, dbo.AG_META_DEFINITION_USER.DU_ALERT_ORDER, 
+                         dbo.AG_META_DEFINITION_USER.DU_ENABLED, dbo.AG_META_DEFINITION_USER.DU_PARAMETER, dbo.AG_META_DEFINITION_USER.DU_ITEM_KEY_LOGIC, dbo.ALT_META_PROJECT.PROJECT_KEY, 
+                         dbo.ALT_META_PROJECT.PROJECT_ENABLED, dbo.ALT_META_PROJECT.PROJECT_NAME, dbo.ALT_META_PROJECT.PROJECT_DESC, dbo.ALT_META_PROJECT.PROJECT_PRE_SCRIPT, 
+                         dbo.ALT_META_PROJECT.PROJECT_POST_SCRIPT, dbo.ALT_META_INTERVENTION.INTERVENTION_ENABLED, dbo.ALT_META_INTERVENTION.INTERVENTION_DESC, 
+                         dbo.ALT_META_INTERVENTION.INTERVENTION_UPDATED_BY, dbo.ALT_META_INTERVENTION.INTERVENTION_UPDATED_TIME, dbo.AG_META_DEFINITION.DEFINITION_ENABLED, 
+                         dbo.AG_META_DEFINITION.DEFINITION_DESC, dbo.AG_META_DEFINITION.PERIOD_KEY_ALGORITHM, dbo.AG_META_DEFINITION.DEFINITION_PRE_SCRIPT, 
+                         dbo.AG_META_DEFINITION.DEFINITION_POST_SCRIPT, dbo.AG_META_DEFINITION.DEFINITION_UPDATED_BY, dbo.AG_META_DEFINITION.DEFINITION_UPDATED_TIME
+FROM            dbo.ALT_META_PROJECT INNER JOIN
+                         dbo.ALT_META_INTERVENTION ON dbo.ALT_META_PROJECT.PROJECT_KEY = dbo.ALT_META_INTERVENTION.PROJECT_KEY INNER JOIN
+                         dbo.AG_META_DEFINITION ON dbo.ALT_META_INTERVENTION.INTERVENTION_KEY = dbo.AG_META_DEFINITION.INTERVENTION_KEY INNER JOIN
+                         dbo.AG_META_DEFINITION_USER ON dbo.AG_META_DEFINITION.DEFINITION_KEY = dbo.AG_META_DEFINITION_USER.DEFINITION_KEY</createView>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-47">
+        <addPrimaryKey columnNames="RULE_ID" constraintName="PK__AFM_META__E103520C8C497627" tableName="AFM_META_RULES"/>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-48">
+        <createView fullDefinition="false" viewName="V_AG_META_DEFINITION_MEASURE">SELECT        dbo.AG_META_MEASURE_MAPPING.DEFINITION_KEY, dbo.AG_META_MEASURE_MAPPING.SAVE_TO_TABLE, dbo.AG_META_MEASURE_MAPPING.SAVE_TO_COLUMN, 
+                         dbo.AG_META_MEASURE.MEASURE_KEY, dbo.AG_META_MEASURE_GROUP.MEASURE_GROUP_KEY, dbo.AG_META_MEASURE.MEASURE_TYPE, dbo.AG_META_MEASURE.MEASURE_NAME, 
+                         dbo.AG_META_MEASURE.MEASURE_AGGREGATION, dbo.AG_META_MEASURE.MEASURE_DEFINITION, dbo.AG_META_MEASURE.COLUMN_NAME, dbo.AG_META_MEASURE.DEPEND_MEASURE_KEYS, 
+                         dbo.AG_META_MEASURE.FUNC_NAME, dbo.AG_META_MEASURE.FUNC_PARAMETER, dbo.AG_META_MEASURE_GROUP.MEASURE_GROUP, dbo.AG_META_MEASURE_GROUP.MEASURE_FILTER, 
+                         dbo.AG_META_MEASURE_GROUP.MEASURE_AGG_BY_ITEM, dbo.AG_META_MEASURE_GROUP.MEASURE_AGG_BY_STORE, dbo.AG_META_MEASURE_GROUP.MEASURE_AGG_BY_DC, 
+                         dbo.AG_META_MEASURE_GROUP.MEASURE_GROUP_FILTER, dbo.AG_META_MEASURE_GROUP.MEASURE_GROUP_SOURCE
+FROM            dbo.AG_META_MEASURE_MAPPING INNER JOIN
+                         dbo.AG_META_MEASURE ON dbo.AG_META_MEASURE_MAPPING.MEASURE_KEY = dbo.AG_META_MEASURE.MEASURE_KEY LEFT OUTER JOIN
+                         dbo.AG_META_MEASURE_GROUP ON dbo.AG_META_MEASURE.MEASURE_GROUP_KEY = dbo.AG_META_MEASURE_GROUP.MEASURE_GROUP_KEY</createView>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-49">
+        <addPrimaryKey columnNames="DATA_PROVIDER_NAME" constraintName="PK__AFM_META__4817751F22E7DFCA" tableName="AFM_META_DATA_PROVIDERS"/>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-50">
+        <addForeignKeyConstraint baseColumnNames="RULE_ID" baseTableName="AFM_RULES" constraintName="FK_AFM_RULES_AFM_META_RULES" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="RULE_ID" referencedTableName="AFM_META_RULES"/>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-51">
+        <addPrimaryKey columnNames="RULE_ID, RULE_SET_ID" constraintName="PK_AFM_RULES" tableName="AFM_RULES"/>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-53">
+        <createIndex clustered="true" indexName="UX_AFM_RULES_SUB_LEVEL_FILTER" tableName="AFM_RULES_SUB_LEVEL_FILTER" unique="true">
+            <column name="RULE_ID"/>
+            <column name="RULE_SET_ID"/>
+            <column name="SUB_LEVEL_VALUE"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-54">
+        <createIndex clustered="true" indexName="IX_AFM_RULES_UPC_STORE_LIST" tableName="AFM_RULES_UPC_STORE_LIST">
+            <column name="FILE_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-55">
+        <addPrimaryKey columnNames="ID" constraintName="PK__RSI_LOG__3214EC27A04FD9C7" tableName="RSI_LOG"/>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-57">
+        <addPrimaryKey columnNames="VENDOR_KEY, RETAILER_KEY, DEFINITION_KEY" constraintName="PK_AG_META_DEFINITION_USER" tableName="AG_META_DEFINITION_USER"/>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-58">
+        <addPrimaryKey columnNames="VENDOR_KEY, RETAILER_KEY, DEFINITION_KEY, TIMESTAMP" constraintName="PK_AG_META_DEFINITION_USER_HISTORY" tableName="AG_META_DEFINITION_USER_HISTORY"/>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-59">
+        <addPrimaryKey columnNames="DEFINITION_KEY, STEP_ORDER" constraintName="PK_AG_META_STEP" tableName="AG_META_STEP"/>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-60">
+        <createView fullDefinition="false" viewName="V_ALT_META_MODULE_FUNC">SELECT        dbo.ALT_META_FUNC.FUNC_KEY, dbo.ALT_META_MODULE.MODULE_KEY, dbo.ALT_META_FUNC.FUNC_NAME, dbo.ALT_META_FUNC.FUNC_DESC, dbo.ALT_META_FUNC.FUNC_PARAMETER, 
+                         dbo.ALT_META_MODULE.MODULE_NAME, dbo.ALT_META_MODULE.MODULE_PATH, dbo.ALT_META_MODULE.MODULE_DESC
+FROM            dbo.ALT_META_FUNC INNER JOIN
+                         dbo.ALT_META_MODULE ON dbo.ALT_META_FUNC.MODULE_KEY = dbo.ALT_META_MODULE.MODULE_KEY</createView>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-64">
+        <addPrimaryKey columnNames="DEFINITION_KEY, MEASURE_GROUP_KEY" constraintName="PK_AG_META_MEASURE_GROUP_MERGE" tableName="AG_META_MEASURE_GROUP_MERGE"/>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-65">
+        <addPrimaryKey columnNames="DEFINITION_KEY, MEASURE_KEY" constraintName="PK_AG_META_MEASURE_MAPPING" tableName="AG_META_MEASURE_MAPPING"/>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-66">
+        <addPrimaryKey columnNames="INTERVENTION_KEY" constraintName="PK_ALT_META_INTERVENTION" tableName="ALT_META_INTERVENTION"/>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-67">
+        <addPrimaryKey columnNames="VENDOR_KEY, RETAILER_KEY, DEFINITION_KEY" constraintName="PK_AG_META_DEFINITION_TEMPLATE" tableName="AG_META_DEFINITION_TEMPLATE"/>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-68">
+        <addPrimaryKey columnNames="VARIABLE_NAME" constraintName="PK_RSI_VARIABLES" tableName="VARIABLES"/>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-69">
+        <createTable tableName="AG_DATA_COMPLETE">
+            <column name="DATA_COMPLETE_ALERT_DAY" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CYCLE_KEY" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="0" name="DATA_COMPLETE_EXECUTED" type="int"/>
+            <column name="DATA_COMPLETE_UPDATED_BY" type="nvarchar(100)"/>
+            <column name="DATA_COMPLETE_UPDATED_TIME" type="datetime"/>
+            <column name="DATA_COMPLETE_STATUS" type="nvarchar(10)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-70">
+        <addPrimaryKey columnNames="DATA_COMPLETE_ALERT_DAY, CYCLE_KEY" constraintName="PK_AG_DATA_COMPLETE" tableName="AG_DATA_COMPLETE"/>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-71">
+        <createTable tableName="AFM_SVR_RULE">
+            <column name="VENDOR_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="RETAILER_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="OWNER" type="nvarchar(512)"><constraints nullable="false"/></column>
+            <column name="RULE_SET_ID" type="nvarchar(100)"><constraints nullable="false"/></column>
+        </createTable>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-72">
+        <addPrimaryKey columnNames="VENDOR_KEY, RETAILER_KEY, OWNER, RULE_SET_ID" constraintName="PK_AFM_SVR_RULE" tableName="AFM_SVR_RULE"/>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-73">
+        <createTable tableName="AFM_RETAILER_RULE">
+            <column name="CYCLE_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="OWNER" type="nvarchar(512)"><constraints nullable="false"/></column>
+            <column name="RULE_SET_ID" type="nvarchar(100)"><constraints nullable="false"/></column>
+        </createTable>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-74">
+        <addPrimaryKey columnNames="CYCLE_KEY, OWNER, RULE_SET_ID" constraintName="PK_AFM_RETAILER_RULE" tableName="AFM_RETAILER_RULE"/>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-75">
+        <sql>
+            CREATE TABLE AP_ALERT_CYCLE_DEFINITION(
+                CYCLE_KEY int IDENTITY(1,1) NOT NULL,
+                CYCLE_NAME nvarchar(512) NOT NULL,
+                ALERTS_SLA_TIME nvarchar(512) NOT NULL,
+                ALERTS_FULL_ETA_TIME datetime NULL,
+                FEEDBACK_CUTOFF_TIME nvarchar(512) NOT NULL,
+                SHOW_OLD_ALERTS char(1) NOT NULL,
+                ALERTS_AVAILABILITY_WEEKDAYS nvarchar(512) NOT NULL,
+                STATUS char(1) NULL DEFAULT ('A'),
+                UPDATED_BY nvarchar(512) NULL,
+                UPDATED_DATE datetime NULL,
+				TIME_ZONE nvarchar(512) NOT NULL DEFAULT ('US/Eastern'),
+				DATA_LAG int NOT NULL DEFAULT (1),	
+				RUN_LATEST_AVAILABLE_DATE_DATA char(1)
+                CONSTRAINT PK_AP_ALERT_CYCLE PRIMARY KEY CLUSTERED 
+                (
+                    CYCLE_KEY ASC
+                )
+            ) 
+        </sql>
+    </changeSet>    <changeSet author="hong.hu (generated)" id="1522134024518-76">
+        <sql>
+            CREATE TABLE AP_ALERT_CYCLE_MAPPING(
+                VENDOR_KEY int NOT NULL,
+                RETAILER_KEY int NOT NULL,
+                CYCLE_KEY int NOT NULL,
+                ALERT_TYPE NVARCHAR(512), 
+                DATA_RANGE NVARCHAR(512), 
+                CONSTRAINT PK_AP_ALERT_CYCLE_MAPPING PRIMARY KEY CLUSTERED 
+                (
+                    VENDOR_KEY ASC,
+                    RETAILER_KEY ASC,
+                    CYCLE_KEY ASC
+                )
+            ) 
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-77">
+        <sql>
+            CREATE TABLE AP_DIM_FEEDBACK_ASSUMPTIONS
+            (
+                 MERCHANDISER NVARCHAR(64) NOT NULL ,
+                 FEEDBACK_DESC NVARCHAR(255) NOT NULL ,
+                 ACCEPT_ADJUSTMENT CHAR(1) NULL ,
+                 EFFECTIVE_FEEDBACK CHAR(1) NULL ,
+                 FEEDBACK_RANK CHAR(1) NULL ,
+                 FEEDBACK_SUB_RANK CHAR(1) NULL ,
+                 HAS_FEEDBACK CHAR(1) NULL ,
+                 TRUE_ALERT CHAR(1) NULL ,
+                 NOT_ON_PLANOGRAM CHAR(1) NULL,
+                 ALERT_TYPE_LIST VARCHAR(512)
+            )
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-78">
+        <sql>
+            CREATE UNIQUE CLUSTERED INDEX PK_AP_DIM_FEEDBACK_ASSUMPTIONS ON AP_DIM_FEEDBACK_ASSUMPTIONS (
+               MERCHANDISER ASC,
+               FEEDBACK_DESC ASC
+            )
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-79">
+        <sql>
+            CREATE TABLE AP_LAYOUT_CYCLE_MAPPING(
+                LAYOUT_KEY INT NOT NULL,
+                CYCLE_KEY INT NOT NULL
+            ) 
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-80">
+        <sql>
+            CREATE TABLE AP_CONFIG_META_ATTRIBUTE(
+                LAYOUT_KEY INT NOT NULL,
+                ATTRIBUTE_NAME nvarchar (256) NOT NULL,
+                KEY_COLUMN nvarchar(256) NOT NULL,
+                FOLDER nvarchar(512) NULL,
+                DIMENSION_TYPE smallint NULL,
+                ATTRIBUTE_DATA_TYPE nvarchar(512) NULL,
+                ATTRIBUTE_SEQUENCE int NULL,
+                DATA_ORDER nvarchar(10) NULL,
+                SHOW_BY_DEFAULT char(1) NOT NULL,
+                ALERT_VALUE_COLUMN char(1) NULL
+            ) 
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-81">
+        <sql>
+            CREATE TABLE RSI_META_TRANSLATION_LANG(
+                LANG_ID int NULL,
+                LANG_LOCALE nvarchar(128) NULL
+            ) 
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-82">
+        <sql>
+            CREATE TABLE RSI_META_TRANSLATION_MESSAGES(
+                TRANSLATION_KEY nvarchar(255) NULL,
+                DIMENSION_TYPE nvarchar(50) NULL,
+                LANG_LOCALE nvarchar(128) NULL,
+                LANG_VALUE nvarchar(max) NULL
+            ) 
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-83">
+        <createSequence cycle="false" incrementBy="1" maxValue="9223372036854775807" minValue="-9223372036854775808" sequenceName="SEQ_RSI_LAYOUT_KEY" startValue="1"/>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-84">
+        <sql>
+            CREATE TABLE META_ALERT_COLUMN(
+				InterventionKey int NOT NULL,
+				AttributeColumn varchar(32) NOT NULL,
+				ColumnSource varchar(64) NOT NULL,
+				Type varchar(32) NULL,
+				PRIMARY KEY CLUSTERED 
+				(
+					InterventionKey ASC,
+					AttributeColumn ASC
+				)
+			)
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-86">
+        <sql>
+			Create table META_TIMEZONE
+			(
+			   ZONE_ID nvarchar(512) NOT NULL,
+			   UTC_OFFSET nvarchar(512) NOT NULL, 
+			   CONSTRAINT PK_META_TIMEZONE PRIMARY KEY CLUSTERED 
+				(
+					ZONE_ID ASC
+				)
+			)
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-87">
+        <sql>
+			create table META_DATA_RANGE
+			(
+			   WEEKS INT NOT NULL,
+			   CONSTRAINT PK_META_DATA_RANGE PRIMARY KEY CLUSTERED 
+				(
+					WEEKS ASC
+				)
+			)
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-88">
+        <sql>
+			CREATE TABLE META_STATIC_HEADER_DEFINITION
+			(
+			  HEADER_KEY INTEGER  IDENTITY(1,1) NOT NULL,
+			  HEADER_TYPE NVARCHAR(64) NOT NULL,
+			  TEXT NVARCHAR(64) NOT NULL,
+			  VALUE NVARCHAR(64) NOT NULL,
+			  ALIGN NVARCHAR(32) NOT NULL DEFAULT 'center', 
+			  TYPE NVARCHAR(32) NOT NULL,
+			  CAST NVARCHAR(32) NOT NULL,
+			  VISIBLE NVARCHAR(32) NOT NULL,
+			  FILTERED NVARCHAR(32) NOT NULL,
+			  PRIMARY KEY CLUSTERED 
+			  (
+				HEADER_KEY ASC
+			  )
+			)
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-89">
+        <sql>
+			CREATE TABLE ALERT_CYCLE_STATUS (
+			   VENDOR_KEY INT NOT NULL,
+			   RETAILER_KEY INT NOT NULL,
+			   SLA_TIME DATETIME NOT NULL,
+			   PERIOD_KEY INT NOT NULL,
+			   CYCLE_KEY INT,
+			   DATA_COMPLETE_STATUS char(1),
+			   DATA_COMPLETE_LOG NVARCHAR(MAX),
+			   IS_JOB_EXECUTED CHAR(1),
+			   JOB_EXECUTE_TIME DATETIME,
+			   ALERT_GEN_RAW_SEQ BIGINT,
+			   ALERT_GEN_SEQ BIGINT,
+			   ALERT_GEN_START_TIME DATETIME,
+			   ALERT_GEN_END_TIME DATETIME,
+			   RETAILER_AFM_EXECUTED CHAR(1),
+			   AFM_START_TIME DATETIME,
+			   AFM_END_TIME DATETIME,
+			   ISSUED_COUNT INT,
+			   IS_CANCELED CHAR(1),
+			   CANCEL_TIME DATETIME,
+			   CANCELED_BY VARCHAR(512),
+			   IS_RERUN CHAR(1),
+			   RERUN_TIME DATETIME,
+			   RERUN_BY VARCHAR(512),
+			   IS_FORCED CHAR(1),
+			   FORCE_TIME DATETIME,
+			   FORCED_BY VARCHAR(512),
+			   UPDATE_TIME DATETIME,
+			   CONSTRAINT PK_CYCLE_STATUS PRIMARY KEY (VENDOR_KEY, RETAILER_KEY, SLA_TIME)
+			)
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-90">
+        <sql>
+			ALTER TABLE ALERT_CYCLE_STATUS DROP COLUMN RETAILER_AFM_EXECUTED;
+			ALTER TABLE ALERT_CYCLE_STATUS DROP COLUMN IS_RERUN;
+			ALTER TABLE ALERT_CYCLE_STATUS ADD JOB_ID INTEGER;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-91">
+        <sql>
+			ALTER TABLE ALERT_CYCLE_STATUS ALTER COLUMN JOB_ID BIGINT;
+			ALTER TABLE ALERT_CYCLE_STATUS ADD AFM_JOB_ID BIGINT;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-92">
+        <sql>
+			CREATE TABLE META_ALERT_PARAM_REL (
+			   ID INT NOT NULL,
+			   ALERT_TYPE VARCHAR(64) NOT NULL,
+			   PARAM_CATEGORIES VARCHAR(512) NOT NULL,
+			   CONSTRAINT PK_META_PARAM_CATEGORY PRIMARY KEY (ID)
+			);
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-93">
+        <sql>
+            ALTER TABLE AP_ALERT_CYCLE_MAPPING ADD PARAM_VALUES TEXT;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-94">
+        <sql>
+            ALTER TABLE AP_ALERT_CYCLE_MAPPING DROP COLUMN PARAM_VALUES;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-95">
+        <sql>
+            DROP TABLE META_ALERT_PARAM_REL;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-96">
+        <sql>
+            CREATE TABLE META_DIM_DEF (
+              ID INT NOT NULL IDENTITY PRIMARY KEY, 
+              NAME NVARCHAR(128) NOT NULL,
+              DESCRIPTION NVARCHAR(512),
+              CONSTRAINT IX_DIM_DEF_NAME UNIQUE (NAME)
+            );
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-97">
+        <sql>
+            CREATE TABLE META_DIM_DTL (
+              ID INT NOT NULL IDENTITY PRIMARY KEY, 
+              DEF_ID INT NOT NULL FOREIGN KEY REFERENCES META_DIM_DEF(ID),
+              ATTR_STR1 NVARCHAR(1024), 
+              ATTR_STR2 NVARCHAR(1024), 
+              ATTR_STR3 NVARCHAR(1024), 
+              ATTR_STR4 NVARCHAR(1024), 
+              ATTR_STR5 NVARCHAR(1024),
+              ATTR_INT1 INT, 
+              ATTR_INT2 INT, 
+              ATTR_INT3 INT, 
+              ATTR_INT4 INT, 
+              ATTR_INT5 INT, 
+              ATTR_DEC1 DECIMAL(20,4),
+              ATTR_DEC2 DECIMAL(20,4), 
+              ATTR_DEC3 DECIMAL(20,4), 
+              ATTR_DEC4 DECIMAL(20,4), 
+              ATTR_DEC5 DECIMAL(20,4),
+              ATTR_TEXT TEXT
+            );
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-98">
+        <sql>
+            CREATE TABLE META_DIM_ATTR_DESC (
+              ID INT NOT NULL IDENTITY PRIMARY KEY, 
+              DEF_ID INT NOT NULL FOREIGN KEY REFERENCES META_DIM_DEF(ID),
+              ATTR_COL_NAME NVARCHAR(128) NOT NULL,
+              ATTR_DESC NVARCHAR(512) NOT NULL
+            );
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-99">
+        <sql>
+            DROP TABLE META_TIMEZONE;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-100">
+        <sql>
+            CREATE VIEW META_TIMEZONE AS
+            SELECT DTL.ATTR_STR1 AS ZONE_ID, DTL.ATTR_STR2 AS UTC_OFFSET
+            FROM META_DIM_DEF DEF
+            INNER JOIN META_DIM_DTL DTL ON DEF.ID = DTL.DEF_ID
+            WHERE DEF.NAME = 'timezoneUTCOffset';
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-101">
+        <sql>
+            DROP TABLE META_DATA_RANGE;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-102">
+        <sql>
+            CREATE VIEW META_DATA_RANGE AS
+            SELECT DTL.ATTR_INT1 AS WEEKS
+            FROM META_DIM_DEF DEF
+            INNER JOIN META_DIM_DTL DTL ON DEF.ID = DTL.DEF_ID
+            WHERE DEF.NAME = 'OSACoreDataRangeList';
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-103">
+        <sql>
+            DROP TABLE RSI_META_TRANSLATION_LANG;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-104">
+        <sql>
+            CREATE VIEW RSI_META_TRANSLATION_LANG AS
+            SELECT DTL.ATTR_INT1 AS LANG_ID, DTL.ATTR_STR1 AS LANG_LOCALE
+            FROM META_DIM_DEF DEF
+            INNER JOIN META_DIM_DTL DTL ON DEF.ID = DTL.DEF_ID
+            WHERE DEF.NAME = 'translationLanguage';
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-105">
+        <sql>
+            DROP TABLE RSI_META_TRANSLATION_MESSAGES;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-106">
+        <sql>
+            CREATE VIEW RSI_META_TRANSLATION_MESSAGES AS
+            SELECT DTL.ATTR_STR1 AS TRANSLATION_KEY, DTL.ATTR_STR2 AS DIMENSION_TYPE, DTL.ATTR_STR3 AS LANG_LOCALE, DTL.ATTR_STR4 AS LANG_VALUE
+            FROM META_DIM_DEF DEF
+            INNER JOIN META_DIM_DTL DTL ON DEF.ID = DTL.DEF_ID
+            WHERE DEF.NAME = 'translationMessage';
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-107">
+        <sql>
+            CREATE TABLE AP_META_ENDPOINTS
+            (
+                ID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+                SERVER nvarchar(100) NULL,
+                EXTRACTION_FOLDER nvarchar(max) NULL,
+                USERNAME nvarchar(100) NULL,
+                PASSWORD nvarchar(100) NULL,
+                MAIL_SUBJECT nvarchar(max) NULL,
+                MAIL_BODY nvarchar(max) NULL,
+                MAIL_RECPSTO nvarchar(max) NULL,
+                MAIL_RECPSCC nvarchar(max) NULL,
+                DELIVERY_TYPE nvarchar(20) NOT NULL,
+                ENABLED char(1) NOT NULL
+            );
+            ALTER TABLE AP_META_ENDPOINTS ADD CONSTRAINT DF_ENDPOINTS_ENABLED DEFAULT ('T') FOR ENABLED;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="1522134024518-108">
+        <sql>
+            CREATE TABLE AP_META_DELIVERIES
+            (
+                ID INT IDENTITY(1,1) NOT NULL,
+                CYCLE_KEY INT NOT NULL,
+                VENDOR_KEY INT NULL,
+                RETAILER_KEY INT NOT NULL,
+                DELIVERY_NAME nvarchar(1024) NOT NULL,
+                FILTERS nvarchar(max) NULL,
+                DELIMITER nvarchar(2) NOT NULL,
+                ENDPOINT_ID INT NOT NULL,
+                ENABLED char(1) NOT NULL
+            );
+            ALTER TABLE AP_META_DELIVERIES ADD CONSTRAINT DF_DELIVERIES_ENABLED DEFAULT ('T') FOR ENABLED;
+            ALTER TABLE AP_META_DELIVERIES WITH CHECK ADD CONSTRAINT FK_DELIVERIES_ENDPOINTS FOREIGN KEY(ENDPOINT_ID) REFERENCES AP_META_ENDPOINTS (ID);
+        </sql>
+    </changeSet>
+</databaseChangeLog>

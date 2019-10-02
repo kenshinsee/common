@@ -1,0 +1,45 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    
+    <changeSet author="hong.hu (generated)" id="1">
+        <sql>
+			DROP TABLE IF EXISTS $(schema).ANL_DIM_OSM_PRODUCT CASCADE;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="2">
+        <sql>
+			CREATE TABLE IF NOT EXISTS $(schema).ANL_DIM_OSM_PRODUCT (
+                "VENDOR_KEY" int NOT NULL ENCODING RLE,
+                "RETAILER_KEY" int NOT NULL ENCODING RLE,
+                "STORE_KEY" int NULL ENCODING RLE,
+                "ITEM_GROUP" varchar(512) NOT NULL ENCODING RLE,
+                "StagingType" INT NULL ENCODING RLE,
+                "ShelfCapacity" int NULL ENCODING RLE,
+                "ItemTransitionIndicator" INT NULL ENCODING RLE,
+                PRIMARY KEY("VENDOR_KEY", "RETAILER_KEY", "ITEM_GROUP")            
+			)
+			ORDER BY "VENDOR_KEY", "RETAILER_KEY","ITEM_GROUP"
+			UNSEGMENTED ALL NODES
+			Partition by VENDOR_KEY
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="3">
+        <sql>
+            ALTER TABLE $(schema).FACT_RAW_ALERT ADD TVFlip int;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT ADD TVFlip int;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="4">
+        <sql>
+            ALTER TABLE $(schema).FACT_RAW_ALERT RENAME maxAdjustment TO lastShipUnits;
+            ALTER TABLE $(schema).FACT_RAW_ALERT RENAME minAdjustment TO salesRate4Wks;
+            ALTER TABLE $(schema).FACT_RAW_ALERT RENAME maxUnexpAdjustment TO salesRate8Wks;
+            ALTER TABLE $(schema).FACT_RAW_ALERT RENAME minUnexpAdjustment TO salesRate13Wks;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT RENAME maxAdjustment TO lastShipUnits;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT RENAME minAdjustment TO salesRate4Wks;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT RENAME maxUnexpAdjustment TO salesRate8Wks;
+            ALTER TABLE $(schema).FACT_PROCESSED_ALERT RENAME minUnexpAdjustment TO salesRate13Wks;
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

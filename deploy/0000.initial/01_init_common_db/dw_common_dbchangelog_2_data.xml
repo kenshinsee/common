@@ -1,0 +1,1005 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet author="hong.hu (generated)" id="COMMON-DATA-1">
+        <sql>
+            INSERT INTO $(common).ALT_META_INTERVENTION(INTERVENTION_KEY, INTERVENTION_ENABLED, INTERVENTION_NAME, INTERVENTION_DESC, INTERVENTION_PRIORITY, INTERVENTION_RANK, INTERVENTION_TEMPLATE, INTERVENTION_TYPE, INTERVENTION_UPDATED_BY, INTERVENTION_UPDATED_TIME)
+            SELECT 0, 'FALSE', 'Not Included', 'Not Included', 10000, '"ExpectedLostSalesAmount"', 'Not Included', 0, NULL, NULL UNION ALL
+            SELECT 1, 'FALSE', 'NTV', 'Not Traited/Valid', 10000, '"ExpectedLostSalesAmount"', 'Not Traited', 0, NULL, NULL UNION ALL
+            SELECT 2, 'TRUE', 'TNV', 'Traited/Not Valid', 10000, '"ExpectedLostSalesAmount"', 'Not Valid', 0, NULL, NULL UNION ALL
+            SELECT 3, 'FALSE', 'Others', 'Other', 10000, '"ExpectedLostSalesAmount"', 'DD Frozen', 0, NULL, NULL UNION ALL
+            SELECT 4, 'TRUE', 'D-Void', 'D-Void', 30, '"ExpectedLostSalesAmount"', 'Zero Scan Alert - No Sales for ${0} days', 2, NULL, NULL UNION ALL
+            SELECT 5, 'TRUE', 'Phantom', 'Inventory', 20, '"ExpectedLostSalesAmount"', 'Ghost Inventory ${0} units', 4, NULL, NULL UNION ALL
+            SELECT 6, 'FALSE', 'Others', 'Other', 10000, '"ExpectedLostSalesAmount"', 'FT Frozen', 0, NULL, NULL UNION ALL
+            SELECT 7, 'FALSE', 'Others', 'Other', 10000, '"ExpectedLostSalesAmount"', 'Open Stock Promotion Shelf OOS - No Sales for ${0} days', 0, NULL, NULL UNION ALL
+            SELECT 8, 'FALSE', 'Others', 'Other', 10000, '"ExpectedLostSalesAmount"', 'New Item Distribution Shelf OOS - No Sales for ${0} days', 0, NULL, NULL UNION ALL
+            SELECT 9, 'FALSE', 'Others', 'Other', 10000, '"ExpectedLostSalesAmount"', 'New Item Promotion Shelf OOS - No Sales for ${0} days', 0, NULL, NULL UNION ALL
+            SELECT 10, 'FALSE', 'Others', 'Other', 10000, '"ExpectedLostSalesAmount"', 'Suspect POS Transaction', 0, NULL, NULL UNION ALL
+            SELECT 11, 'FALSE', 'Others', 'Other', 10000, '"ExpectedLostSalesAmount"', 'Excessive Discounting', 0, NULL, NULL UNION ALL
+            SELECT 12, 'FALSE', 'Others', 'Other', 10000, '"ExpectedLostSalesAmount"', 'EPC Case in Backroom', 0, NULL, NULL UNION ALL
+            SELECT 13, 'FALSE', 'Others', 'Other', 10000, '"ExpectedLostSalesAmount"', 'EPC Case Odd Movement', 0, NULL, NULL UNION ALL
+            SELECT 14, 'FALSE', 'Others', 'Other', 10000, '"ExpectedLostSalesAmount"', 'Move EPC Case to Sales Floor', 0, NULL, NULL UNION ALL
+            SELECT 15, 'FALSE', 'Others', 'Other', 10000, '"ExpectedLostSalesAmount"', 'Product Not Trading', 0, NULL, NULL UNION ALL
+            SELECT 16, 'FALSE', 'Others', 'Other', 10000, '"ExpectedLostSalesAmount"', 'Alert Recovery', 0, NULL, NULL UNION ALL
+            SELECT 17, 'TRUE', 'Shelf OOS', 'Shelf OOS', 30, '"ExpectedLostSalesAmount"', 'Zero Scan Alert - No Sales for ${0} days', 1, NULL, NULL UNION ALL
+            SELECT 18, 'FALSE', 'Others', 'Other', 10000, '"ExpectedLostSalesAmount"', 'Unexplained Adj Sales Pattern', 0, NULL, NULL UNION ALL
+            SELECT 19, 'TRUE', 'Shelf OOS', 'Shelf OOS', 30, '"ExpectedLostSalesAmount"', 'Zero Scan Alert - No Sales for ${0} days', 1, NULL, NULL UNION ALL
+            SELECT 20, 'TRUE', 'High Velocity', 'Shelf OOS', 100, '"ExpectedLostSalesAmount"', 'Zero Scan Alert - No Sales for ${0} days', 0, NULL, NULL UNION ALL
+            SELECT 21, 'FALSE', 'Shelf OOS', 'Shelf OOS', 100, '"ExpectedLostSalesAmount"', 'New Item Introduction Alert - No Sales since ${0}', 1, NULL, NULL UNION ALL
+            SELECT 22, 'FALSE', 'Shelf OOS', 'Shelf OOS', 100, '"ExpectedLostSalesAmount"', 'Distribution Void Alert - No Sales for ${0} days', 1, NULL, NULL UNION ALL
+            SELECT 23, 'TRUE', 'DC Push', 'Replenish', 50, '"ExpectedLostSalesAmount"', 'DC Push Alert - Need to push ${0} packages', 0, NULL, NULL UNION ALL
+            SELECT 24, 'TRUE', 'SSO', 'Replenish', 50, '"ExpectedLostSalesAmount"', 'SSO Alert - Need to send ${0} packages', 0, NULL, NULL UNION ALL
+            SELECT 25, 'FALSE', 'DD Update', 'Replenish', 50, '"ExpectedLostSalesAmount"', 'DD Update Request - Update DD value to ${0}', 0, NULL, NULL UNION ALL
+            SELECT 26, 'FALSE', 'Shelf OOS', 'Shelf OOS', 10000, '"ExpectedLostSalesAmount"', 'Force Alert', 1, NULL, NULL UNION ALL
+            SELECT 30, 'FALSE', 'Phantom', 'Inventory', 100, '-1000000 + rank_value', 'Phantom - A - High Positive Adj', 4, NULL, NULL UNION ALL
+            SELECT 31, 'FALSE', 'Phantom', 'Inventory', 100, '-2000000 + rank_value', 'Phantom - W - High WOI', 4, NULL, NULL UNION ALL
+            SELECT 32, 'FALSE', 'Shelf OOS', 'Shelf OOS', 100, '-3000000 + rank_value', 'IZS - Z - High Velocity Zero Sales', 1, NULL, NULL UNION ALL
+            SELECT 33, 'TRUE', 'Forced', 'Forced', 10, '"ExpectedLostSalesAmount"', 'Forced Alert', 8, NULL, NULL UNION ALL
+            SELECT 34, 'TRUE', 'Forced Count', 'Count', 1000, '"ExpectedLostSalesAmount"', 'Forced Count', 16, NULL, NULL UNION ALL
+            SELECT 35, 'TRUE', 'IDP', 'Inactive Distribution Point', 40, '"ExpectedLostSalesAmount"', 'Inactive Distribution Point - No Sales for ${0} days', 32, NULL, NULL UNION ALL
+            SELECT 36, 'TRUE', 'LDP', 'Lost Distribution Point', 40, '"ExpectedLostSalesAmount"', 'Lost Distribution Point - No Sales for ${0} days', 32, NULL, NULL UNION ALL
+            SELECT 37, 'TRUE', 'STO', 'Short Term Off Sale', 40, '"ExpectedLostSalesAmount"', 'Short Term Off Sale', 32, NULL, NULL UNION ALL
+            SELECT 38, 'TRUE', 'ZSD', 'Zero Sales Day', 40, '"ExpectedLostSalesAmount"', 'Zero Sales Day', 32, NULL, NULL UNION ALL
+            SELECT 39, 'FALSE', 'SUPP', 'Suppressed Alerts', 10000, '"ExpectedLostSalesAmount"', 'Suppressed Alerts', 64, NULL, NULL;
+
+        </sql>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-DATA-2">
+        <sql>
+            INSERT INTO $(common).DIM_OSM_VELOCITY_TIER
+            SELECT 0, 'Low Velocity'
+            UNION ALL
+            SELECT 1, 'Medium Velocity'
+            UNION ALL
+            SELECT 2, 'High Velocity';
+        </sql>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-DATA-3">
+        <sql>
+            INSERT INTO $(common).DIM_OSM_CLASSIFICATION  ("ClassificationCode","Classification","OOSGroup","RepOriented","RetailerMeasured",  "RootCause","StoreExec","T3OOS")
+            SELECT 0,'Default','Default','Default','Default','Default','Default','Not OOS' UNION ALL
+            SELECT 1,'Phantom','Phantom','Phantom','(Not Included)','Phantom','Phantom','OOS' UNION ALL
+            SELECT 2,'Replenishment','Replenishment','Replenishment','Replenishment Settings','Replenishment Settings','Replenishment','OOS' UNION ALL
+            SELECT 3,'No Order','Replenishment','Replenishment','Blocked Replenishment','Blocked Replenishment','Replenishment','OOS' UNION ALL
+            SELECT 4,'Delayed Delivery','Replenishment','Replenishment','Delayed Delivery','Delayed Delivery','Replenishment','OOS' UNION ALL
+            SELECT 5,'Trading Suspended','Replenishment','(Not Included)','(Not Included)','(Not Included)','(Not Included)','Not OOS' UNION ALL
+            SELECT 6,'Trading Initiated','Replenishment','(Not Included)','(Not Included)','(Not Included)','(Not Included)','Not OOS' UNION ALL
+            SELECT 7,'Excluded EpisodeTail','Replenishment','(Not Included)','(Not Included)','(Not Included)','(Not Included)','Not OOS' UNION ALL
+            SELECT 8,'Excluded Shrink','Phantom','(Not Included)','(Not Included)','(Not Included)','(Not Included)','Not OOS' UNION ALL
+            SELECT 9,'Excluded Episode','Replenishment','(Not Included)','(Not Included)','(Not Included)','(Not Included)','Not OOS' UNION ALL
+            SELECT 10,'Not Determined','Replenishment','Replenishment','Not Determined','Not Determined','Replenishment','Not OOS' UNION ALL
+            SELECT 11,'Excluded Period','Replenishment','(Not Included)','(Not Included)','(Not Included)','(Not Included)','Not OOS' UNION ALL
+            SELECT 12,'Shelf with Phantom','Phantom','Phantom','(Not Included)','Shelf with Phantom','Shelf Only','OOS' UNION ALL
+            SELECT 13,'Shelf','Shelf','Shelf Only','(Not Included)','Shelf Only','Shelf Only','OOS' UNION ALL
+            SELECT 14,'Other','Replenishment','(Not Included)','Not Confirmed','(Not Included)','(Not Included)','Not OOS' UNION ALL
+            SELECT 15,'Distribution Void','Replenishment','Replenishment','Distribution Void','Distribution Void','Replenishment','OOS' UNION ALL
+            SELECT 16,'Distribution Void with Phantom','Phantom','Phantom','(Not Included)','Distribution Void with Phantom','Phantom','OOS' UNION ALL
+            SELECT 17,'Shelf After Store','Shelf','Shelf Only','(Not Included)','Shelf After Store','Shelf Only','Not OOS' UNION ALL
+            SELECT 18,'Not Traited','Not Traited','Not Traited','Not Traited','Not Traited','Not Traited','Not OOS' UNION ALL
+            SELECT 19,'Traited/Not Valid','Traited/Not Valid','Traited/Not Valid','Traited/Not Valid','Traited/Not Valid','Traited/Not Valid','Not OOS';
+        </sql>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-DATA-4">
+        <sql>
+            INSERT INTO $(common).DIM_OSM_INCIDENTAPPLICATIONSTATUS (   "ApplicationStatus" ,   "ApplicationStatusDesc" )
+            SELECT 0,'Open' UNION ALL
+            SELECT 1,'Closed';
+        </sql>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-DATA-5">
+        <sql>
+            INSERT INTO $(common).DIM_OSM_EPISODELENGTH (   "EpisodeLength",   "EpisodeType",   "EpisodeRanges",   "EpisodeRangeOrder")
+            SELECT 0,'No Episode','0',0 UNION ALL
+            SELECT 1,'Episode','1',1 UNION ALL
+            SELECT 2,'Episode','2',2 UNION ALL
+            SELECT 3,'Episode','3',3 UNION ALL
+            SELECT 4,'Episode','4-7',4 UNION ALL
+            SELECT 5,'Episode','4-7',4 UNION ALL
+            SELECT 6,'Episode','4-7',4 UNION ALL
+            SELECT 7,'Episode','4-7',4 UNION ALL
+            SELECT 8,'Episode','8-14',8 UNION ALL
+            SELECT 9,'Episode','8-14',8 UNION ALL
+            SELECT 10,'Episode','8-14',8 UNION ALL
+            SELECT 11,'Episode','8-14',8 UNION ALL
+            SELECT 12,'Episode','8-14',8 UNION ALL
+            SELECT 13,'Episode','8-14',8 UNION ALL
+            SELECT 14,'Episode','8-14',8 UNION ALL
+            SELECT 15,'Episode','15-50',15 UNION ALL
+            SELECT 16,'Episode','15-50',15 UNION ALL
+            SELECT 17,'Episode','15-50',15 UNION ALL
+            SELECT 18,'Episode','15-50',15 UNION ALL
+            SELECT 19,'Episode','15-50',15 UNION ALL
+            SELECT 20,'Episode','15-50',15 UNION ALL
+            SELECT 21,'Episode','15-50',15 UNION ALL
+            SELECT 22,'Episode','15-50',15 UNION ALL
+            SELECT 23,'Episode','15-50',15 UNION ALL
+            SELECT 24,'Episode','15-50',15 UNION ALL
+            SELECT 25,'Episode','15-50',15 UNION ALL
+            SELECT 26,'Episode','15-50',15 UNION ALL
+            SELECT 27,'Episode','15-50',15 UNION ALL
+            SELECT 28,'Episode','15-50',15 UNION ALL
+            SELECT 29,'Episode','15-50',15 UNION ALL
+            SELECT 30,'Episode','15-50',15 UNION ALL
+            SELECT 31,'Episode','15-50',15 UNION ALL
+            SELECT 32,'Episode','15-50',15 UNION ALL
+            SELECT 33,'Episode','15-50',15 UNION ALL
+            SELECT 34,'Episode','15-50',15 UNION ALL
+            SELECT 35,'Episode','15-50',15 UNION ALL
+            SELECT 36,'Episode','15-50',15 UNION ALL
+            SELECT 37,'Episode','15-50',15 UNION ALL
+            SELECT 38,'Episode','15-50',15 UNION ALL
+            SELECT 39,'Episode','15-50',15 UNION ALL
+            SELECT 40,'Episode','15-50',15 UNION ALL
+            SELECT 41,'Episode','15-50',15 UNION ALL
+            SELECT 42,'Episode','15-50',15 UNION ALL
+            SELECT 43,'Episode','15-50',15 UNION ALL
+            SELECT 44,'Episode','15-50',15 UNION ALL
+            SELECT 45,'Episode','15-50',15 UNION ALL
+            SELECT 46,'Episode','15-50',15 UNION ALL
+            SELECT 47,'Episode','15-50',15 UNION ALL
+            SELECT 48,'Episode','15-50',15 UNION ALL
+            SELECT 49,'Episode','15-50',15 UNION ALL
+            SELECT 50,'Episode','15-50',15 UNION ALL
+            SELECT 51,'Episode','51-90',51 UNION ALL
+            SELECT 52,'Episode','51-90',51 UNION ALL
+            SELECT 53,'Episode','51-90',51 UNION ALL
+            SELECT 54,'Episode','51-90',51 UNION ALL
+            SELECT 55,'Episode','51-90',51 UNION ALL
+            SELECT 56,'Episode','51-90',51 UNION ALL
+            SELECT 57,'Episode','51-90',51 UNION ALL
+            SELECT 58,'Episode','51-90',51 UNION ALL
+            SELECT 59,'Episode','51-90',51 UNION ALL
+            SELECT 60,'Episode','51-90',51 UNION ALL
+            SELECT 61,'Episode','51-90',51 UNION ALL
+            SELECT 62,'Episode','51-90',51 UNION ALL
+            SELECT 63,'Episode','51-90',51 UNION ALL
+            SELECT 64,'Episode','51-90',51 UNION ALL
+            SELECT 65,'Episode','51-90',51 UNION ALL
+            SELECT 66,'Episode','51-90',51 UNION ALL
+            SELECT 67,'Episode','51-90',51 UNION ALL
+            SELECT 68,'Episode','51-90',51 UNION ALL
+            SELECT 69,'Episode','51-90',51 UNION ALL
+            SELECT 70,'Episode','51-90',51 UNION ALL
+            SELECT 71,'Episode','51-90',51 UNION ALL
+            SELECT 72,'Episode','51-90',51 UNION ALL
+            SELECT 73,'Episode','51-90',51 UNION ALL
+            SELECT 74,'Episode','51-90',51 UNION ALL
+            SELECT 75,'Episode','51-90',51 UNION ALL
+            SELECT 76,'Episode','51-90',51 UNION ALL
+            SELECT 77,'Episode','51-90',51 UNION ALL
+            SELECT 78,'Episode','51-90',51 UNION ALL
+            SELECT 79,'Episode','51-90',51 UNION ALL
+            SELECT 80,'Episode','51-90',51 UNION ALL
+            SELECT 81,'Episode','51-90',51 UNION ALL
+            SELECT 82,'Episode','51-90',51 UNION ALL
+            SELECT 83,'Episode','51-90',51 UNION ALL
+            SELECT 84,'Episode','51-90',51 UNION ALL
+            SELECT 85,'Episode','51-90',51 UNION ALL
+            SELECT 86,'Episode','51-90',51 UNION ALL
+            SELECT 87,'Episode','51-90',51 UNION ALL
+            SELECT 88,'Episode','51-90',51 UNION ALL
+            SELECT 89,'Episode','51-90',51 UNION ALL
+            SELECT 90,'Episode','51-90',51 UNION ALL
+            SELECT 91,'Episode','91+',91 UNION ALL
+            SELECT 92,'Episode','91+',91 UNION ALL
+            SELECT 93,'Episode','91+',91 UNION ALL
+            SELECT 94,'Episode','91+',91 UNION ALL
+            SELECT 95,'Episode','91+',91 UNION ALL
+            SELECT 96,'Episode','91+',91 UNION ALL
+            SELECT 97,'Episode','91+',91 UNION ALL
+            SELECT 98,'Episode','91+',91 UNION ALL
+            SELECT 99,'Episode','91+',91 UNION ALL
+            SELECT 100,'Episode','91+',91;
+        </sql>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-DATA-6">
+        <sql>
+            INSERT INTO $(common).DIM_OSM_INCIDENTRESPONSE (   "InterventionKey",   "ResponseDesc",   "MerchandizerResponse")
+            SELECT 2,'1. Item already valid. Tag up','No Problem Found' UNION ALL
+            SELECT 2,'2. Store re-instated. Tag up.','Fixed' UNION ALL
+            SELECT 2,'3. Store would not re-instate.','Not Fixed' UNION ALL
+            SELECT 2,'Empty Response','No Response' UNION ALL
+            SELECT 2,'No Response','No Response' UNION ALL
+            SELECT 3,'1. Display Up. Ftr Tracking on','Fixed' UNION ALL
+            SELECT 3,'2. Ftr Tracking already off.','No Problem Found' UNION ALL
+            SELECT 3,'3. Store Assoc. turned off.','Not Fixed' UNION ALL
+            SELECT 3,'4. No display &amp; store refused.','Not Fixed' UNION ALL
+            SELECT 3,'5. Could not address issue.','Not Fixed' UNION ALL
+            SELECT 3,'Empty Response','No Response' UNION ALL
+            SELECT 3,'No Response','No Response' UNION ALL
+            SELECT 4,'1. Tag/product missing. Fixed.','Fixed' UNION ALL
+            SELECT 4,'2. Tag/product missing. No fix','Not Fixed' UNION ALL
+            SELECT 4,'3. Product in back room. Fixed','Fixed' UNION ALL
+            SELECT 4,'4. On-Hand wrong. Fixed.','Fixed' UNION ALL
+            SELECT 4,'5. On-Hand wrong.  WM will fix','Fixed' UNION ALL
+            SELECT 4,'6. On Hand wrong. Not fixed.','Not Fixed' UNION ALL
+            SELECT 4,'7. Mix of things. I fixed.','Fixed' UNION ALL
+            SELECT 4,'8. Mix of things. Not fixed.','Not Fixed' UNION ALL
+            SELECT 4,'9. Everything okay. Sales slow','No Problem Found' UNION ALL
+            SELECT 4,'Empty Response','No Response' UNION ALL
+            SELECT 4,'No Response','No Response' UNION ALL
+            SELECT 5,'1. Tag/product missing. Fixed.','Fixed' UNION ALL
+            SELECT 5,'2. Tag/product missing. No fix','Not Fixed' UNION ALL
+            SELECT 5,'3. Product in back room. Fixed','Fixed' UNION ALL
+            SELECT 5,'4. On-Hand wrong. Fixed.','Fixed' UNION ALL
+            SELECT 5,'5. On-Hand wrong.  WM will fix','Fixed' UNION ALL
+            SELECT 5,'6. On Hand wrong. Not fixed.','Not Fixed' UNION ALL
+            SELECT 5,'7. Mix of things. I fixed.','Fixed' UNION ALL
+            SELECT 5,'8. Mix of things. Not fixed.','Not Fixed' UNION ALL
+            SELECT 5,'9. Everything okay. Sales slow','No Problem Found' UNION ALL
+            SELECT 5,'Empty Response','No Response' UNION ALL
+            SELECT 5,'No Response','No Response' UNION ALL
+            SELECT 7,'1 I moved full qty to floor','Fixed' UNION ALL
+            SELECT 7,'2 I moved some qty to floor','Fixed' UNION ALL
+            SELECT 7,'3 WM had fully setup on floor','No Problem Found' UNION ALL
+            SELECT 7,'4 WM had partly setup on floor','Fixed' UNION ALL
+            SELECT 7,'5 WM worked in to modular','Fixed' UNION ALL
+            SELECT 7,'6 Store refused - No space','Not Fixed' UNION ALL
+            SELECT 7,'7 Store refused - Inaccessible','Not Fixed' UNION ALL
+            SELECT 7,'8 Store refused -Too few units','Not Fixed' UNION ALL
+            SELECT 7,'9 No product found in store','Not Fixed' UNION ALL
+            SELECT 7,'Empty Response','No Response' UNION ALL
+            SELECT 7,'No Response','No Response' UNION ALL
+            SELECT 8,'1 Already on shelf','No Problem Found' UNION ALL
+            SELECT 8,'2 Moved to shelf, mod not set','Fixed' UNION ALL
+            SELECT 8,'3 Moved to shelf, mod was set','Fixed' UNION ALL
+            SELECT 8,'4 No.  Could not find product','Not Fixed' UNION ALL
+            SELECT 8,'5 No.  Modular not set','Not Fixed' UNION ALL
+            SELECT 8,'6 No.  Store refused - Other','Not Fixed' UNION ALL
+            SELECT 8,'Empty Response','No Response' UNION ALL
+            SELECT 8,'No Response','No Response' UNION ALL
+            SELECT 9,'1 I moved full qty to floor','Fixed' UNION ALL
+            SELECT 9,'2 I moved some qty to floor','Fixed' UNION ALL
+            SELECT 9,'3 WM had fully setup on floor','No Problem Found' UNION ALL
+            SELECT 9,'4 WM had partly setup on floor','Not Fixed' UNION ALL
+            SELECT 9,'5 WM worked in to modular','Fixed' UNION ALL
+            SELECT 9,'6 Store refused - No space','Not Fixed' UNION ALL
+            SELECT 9,'7 Store refused - Inaccessible','Not Fixed' UNION ALL
+            SELECT 9,'8 Store refused -Too few units','Not Fixed' UNION ALL
+            SELECT 9,'9 No product found in store','Not Fixed' UNION ALL
+            SELECT 9,'Empty Response','No Response' UNION ALL
+            SELECT 9,'No Response','No Response' UNION ALL
+            SELECT 10,'1 Yes. Competitive pricing.','Fixed' UNION ALL
+            SELECT 10,'2 Yes. Overstock on item.','Fixed' UNION ALL
+            SELECT 10,'3 Yes. Other reason. (Comment)','Fixed' UNION ALL
+            SELECT 10,'4 No. Dept Mgr will follow-up.','Not Fixed' UNION ALL
+            SELECT 10,'5 No. No action by Dept Mgr.','Not Fixed' UNION ALL
+            SELECT 10,'Empty Response','No Response' UNION ALL
+            SELECT 10,'No Response','No Response' UNION ALL
+            SELECT 11,'1 Yes. Competitive pricing.','Fixed' UNION ALL
+            SELECT 11,'2 Yes. Overstock on item.','Fixed' UNION ALL
+            SELECT 11,'3 Yes. Other reason. (Comment)','Fixed' UNION ALL
+            SELECT 11,'4 No. Dept Mgr will follow-up.','Not Fixed' UNION ALL
+            SELECT 11,'5 No. No action by Dept Mgr.','Not Fixed' UNION ALL
+            SELECT 11,'Empty Response','No Response' UNION ALL
+            SELECT 11,'No Response','No Response' UNION ALL
+            SELECT 12,'1 I moved the case to floor','Fixed' UNION ALL
+            SELECT 12,'2 I moved some qty to floor','Fixed' UNION ALL
+            SELECT 12,'3 Case in back NoSpace on flor','Not Fixed' UNION ALL
+            SELECT 12,'4 Case in back Store Refused','Not Fixed' UNION ALL
+            SELECT 12,'5 Could not find case in back','Not Fixed' UNION ALL
+            SELECT 12,'Empty Response','No Response' UNION ALL
+            SELECT 12,'No Response','No Response' UNION ALL
+            SELECT 13,'1 I moved the case to floor','Fixed' UNION ALL
+            SELECT 13,'2 I moved some qty to floor','Fixed' UNION ALL
+            SELECT 13,'3 Case in back NoSpace on flor','Not Fixed' UNION ALL
+            SELECT 13,'4 Case in back Store Refused','Not Fixed' UNION ALL
+            SELECT 13,'5 Could not find case in back','Not Fixed' UNION ALL
+            SELECT 13,'Empty Response','No Response' UNION ALL
+            SELECT 13,'No Response','No Response' UNION ALL
+            SELECT 14,'1 I moved full display to flor','Fixed' UNION ALL
+            SELECT 14,'2 I moved some display to flor','Fixed' UNION ALL
+            SELECT 14,'3 WM had fully setup on floor','No Problem Found' UNION ALL
+            SELECT 14,'3. Display not found.','Not Fixed' UNION ALL
+            SELECT 14,'4 WM had partly setup on floor','Fixed' UNION ALL
+            SELECT 14,'5 Store refused - No space','Not Fixed' UNION ALL
+            SELECT 14,'6 Store refused - Inaccessible','Not Fixed' UNION ALL
+            SELECT 14,'7 Store refused -Too few units','Not Fixed' UNION ALL
+            SELECT 14,'8 No display(s) found in store','Not Fixed' UNION ALL
+            SELECT 14,'Empty Response','No Response' UNION ALL
+            SELECT 14,'No Response','No Response' UNION ALL
+            SELECT 1,'No Response','No Response' UNION ALL
+            SELECT 1,'Empty Response','Empty Response' UNION ALL
+            SELECT 6,'No Response','No Response' UNION ALL
+            SELECT 6,'Empty Response','Empty Response' UNION ALL
+            SELECT 12,'6 Scheduling Conflict','Not Fixed' UNION ALL
+            SELECT 13,'7 Scheduling Conflict','Not Fixed' UNION ALL
+            SELECT 14,'9 Scheduling Conflict','Not Fixed' UNION ALL
+            SELECT 17,'1 I moved the case to floor','Fixed' UNION ALL
+            SELECT 17,'2 I moved some qty to floor','Fixed' UNION ALL
+            SELECT 17,'3 Case in back NoSpace on flor','Not Fixed' UNION ALL
+            SELECT 17,'4 Case in back Store Refused','Not Fixed' UNION ALL
+            SELECT 17,'5 Could not find case in back','Not Fixed' UNION ALL
+            SELECT 17,'Empty Response','No Response' UNION ALL
+            SELECT 17,'No Response','No Response' UNION ALL
+            SELECT 17,'6 Scheduling Conflict','Not Fixed' UNION ALL
+            SELECT 19,'1 I moved the case to floor','Fixed' UNION ALL
+            SELECT 19,'2 I moved some qty to floor','Fixed' UNION ALL
+            SELECT 19,'3 Case in back NoSpace on flor','Not Fixed' UNION ALL
+            SELECT 19,'4 Case in back Store Refused','Not Fixed' UNION ALL
+            SELECT 19,'5 Could not find case in back','Not Fixed' UNION ALL
+            SELECT 19,'Empty Response','No Response' UNION ALL
+            SELECT 19,'No Response','No Response' UNION ALL
+            SELECT 19,'6 Scheduling Conflict','Not Fixed' UNION ALL
+            SELECT 20,'1 I moved the case to floor','Fixed' UNION ALL
+            SELECT 20,'2 I moved some qty to floor','Fixed' UNION ALL
+            SELECT 20,'3 Case in back NoSpace on flor','Not Fixed' UNION ALL
+            SELECT 20,'4 Case in back Store Refused','Not Fixed' UNION ALL
+            SELECT 20,'5 Could not find case in back','Not Fixed' UNION ALL
+            SELECT 20,'Empty Response','No Response' UNION ALL
+            SELECT 20,'No Response','No Response' UNION ALL
+            SELECT 20,'6 Scheduling Conflict','Not Fixed' UNION ALL
+            SELECT 21,'1 I moved the case to floor','Fixed' UNION ALL
+            SELECT 21,'2 I moved some qty to floor','Fixed' UNION ALL
+            SELECT 21,'3 Case in back NoSpace on flor','Not Fixed' UNION ALL
+            SELECT 21,'4 Case in back Store Refused','Not Fixed' UNION ALL
+            SELECT 21,'5 Could not find case in back','Not Fixed' UNION ALL
+            SELECT 21,'Empty Response','No Response' UNION ALL
+            SELECT 21,'No Response','No Response' UNION ALL
+            SELECT 21,'6 Scheduling Conflict','Not Fixed' UNION ALL
+            SELECT 22,'1 I moved the case to floor','Fixed' UNION ALL
+            SELECT 22,'2 I moved some qty to floor','Fixed' UNION ALL
+            SELECT 22,'3 Case in back NoSpace on flor','Not Fixed' UNION ALL
+            SELECT 22,'4 Case in back Store Refused','Not Fixed' UNION ALL
+            SELECT 22,'5 Could not find case in back','Not Fixed' UNION ALL
+            SELECT 22,'Empty Response','No Response' UNION ALL
+            SELECT 22,'No Response','No Response' UNION ALL
+            SELECT 22,'6 Scheduling Conflict','Not Fixed' UNION ALL
+            SELECT 23,'1 I moved the case to floor','Fixed' UNION ALL
+            SELECT 23,'2 I moved some qty to floor','Fixed' UNION ALL
+            SELECT 23,'3 Case in back NoSpace on flor','Not Fixed' UNION ALL
+            SELECT 23,'4 Case in back Store Refused','Not Fixed' UNION ALL
+            SELECT 23,'5 Could not find case in back','Not Fixed' UNION ALL
+            SELECT 23,'Empty Response','No Response' UNION ALL
+            SELECT 23,'No Response','No Response' UNION ALL
+            SELECT 23,'6 Scheduling Conflict','Not Fixed' UNION ALL
+            SELECT 24,'1 I moved the case to floor','Fixed' UNION ALL
+            SELECT 24,'2 I moved some qty to floor','Fixed' UNION ALL
+            SELECT 24,'3 Case in back NoSpace on flor','Not Fixed' UNION ALL
+            SELECT 24,'4 Case in back Store Refused','Not Fixed' UNION ALL
+            SELECT 24,'5 Could not find case in back','Not Fixed' UNION ALL
+            SELECT 24,'Empty Response','No Response' UNION ALL
+            SELECT 24,'No Response','No Response' UNION ALL
+            SELECT 24,'6 Scheduling Conflict','Not Fixed' UNION ALL
+            SELECT 25,'1 I moved the case to floor','Fixed' UNION ALL
+            SELECT 25,'2 I moved some qty to floor','Fixed' UNION ALL
+            SELECT 25,'3 Case in back NoSpace on flor','Not Fixed' UNION ALL
+            SELECT 25,'4 Case in back Store Refused','Not Fixed' UNION ALL
+            SELECT 25,'5 Could not find case in back','Not Fixed' UNION ALL
+            SELECT 25,'Empty Response','No Response' UNION ALL
+            SELECT 25,'No Response','No Response' UNION ALL
+            SELECT 25,'6 Scheduling Conflict','Not Fixed' UNION ALL
+            SELECT 26,'1 I moved the case to floor','Fixed' UNION ALL
+            SELECT 26,'2 I moved some qty to floor','Fixed' UNION ALL
+            SELECT 26,'3 Case in back NoSpace on flor','Not Fixed' UNION ALL
+            SELECT 26,'4 Case in back Store Refused','Not Fixed' UNION ALL
+            SELECT 26,'5 Could not find case in back','Not Fixed' UNION ALL
+            SELECT 26,'Empty Response','No Response' UNION ALL
+            SELECT 26,'No Response','No Response' UNION ALL
+            SELECT 26,'6 Scheduling Conflict','Not Fixed' UNION ALL
+            SELECT 30,'1 I moved the case to floor','Fixed' UNION ALL
+            SELECT 30,'2 I moved some qty to floor','Fixed' UNION ALL
+            SELECT 30,'3 Case in back NoSpace on flor','Not Fixed' UNION ALL
+            SELECT 30,'4 Case in back Store Refused','Not Fixed' UNION ALL
+            SELECT 30,'5 Could not find case in back','Not Fixed' UNION ALL
+            SELECT 30,'Empty Response','No Response' UNION ALL
+            SELECT 30,'No Response','No Response' UNION ALL
+            SELECT 30,'6 Scheduling Conflict','Not Fixed' UNION ALL
+            SELECT 31,'1 I moved the case to floor','Fixed' UNION ALL
+            SELECT 31,'2 I moved some qty to floor','Fixed' UNION ALL
+            SELECT 31,'3 Case in back NoSpace on flor','Not Fixed' UNION ALL
+            SELECT 31,'4 Case in back Store Refused','Not Fixed' UNION ALL
+            SELECT 31,'5 Could not find case in back','Not Fixed' UNION ALL
+            SELECT 31,'Empty Response','No Response' UNION ALL
+            SELECT 31,'No Response','No Response' UNION ALL
+            SELECT 31,'6 Scheduling Conflict','Not Fixed' UNION ALL
+            SELECT 32,'1 I moved the case to floor','Fixed' UNION ALL
+            SELECT 32,'2 I moved some qty to floor','Fixed' UNION ALL
+            SELECT 32,'3 Case in back NoSpace on flor','Not Fixed' UNION ALL
+            SELECT 32,'4 Case in back Store Refused','Not Fixed' UNION ALL
+            SELECT 32,'5 Could not find case in back','Not Fixed' UNION ALL
+            SELECT 32,'Empty Response','No Response' UNION ALL
+            SELECT 32,'No Response','No Response' UNION ALL
+            SELECT 32,'6 Scheduling Conflict','Not Fixed';
+        </sql>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-DATA-7">
+        <sql>
+            INSERT INTO $(common).DIM_OSM_INCIDENTCLOSURETYPE (   "ClosureType",   "ClosureDesc",   "ClosureStatus")
+            SELECT 0,'Open','Open' UNION ALL
+            SELECT 1,'Alert Response','Closed' UNION ALL
+            SELECT 2,'Corrected by Store','Closed' UNION ALL
+            SELECT 3,'Detected by Application','Closed';
+        </sql>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-DATA-8">
+        <sql>
+            INSERT INTO $(common).DIM_OSM_INCIDENTISSUANCE (   "IssuanceId",   "AlertIssued")
+            SELECT 0,'Issued' UNION ALL
+            SELECT 1,'Not Issued';
+        </sql>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-DATA-9">
+        <sql>
+            INSERT INTO $(common).DIM_OSM_TRAITED (   "TraitedKey",   "Value")
+            SELECT 0,'Not Traited' UNION ALL
+            SELECT 1,'Traited';
+        </sql>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-DATA-10">
+        <sql>
+            INSERT INTO $(common).DIM_OSM_VALID (   "ValidKey",   "Value")
+            SELECT 0,'Not Valid' UNION ALL
+            SELECT 1,'Valid';
+        </sql>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-DATA-11">
+        <sql>
+            INSERT INTO $(common).DIM_OSM_JOBTYPE (   "ParamId",   "Parameter",   "Description")
+            SELECT 1,'runBaseline','Baseline' UNION ALL
+            SELECT 2,'calculateIZS','IZS' UNION ALL
+            SELECT 3,'calculateOSM','OSM' UNION ALL
+            SELECT 4,'incremental','Incremental' UNION ALL
+            SELECT 5,'runForecasting','Forecasting' UNION ALL
+            SELECT 6,'calculateAA','AA';
+        </sql>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="COMMON-DATA-12">
+        <sql>
+            INSERT INTO $(common).DIM_PROMO_TYPES (   "RETAILER_KEY",   "PROMO_TYPE_ID",   "DESCRIPTION",   "PARAMS_NUM")
+            SELECT 267,0,'The Regular Sale',0 UNION ALL
+            SELECT 267,1,'Ad only, no TPR',0 UNION ALL
+            SELECT 267,2,'Ad with Promoted Price',1 UNION ALL
+            SELECT 267,3,'Ad with Cents Off',1 UNION ALL
+            SELECT 267,4,'Ad with Percent Off',1 UNION ALL
+            SELECT 267,5,'Ad with Penny for Penny',1 UNION ALL
+            SELECT 267,6,'Ad with Multiple (such as 2 for $5)',2 UNION ALL
+            SELECT 267,7,'Ad with BOGO',1 UNION ALL
+            SELECT 267,8,'Ad with EDLP',0 UNION ALL
+            SELECT 267,9,'No Ad, Promoted Price',1 UNION ALL
+            SELECT 267,10,'No Ad, Cents Off',1 UNION ALL
+            SELECT 267,11,'No Ad, Percent Off',1 UNION ALL
+            SELECT 267,12,'No Ad, Penny for Penny',1 UNION ALL
+            SELECT 267,13,'No Ad, Multiple (such as 2 for $5)',2 UNION ALL
+            SELECT 267,14,'No Ad, BOGO',1 UNION ALL
+            SELECT 267,15,'No Ad, EDLP',0;
+        </sql>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-DATA-13">
+        <sql>
+            INSERT INTO $(common).DIM_ALERT_TYPE("ALERT_TYPE_KEY", "ALERT_TYPE", "ALERT_TYPE_DESCRIPTION")
+            SELECT 1, 'I','IZS' UNION ALL
+            SELECT 2, 'P','Phantom' UNION ALL
+            SELECT 3, 'V','High Velocity' UNION ALL
+            SELECT 4, 'F','Forced' UNION ALL
+            SELECT 5, 'C','Count' UNION ALL
+            SELECT 6, 'Z','ZSD' UNION ALL
+            SELECT 7, 'S','STO' UNION ALL
+            SELECT 8, 'D','IDP' UNION ALL
+            SELECT 9, 'L','LDP';
+        </sql>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-DATA-14">
+        <sql>
+            INSERT INTO $(common).DIM_ALERT_FEEDBACKRANK("feedbackrank_key", "feedbackrank")
+            select 0, ''  union
+            select 1, 'A' union
+            select 2, 'B' union
+            select 3, 'C' union
+            select 4, 'D' union
+            select 5, 'E' union
+            select 6, 'F' union
+            select 7, 'Unknown';
+        </sql>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-DATA-15">
+        <sql>
+            INSERT INTO $(common).DIM_ALERT_CATEGORY("AlertCategory_KEY", "AlertCategory")
+            select 1, 'Phantom' UNION
+            select 2, 'Distribution Void' UNION
+            select 3, 'Phantom - W - High WOI' UNION
+            select 4, 'IZS - N - New Item' UNION
+            select 5, 'Phantom - A - High Positive Adj' UNION
+            select 6, 'IZS - I - In and Out' UNION
+            select 7, 'Shelf OOS' UNION
+            select 8, 'IZS - W - High WOI' UNION
+            select 9, 'Not Valid' UNION
+            select 10, 'IZS - Z - Ad-hoc addition' UNION
+            select 11, 'IZS - M - Middle Velocity Zero Sales' UNION
+            select 12, 'IZS - Z - High Velocity Zero Sales' UNION
+            select 13, ''
+        </sql>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-DATA-16">
+        <sql>
+            INSERT INTO $(common).DIM_FEEDBACK_DESC_TRANS("Merchandiser", "Type", "Source", "Target")
+            SELECT 'ADVANTAGE','BeginStatus','DV','Distribution Void' UNION ALL
+            SELECT 'ADVANTAGE','BeginStatus','NA','Not Authorized' UNION ALL
+            SELECT 'ADVANTAGE','BeginStatus','NT','No Tag' UNION ALL
+            SELECT 'ADVANTAGE','BeginStatus','OOS','OOS' UNION ALL
+            SELECT 'ADVANTAGE','BeginStatus','SH','On Shelf' UNION ALL
+            SELECT 'ADVANTAGE','Action','AI','Adjusted Inventory' UNION ALL
+            SELECT 'ADVANTAGE','Action','CF','Confirmed' UNION ALL
+            SELECT 'ADVANTAGE','Action','CI','Cut In' UNION ALL
+            SELECT 'ADVANTAGE','Action','F','Filled' UNION ALL
+            SELECT 'ADVANTAGE','Action','ORP','Order Placed' UNION ALL
+            SELECT 'ADVANTAGE','Action','TG','Tag Placed' UNION ALL
+            SELECT 'ADVANTAGE','Action','WO','Confirmed' UNION ALL
+            SELECT 'ADVANTAGE','Action','NOP','Not On Planogram' UNION ALL
+            SELECT 'ADVANTAGE','Action','ORC','Confirmed Product in Transit' UNION ALL
+            SELECT 'ADVANTAGE','Action','R','Rotated' UNION ALL
+            SELECT 'ADVANTAGE','Action','OR','Ordered' UNION ALL
+            SELECT 'ADVANTAGE','Action','S','Scanned';
+        </sql>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-DATA-17">
+        <sql>
+            INSERT INTO $(common).DIM_ALERT_EFFECTIVENESS("KEY", "VALUE")
+            SELECT 1, 'YES' UNION ALL
+            SELECT 0, 'NO' UNION ALL
+            SELECT -1, 'N/A';
+        </sql>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-DATA-18">
+        <sql>
+            INSERT INTO $(common).DIM_ALERT_ACCURACY("KEY", "DESCRIPTION", "VALUE")
+            SELECT 0, 'False Alert','False' UNION ALL
+            SELECT 1, 'True Alert','True' UNION ALL
+            SELECT 2, 'Neutral','Neutral' UNION ALL
+            SELECT 3, 'The feedback is not provided for this alert','N/A';
+        </sql>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="APP-DATA-10">
+        <sql>
+            <![CDATA[
+            INSERT INTO $(common).DIM_FEEDBACK_ASSUMPTIONS
+            (Merchandiser, FeedbackDesc, AcceptAdjustment, EffectiveFeedback, FeedbackRank, FeedbackSubRank, HasFeedback, TrueAlert, NotOnPlanogram, alertTypeList)
+            SELECT 'ACOSTA_NARS','Item tagged and on shelf on arrival',' ','N','D','A','Y','N','N','D-Void,Shelf OOS' UNION ALL
+            SELECT 'ACOSTA_NARS','Not authorized for set size and format',' ','N','D','A','Y','N','Y','D-Void,Shelf OOS' UNION ALL
+            SELECT 'ACOSTA_NARS','Other issue corrected, item on shelf','Y','Y','A','E','Y','Y','N','D-Void,Shelf OOS' UNION ALL
+            SELECT 'ACOSTA_NARS','Tagged and out of stock on arrival',' ','Y','A','A','Y','Y','N','D-Void,Shelf OOS' UNION ALL
+            SELECT 'ACOSTA_NARS','Void identified, store action required','Y','Y','A','D','Y','Y','N','D-Void,Shelf OOS' UNION ALL
+            SELECT 'ACOSTA_NARS','Void identified, tag and product placed','Y','Y','A','B','Y','Y','N','D-Void,Shelf OOS' UNION ALL
+            SELECT 'ACOSTA_NARS','Void identified, tag placed','Y','Y','A','C','Y','Y','N','D-Void,Shelf OOS' UNION ALL
+            SELECT 'AHOLD','1. Issue Resolved','Y','Y','A','A','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'AHOLD','2. No Issue','Y','N','D','A','Y','N','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'AHOLD','3. Count Validated','N','N','N','N','Y','I','Y','Forced Count' UNION ALL
+            SELECT 'AHOLD','4. CAO Loc Added','Y','Y','A','B','Y','Y','N','Forced' UNION ALL
+            SELECT 'AHOLD','5. CAO Loc Exists','N','N','D','B','Y','N','N','Forced' UNION ALL
+            SELECT 'AHOLD','6. Incorrect POG','Y','Y','A','C','Y','Y','N','Forced' UNION ALL
+            SELECT 'AHOLD','7. UPC not Found','Y','Y','A','D','Y','Y','N','Forced' UNION ALL
+            SELECT 'AHOLD','8. Disc/ B Item','Y','Y','A','E','Y','Y','N','Forced' UNION ALL
+            SELECT 'DG_ACOSTA','Multiple Issues','Y','Y','A','A','Y','Y',' ','D-Void,Shelf OOS' UNION ALL
+            SELECT 'DG_ACOSTA','No Issues','Y','N','D','D','Y',' ',' ','D-Void,Shelf OOS' UNION ALL
+            SELECT 'DG_ACOSTA','Product in Backroom Zero at Shelf',' ','Y','A','C','Y','Y',' ','D-Void,Shelf OOS' UNION ALL
+            SELECT 'DG_ACOSTA','Shelf Tag Missing',' ','Y','A','A','Y','Y',' ','D-Void,Shelf OOS' UNION ALL
+            SELECT 'DG_ACOSTA','Zero Product on Shelf Zero in Backroom',' ','Y','A','B','Y','Y',' ','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Actual On Hands Equal Telxon On Hands','N','N','D','B','Y','N','N','Phantom' UNION ALL
+            SELECT 'GENERAL_ACOSTA','BonusPK/Xref',' ','N','C','C',' ','Y','N','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Cut in by RSR',' ','Y','A','C',' ','Y',' ','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Deleted / Disco',' ','N','D','B',' ',' ','Y','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Deleted / Discontinued',' ','N','D','F',' ','N','Y','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Deleted/Discontinued',' ','N','D','F',' ','N','Y','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Dept Mgr Refused',' ','N','B','E',' ','Y','N','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Did not check','N','N','E','B','N','N','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Inv Mis-Stock: Could Not Correct','Y','N','B','A','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Inventory Control Str-Added to Pick List','Y','Y','C','A','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Inventory Count Correction','Y','Y','A','A','Y','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Invt Mis-Stock:Situation Corrected','Y','Y','A','H','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Item Tgd/OnShlf',' ','N','D','A',' ','N','N','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Item Tgd/OnShlf Upon Arrival','N','N','D','A','Y','N','N','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Manager Not Available',' ','N','C','B',' ','Y','N','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Manager Refusal','N','N','B','B',' ','Y',' ','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ACOSTA','No Problem Found','Y','N','E','C','Y','N','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'GENERAL_ACOSTA','No Response','N','N','E','A','N',' ',' ','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ACOSTA','No RMU',' ','N','C','A',' ','Y',' ','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ACOSTA','No Telxon Available',' ','N','C','C',' ','Y','N','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Not On File',' ','N','D','E',' ','N','N','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Not On Modular',' ','N','D','D',' ','N','Y','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Out of Stock',' ','N','B','A',' ','Y',' ','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Out of Time','N','N','E','B','N',' ',' ','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Problem Found - Corrected','Y','Y','A','A','Y','Y','N','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Problem Found - Item Out of Stock','N','N','B','A','Y','Y','N','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Problem Found - Requested Inv Correct','Y','Y','A','B','Y','Y','N','Phantom' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Problem Found - Requested Inv Correction','Y','Y','A','B','Y','Y','N','Phantom' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Problem Found - Unable to Correct','N','N','B','B','Y','Y','N','Phantom' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Problem found & Inv Correct at Store','Y','Y','A','J','Y','Y','N','Phantom' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Problem found & Inv Corrected at Store','Y','Y','A','A','Y','Y','N','Phantom' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Problem found-Mgr refused to Change OH','Y','N','A','F','Y','Y','N','Phantom' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Problem Found-Not auth to Fix','Y','N','B','D','Y','Y','N','Phantom' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Problem found-Store Will Fix Inv','Y','Y','A','D','Y','Y','N','Phantom' UNION ALL
+            SELECT 'GENERAL_ACOSTA','RCM Cut Item In',' ','Y','A','G',' ','Y','N','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ACOSTA','RCM Placed Order',' ','Y','A','E',' ','Y','N','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ACOSTA','RCM RqstdInvCor',' ','Y','A','I',' ','Y','N','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ACOSTA','RCM Stocked Shelf',' ','Y','A','C',' ','Y','N','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Shelf Empty-Product Replsh from Back','Y','Y','A','J','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Special Pack',' ','N','C','B',' ','Y',' ','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Stocked by RSR',' ','Y','A','B',' ','Y',' ','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Stocked With Wrong Sku/Rep Corrected','Y','Y','A','D','Y','Y',' ','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Tagged by RSR',' ','Y','A','E',' ','Y',' ','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Tagged/On Shelf Upon Entry',' ','N','D','A',' ',' ',' ','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Unable to Work Alert','N','N','D','A','N','N','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'GENERAL_ACOSTA','Warehouse Out',' ','N','B','C',' ','Y','N','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Did Not Check','N','N','E','A','N',' ',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Distribution Void - Adjusted Inventory','Y','Y','A','A','N','Y','N','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Distribution Void - Confirmed','Y','N','B','O','N','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Distribution Void - Cut In','Y','Y','B','K','N','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Distribution Void - Not On Planogram','Y','Y','A','D','N','Y','N','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Distribution Void - Ordered','Y','Y','B','J','N','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Distribution Void - Scanned','Y','Y','B','I','N','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Distribution Void - Tag Placed','Y','Y','B','H','N','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','DV - CF','Y','N','B','O','N','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','DV - OR','Y','Y','B','J','N','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','DV - TG','Y','Y','B','H','N','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Inventory correct - Item tagged on shelf','Y','N','D','G','Y','N','N','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Inventory Correct-Item Available for Sale','Y','N','D','A','Y',' ',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Inventory discrepancy found - Inventory corrected at store','Y','Y','A','G','Y','Y','N','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Inventory Discrepancy found - Manager refused to change OH','Y','N','B','N','Y','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Inventory Discrepancy Found - Store will fix inventory','Y','Y','A','C','Y','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Inventory Discrepancy found & Inventory corrected at store','Y','Y','A','B','Y','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Inventory Discrepancy Found-Store refused to correct invent','Y','N','B','S','Y','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Inventory Mis-stock ','Y','Y','B','A','Y','Y','N','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Inventory Mis-stock - could not correct','Y','N','B','M','Y','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Inventory Mis-stock - situation corrected','Y','Y','B','A','Y','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Inventory was correct-No inventory adjustment needed','Y','N','D','F','Y',' ',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Item tagged on shelf','Y','N','D','I','Y','N','N','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Item Tagged on shelf correctly faced on arrival','Y','N','D','I','Y','N','N','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Item was out of stock','Y','N','B','L','Y','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Item was out of stock   Could not correct','Y','N','D','E','Y',' ',' ','Phantom' UNION ALL
+            --SELECT 'GENERAL_ADVANTAGE','Item was out of stock - Could not correct','Y','N','D','H','Y','N','N','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Item was out of stock - fixed the OOS','Y','N','A','F','Y','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Item was out of stock - Situation corrected','Y','Y','B','W','Y','Y','N','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Item was out of stock, fixed the OOS','Y','N','A','F','Y','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Item was out of stock - Could not correct','Y','N','D','E','Y',' ',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','NA - CF','Y','N','F','Q','N','Y','Y','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','No problem found - On Hands were correct','Y','N','D','A','Y','N','N','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','No Tag - Confirmed','Y','N','B','P','N','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','No Tag - Rotated','Y','N','A','H','N','Y','N','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','No Tag - Scanned','Y','Y','B','T','N','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','No Tag - Tag Placed','Y','Y','B','G','N','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Not able to address the item on this call','N','N','E','B','N',' ',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Not Authorized - Confirmed','Y','N','F','Q','N','Y','Y','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Not Authorized - Ordered','Y','Y','F','U','N','Y','Y','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Not Authorized - Scanned','Y','Y','F','F','N','Y','Y','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','NT - CF','Y','N','B','P','N','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','NT - TG','Y','Y','B','G','N','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','On Shelf - Adjusted Inventory','Y','N','C','A','N','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','On Shelf - Confirmed','Y','N','D','B','N',' ',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','On Shelf - Cut In','Y','N','C','D','N','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','On Shelf - Filled','Y','N','D','C','N',' ',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','On Shelf - Order Placed','Y','N','D','C','N','N','N','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','On Shelf - Ordered','Y','N','C','B','N','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','On Shelf - Rotated','Y','N','D','D','N','N','N','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','On Shelf - Scanned','Y','N','D','D','N',' ',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','On Shelf - Tag Placed','Y','N','C','C','N','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','OOS - Adjusted Inventory','Y','Y','B','E','N','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','OOS - AI','Y','Y','B','E','N','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','OOS - CF','Y','N','B','R','N','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','OOS - Confirmed','Y','N','B','R','N','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','OOS - Confirmed Product in Transit','Y','Y','A','K','N','Y','N','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','OOS - F','Y','Y','B','D','N','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','OOS - Filled','Y','Y','B','D','N','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','OOS - OR','Y','Y','B','C','N','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','OOS - Order Placed','Y','Y','A','N','N','Y','N','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','OOS - Ordered','Y','Y','B','C','N','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','OOS - Scanned','Y','Y','B','B','N','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','OOS - Warehouse Out','Y','Y','A','M','N','Y','N','D-Void,Shelf OOS' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Other problem found ','Y','N','B','Z','Y','Y','N','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Other problem found (will enter comments in next Q)','Y','N','B','Z','Y','Y','N','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Other problem found (will enter comments)','Y','N','B','Z','Y','Y','N','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Problem found - Manager refused to change OH','Y','N','A','E','Y','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Problem found - On Hands correction completed','Y','Y','A','A','Y','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Problem found - Store will correct On Hands','Y','Y','A','D','Y','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','SH - AI','Y','N','C','A','N','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','SH - CF','Y','N','D','B','N',' ',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','SH - S','Y','N','D','D','N',' ',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Shelf label was NOT in place or visible - Could not correct','Y','N','B','X','Y','Y','N','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','Shelf label was NOT in place or visible - Situation corrected','Y','Y','B','Y','Y','Y','N','Phantom' UNION ALL
+            SELECT 'GENERAL_ADVANTAGE','UnDefined','Y','N','D','B','N','N','N','Phantom' UNION ALL
+            SELECT 'GENERAL_CROSSMARK','Active - Inventory Corrected','Y','Y','A','A','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'GENERAL_CROSSMARK','Active - Manager Refused','Y','N','C','B','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'GENERAL_CROSSMARK','Active - Not Authorized','Y','N','C','A','Y','Y','Y','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'GENERAL_CROSSMARK','Active - OOS Product Ordered','Y','Y','A','C','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'GENERAL_CROSSMARK','Active - Void Corrected','Y','Y','A','B','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'GENERAL_CROSSMARK','Active Item     Not Enough Time','N','N','C','C',' ','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'GENERAL_CROSSMARK','Active Item - In-stock','Y','N','D','A','Y','N','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'GENERAL_CROSSMARK','Active Item - OOS Corrected','Y','Y','A','D','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'GENERAL_CROSSMARK','Active Item - Tagged','Y','Y','B','A','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'GENERAL_CROSSMARK','In-stock','Y','N','D','B','N',' ',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_CROSSMARK','Inventory Corrected','Y','Y','A','B','Y','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_CROSSMARK','Manager Refused','Y','N','B','S','Y','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_CROSSMARK','Not Authorized','Y','N','F','Q','N',' ','Y','Phantom' UNION ALL
+            SELECT 'GENERAL_CROSSMARK','OOS Corrected','Y','N','A','F','Y','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_CROSSMARK','OOS Product Ordered','Y','Y','B','C','N','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_CROSSMARK','Tagged','Y','Y','B','G','N','Y',' ','Phantom' UNION ALL
+            SELECT 'GENERAL_CROSSMARK','Void Corrected','Y','Y','B','J','N','Y',' ','Phantom' UNION ALL
+            SELECT 'OTHER_CUSTOMERS','Inventory correct - Item tagged on shelf','Y','N','D','A','Y','N','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'OTHER_CUSTOMERS','Inventory discrepancy found - Inventory corrected at store','Y','Y','A','A','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'OTHER_CUSTOMERS','Inventory discrepancy found - Manager refused to change OH','Y','N','A','C','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'OTHER_CUSTOMERS','Inventory discrepancy found - Store will fix inventory','Y','Y','A','B','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'OTHER_CUSTOMERS','Inventory Mis-stock - Could not correct','Y','N','B','F','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'OTHER_CUSTOMERS','Inventory Mis-stock - Situation corrected','Y','Y','B','E','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'OTHER_CUSTOMERS','Item was out of stock - Could not correct','Y','N','B','B','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'OTHER_CUSTOMERS','Item was out of stock - Situation corrected','Y','Y','B','A','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'OTHER_CUSTOMERS','Not able to address the item on this call','N','N','E','A','N','N','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'OTHER_CUSTOMERS','Shelf label was NOT in place or visible - Could not correct','Y','N','B','D','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'OTHER_CUSTOMERS','Shelf label was NOT in place or visible - Situation corrected','Y','Y','B','C','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'PREMIUM','Inventory correct - Item tagged on shelf','Y','N','D','G','Y','N','N','Phantom' UNION ALL
+            SELECT 'PREMIUM','Inventory discrepancy found - Inventory corrected at store','Y','Y','A','G','Y','Y','N','Phantom' UNION ALL
+            SELECT 'PREMIUM','Inventory Discrepancy found - Manager refused to change OH','Y','N','B','N','Y','Y','N','Phantom' UNION ALL
+            SELECT 'PREMIUM','Inventory Discrepancy Found - Store will fix inventory','Y','Y','A','C','Y','Y','N','Phantom' UNION ALL
+            SELECT 'PREMIUM','Inventory Mis-stock ','Y','Y','B','A','Y','Y','N','Phantom' UNION ALL
+            SELECT 'PREMIUM','Inventory Mis-stock - could not correct','Y','N','B','M','Y','Y','N','Phantom' UNION ALL
+            SELECT 'PREMIUM','Inventory Mis-stock - situation corrected','Y','Y','B','A','Y','Y','N','Phantom' UNION ALL
+            SELECT 'PREMIUM','Item tagged on shelf','Y','N','D','I','Y','N','N','Phantom' UNION ALL
+            SELECT 'PREMIUM','Item tagged on shelf correctly faced on arrival','Y','N','D','I','Y','N','N','Phantom' UNION ALL
+            SELECT 'PREMIUM','Item was out of stock - Could not correct','Y','N','D','H','Y','N','N','Phantom' UNION ALL
+            SELECT 'PREMIUM','Item was out of stock - Situation corrected','Y','Y','B','W','Y','Y','N','Phantom' UNION ALL
+            SELECT 'PREMIUM','Not able to address the item on this call','Y','N','D','K','Y','N','N','Phantom' UNION ALL
+            SELECT 'PREMIUM','Other problem found ','Y','N','B','Z','Y','Y','N','Phantom' UNION ALL
+            SELECT 'PREMIUM','Other problem found (will enter comments in next Q)','Y','N','B','Z','Y','Y','N','Phantom' UNION ALL
+            SELECT 'PREMIUM','Other problem found (will enter comments)','Y','N','B','Z','Y','Y','N','Phantom' UNION ALL
+            SELECT 'PREMIUM','Shelf label was NOT in place or visible - Could not correct','Y','N','B','X','Y','Y','N','Phantom' UNION ALL
+            SELECT 'PREMIUM','Shelf label was NOT in place or visible - Situation corrected','Y','Y','B','Y','Y','Y','N','Phantom' UNION ALL
+            SELECT 'RW3','Corrected','Y','Y','A','B','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'RW3','Invalid Alert','Y','N','D','I','Y','N','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'RW3','Pending - Mgr Review','Y','Y','B','B','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'RW3','Product On Display','Y','N','C','E','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'RW3','Tagged and on shelf','Y','N','D','H','Y','N','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'RW3','Unresolved','Y','N','C','D','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'Walmart','a.Inventory discrepancy found - Inventory corrected at store','Y','Y','A','A','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'Walmart','b.Inventory discrepancy found - Store will fix inventory','Y','Y','A','B','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'Walmart','c.Inventory discrepancy found - Manager refused to change OH','Y','N','A','C','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'Walmart','d.Inventory correct - Item tagged on shelf','Y','N','D','A','Y','N','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'Walmart','e.Item was out of stock - Situation corrected','Y','Y','B','A','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'Walmart','f.Item was out of stock - Could not correct','Y','N','B','B','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'Walmart','g.Inventory Mis-stock - Situation corrected','Y','Y','B','E','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'Walmart','h.Inventory Mis-stock - Could not correct','Y','N','B','F','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'Walmart','i.Shelf tag / label was NOT in place or visible - Situation corrected','Y','Y','B','C','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'Walmart','j.Shelf tag / label was NOT in place or visible - Could not correct','Y','N','B','D','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'Walmart','k.Other problem found (accurate alert but can t fix issue)','N','N','B','G','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'WebAlertPortal','a.Inventory discrepancy found - Inventory corrected at store','Y','Y','A','A','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'WebAlertPortal','b.Inventory discrepancy found - Store will fix inventory','Y','Y','A','B','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'WebAlertPortal','c.Inventory discrepancy found - Manager refused to change OH','Y','N','A','C','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'WebAlertPortal','d.Inventory correct - Item tagged on shelf','Y','N','D','A','Y','N','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'WebAlertPortal','e.Item was out of stock - Situation corrected','Y','Y','B','A','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'WebAlertPortal','f.Item was out of stock - Could not correct','Y','N','B','B','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'WebAlertPortal','g.Inventory Mis-stock - Situation corrected','Y','Y','B','E','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'WebAlertPortal','h.Inventory Mis-stock - Could not correct','Y','N','B','F','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'WebAlertPortal','i.Shelf tag / label was NOT in place or visible - Situation corrected','Y','Y','B','C','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'WebAlertPortal','Inventory correct - Item tagged on shelf','Y','N','D','A','Y','N','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'WebAlertPortal','Inventory discrepancy found - Inventory corrected at store','Y','Y','A','A','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'WebAlertPortal','Inventory discrepancy found - Manager refused to change OH','Y','N','A','C','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'WebAlertPortal','Inventory discrepancy found - Store will fix inventory','Y','Y','A','B','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'WebAlertPortal','Inventory Mis-stock - Could not correct','Y','N','B','F','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'WebAlertPortal','Inventory Mis-stock - Situation corrected','Y','Y','B','E','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'WebAlertPortal','Item was out of stock - Could not correct','Y','N','B','B','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'WebAlertPortal','Item was out of stock - Situation corrected','Y','Y','B','A','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'WebAlertPortal','j.Shelf tag / label was NOT in place or visible - Could not correct','Y','N','B','D','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'WebAlertPortal','k.Product expired. Removed from shelf - Inventory corrected ','Y','Y','B','G','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'WebAlertPortal','l.Product expired. Removed from shelf - Inventory NOT corrected','Y','N','B','H','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'WebAlertPortal','m.Not able to address the item on this call','N','N','E','A','N','N','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'WebAlertPortal','Not able to address the item on this call','N','N','E','A','N','N','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'WebAlertPortal','Shelf label was NOT in place or visible - Could not correct','Y','N','B','D','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'WebAlertPortal','Shelf label was NOT in place or visible - Situation corrected','Y','Y','B','C','Y','Y','N','D-Void,Shelf OOS,Phantom' UNION ALL
+            SELECT 'WM_Unilever','Did Not Check','Y','N','D','J','Y','N','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Distribution Void - Confirmed','Y','N','B','O','N','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Distribution Void - Cut In','Y','Y','B','K','N','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Distribution Void - Ordered','Y','Y','B','J','N','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Distribution Void - Scanned','Y','Y','B','I','N','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Distribution Void - Tag Placed','Y','Y','B','H','N','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Inventory correct - Item tagged on shelf','Y','N','D','G','Y','N','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Inventory Correct-Item Available for Sale','Y','N','D','A','Y','N','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Inventory discrepancy found - Inventory corrected at store','Y','Y','A','G','Y','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Inventory Discrepancy found - Manager refused to change OH','Y','N','B','N','Y','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Inventory Discrepancy Found - Store will fix inventory','Y','Y','A','C','Y','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Inventory Discrepancy found & Inventory corrected at store','Y','Y','A','B','Y','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Inventory Discrepancy Found-Store refused to correct invent','Y','N','B','S','Y','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Inventory Mis-stock - could not correct','Y','N','B','M','Y','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Inventory Mis-stock - situation corrected','Y','Y','B','A','Y','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Inventory was correct-No inventory adjustment needed','Y','N','D','F','Y','N','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Item tagged on shelf correctly faced on arrival','Y','N','D','I','Y','N','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Item was out of stock','Y','N','B','L','Y','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Item was out of stock   Could not correct','Y','N','D','E','Y','N','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Item was out of stock - Could not correct','Y','N','D','E','Y','N','N','Phantom' UNION ALL
+            --SELECT 'WM_Unilever','Item was out of stock - Could not correct','Y','N','D','H','Y','N','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Item was out of stock - fixed the OOS','Y','N','A','F','Y','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Item was out of stock - Situation corrected','Y','Y','B','W','Y','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Item was out of stock, fixed the OOS','Y','N','A','F','Y','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','No Tag - Confirmed','Y','N','B','P','N','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','No Tag - Scanned','Y','Y','B','T','N','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','No Tag - Tag Placed','Y','Y','B','G','N','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Not able to address the item on this call','Y','N','D','K','Y','N','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Not Authorized - Confirmed','Y','N','B','Q','N','Y','Y','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Not Authorized - Ordered','Y','Y','B','U','N','Y','Y','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Not Authorized - Scanned','Y','Y','B','F','N','Y','Y','Phantom' UNION ALL
+            SELECT 'WM_Unilever','On Shelf - Adjusted Inventory','Y','N','C','A','N','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','On Shelf - Confirmed','Y','N','D','B','N','N','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','On Shelf - Cut In','Y','N','C','D','N','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','On Shelf - Filled','Y','N','D','C','N','N','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','On Shelf - Ordered','Y','N','C','B','N','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','On Shelf - Scanned','Y','N','D','D','N','N','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','On Shelf - Tag Placed','Y','N','C','C','N','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','OOS - Adjusted Inventory','Y','Y','B','E','N','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','OOS - Confirmed','Y','N','B','R','N','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','OOS - Filled','Y','Y','B','D','N','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','OOS - Ordered','Y','Y','B','C','N','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','OOS - Scanned','Y','Y','B','B','N','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Other problem found (will enter comments in next Q)','Y','N','B','Z','Y','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Other problem found (will enter comments)','Y','N','B','Z','Y','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Problem found - Manager refused to change OH','Y','N','A','E','Y','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Problem found - On Hands correction completed','Y','Y','A','A','Y','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Problem found - Store will correct On Hands','Y','Y','A','D','Y','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Shelf label was NOT in place or visible - Could not correct','Y','N','B','X','Y','Y','N','Phantom' UNION ALL
+            SELECT 'WM_Unilever','Shelf label was NOT in place or visible - Situation corrected','Y','Y','B','Y','Y','Y','N','Phantom' UNION ALL
+            SELECT 'Loblaw Canada','1. Item Tagged and On Shelf','Y','N','D','A','Y','N','N','Phantom,Shelf OOS,D-Void' UNION ALL
+            SELECT 'Loblaw Canada','2. Out of Stock, PI Adjusted','Y','Y','A','B','Y','Y','N','Phantom,Shelf OOS,D-Void' UNION ALL
+            SELECT 'Loblaw Canada','3. Out of Stock, Item Filled','Y','Y','A','C','Y','Y','N','Phantom,Shelf OOS,D-Void' UNION ALL
+            SELECT 'Loblaw Canada','4. Tag Replaced and Out of Stock, PI Adjusted','Y','Y','B','A','Y','Y','N','Phantom,Shelf OOS,D-Void' UNION ALL
+            SELECT 'Loblaw Canada','5. Tag Replaced','Y','Y','B','B','Y','Y','N','Phantom,Shelf OOS,D-Void' UNION ALL
+            SELECT 'Loblaw Canada','6. Other Issue Corrected, Item Now Available On Shelf','Y','Y','B','C','Y','Y','N','Phantom,Shelf OOS,D-Void' UNION ALL
+            SELECT 'Loblaw Canada','7. Code Date Issue, PI Adjusted','Y','Y','C','A','Y','Y','N','Phantom,Shelf OOS,D-Void' UNION ALL
+            SELECT 'General','Item not on planogram','N','Y','F','C','Y','Y','Y','Phantom,Shelf OOS,D-Void' UNION ALL
+            SELECT 'General','Item not on shelf','N','Y','A','C','Y','Y','N','Phantom,Shelf OOS,D-Void' UNION ALL
+            SELECT 'General','Item not on shelf and inventory discrepancy','N','Y','A','A','Y','Y','N','Phantom,Shelf OOS,D-Void' UNION ALL
+            SELECT 'General','Item not on shelf and missing tag','N','Y','A','B','Y','Y','N','Phantom,Shelf OOS,D-Void' UNION ALL
+            SELECT 'General','Item not on shelf and other issue','N','Y','A','D','Y','Y','N','Phantom,Shelf OOS,D-Void' UNION ALL
+            SELECT 'General','Item on shelf and inventory discrepancy','N','Y','B','A','Y','Y','N','Phantom,Shelf OOS,D-Void' UNION ALL
+            SELECT 'General','Item on shelf and missing tag issue','N','Y','B','B','Y','Y','N','Phantom,Shelf OOS,D-Void' UNION ALL
+            SELECT 'General','Item on shelf and no inventory discrepancy','Y','N','D','D','Y','N','N','Phantom,Shelf OOS,D-Void' UNION ALL
+            SELECT 'General','Item on shelf and placement issue','N','Y','B','C','Y','Y','N','Phantom,Shelf OOS,D-Void' UNION ALL
+            SELECT 'General','Item on shelf, other issue','N','Y','C','A','Y','Y','N','Phantom,Shelf OOS,D-Void'
+            ]]>
+        </sql>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-DATA-19">
+        <sql>
+            UPDATE $(common).DIM_ALERT_TYPE
+            SET ALERT_TYPE_DESCRIPTION =
+                case when ALERT_TYPE_DESCRIPTION = 'IDP' then 'D-Void'
+                     when ALERT_TYPE_DESCRIPTION = 'Forced' then 'Offsale'
+                     when ALERT_TYPE_DESCRIPTION = 'STO' then 'Shelf OOS' end
+            WHERE ALERT_TYPE_DESCRIPTION in ('IDP', 'STO', 'Forced');
+        </sql>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-DATA-20">
+        <sql>
+            INSERT INTO $(common).DIM_ALERT_CATEGORY("AlertCategory_KEY", "AlertCategory")
+            select 14, 'Offsale'
+        </sql>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-DATA-21">
+        <sql>
+            update $(common).alt_meta_intervention
+            set intervention_desc = b.interventiondesc
+            from (
+                select 0 as interventionkey, 'Not Included' as interventiondesc union all
+                select 1 as interventionkey, 'Not Traited' as interventiondesc union all
+                select 2 as interventionkey, 'Traited - Not Valid' as interventiondesc union all
+                select 3 as interventionkey, 'DD Frozen - Feature Tracking' as interventiondesc union all
+                select 4 as interventionkey, 'Distribution Void' as interventiondesc union all
+                select 5 as interventionkey, 'Ghost/Phantom' as interventiondesc union all
+                select 6 as interventionkey, 'Auto Replenishment Blocked' as interventiondesc union all
+                select 7 as interventionkey, 'Open Stock Promotion Shelf OOS' as interventiondesc union all
+                select 8 as interventionkey, 'New Item Distribution Shelf OOS' as interventiondesc union all
+                select 9 as interventionkey, 'New Item Promotion Shelf OOS' as interventiondesc union all
+                select 10 as interventionkey, 'Suspect POS Transaction' as interventiondesc union all
+                select 11 as interventionkey, 'Excessive Discounting' as interventiondesc union all
+                select 12 as interventionkey, 'EPC Case in Backroom' as interventiondesc union all
+                select 13 as interventionkey, 'EPC Case Odd Movement' as interventiondesc union all
+                select 14 as interventionkey, 'Move EPC Case to Sales Floor' as interventiondesc union all
+                select 15 as interventionkey, 'Product Not Trading' as interventiondesc union all
+                select 16 as interventionkey, 'Alert Recovery' as interventiondesc union all
+                select 17 as interventionkey, 'Short Zero Scan' as interventiondesc union all
+                select 18 as interventionkey, 'Unexplained Adj Sales Pattern' as interventiondesc union all
+                select 19 as interventionkey, 'Shelf OOS' as interventiondesc union all
+                select 20 as interventionkey, 'IZS High Velocity' as interventiondesc union all
+                select 21 as interventionkey, 'New Item Introduction' as interventiondesc union all
+                select 22 as interventionkey, 'Distribution Void' as interventiondesc union all
+                select 23 as interventionkey, 'DC Push' as interventiondesc union all
+                select 24 as interventionkey, 'SSO' as interventiondesc union all
+                select 25 as interventionkey, 'DD Update' as interventiondesc union all
+                select 26 as interventionkey, 'Force Alert' as interventiondesc union all
+                select 30 as interventionkey, 'Phantom - A - High Positive Adj' as interventiondesc union all
+                select 31 as interventionkey, 'Phantom - W - High WOI' as interventiondesc union all
+                select 32 as interventionkey, 'IZS - Z - High Velocity Zero Sales' as interventiondesc union all
+                select 33 as interventionkey, 'Forced Alert' as interventiondesc union all
+                select 34 as interventionkey, 'Forced Count Alert' as interventiondesc union all
+                select 35 as interventionkey, 'IDP' as interventiondesc union all
+                select 36 as interventionkey, 'LDP' as interventiondesc union all
+                select 37 as interventionkey, 'STO' as interventiondesc union all
+                select 38 as interventionkey, 'ZSD' as interventiondesc union all
+                select 39 as interventionkey, 'Suppressed Alerts' as interventiondesc union all
+                select 1001 as interventionkey, 'Poor Promotional Lift' as interventiondesc union all
+                select 1002 as interventionkey, 'Chronic OOS' as interventiondesc 
+            ) b
+            where alt_meta_intervention.intervention_key = b.interventionkey;
+            
+            update $(common).alt_meta_intervention
+            set intervention_name = b.intervention_name
+            from (
+                select 4 as intervention_key, 'D-Void' as intervention_name union all
+                select 5 as intervention_key, 'Phantom' as intervention_name union all
+                select 17 as intervention_key, 'Shelf OOS' as intervention_name union all
+                select 19 as intervention_key, 'Shelf OOS' as intervention_name union all
+                select 35 as intervention_key, 'D-Void' as intervention_name union all
+                select 36 as intervention_key, 'D-Void' as intervention_name union all
+                select 37 as intervention_key, 'Short Term Off sale' as intervention_name union all
+                select 38 as intervention_key, 'Shelf OOS' as intervention_name 
+            ) b
+            where alt_meta_intervention.intervention_key = b.intervention_key;
+            
+            update $(common).alt_meta_intervention
+            set intervention_enabled='TRUE'
+            where intervention_key in (4,5,17,19,35,36,37,38);
+            
+            update $(common).alt_meta_intervention
+            set intervention_enabled='FALSE'
+            where intervention_key not in (4,5,17,19,35,36,37,38);
+            
+            update $(common).dim_feedback_assumptions set alertTypeList = 'Short Term Off sale,Phantom,Shelf OOS,D-Void';
+        </sql>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-DATA-22">
+        <sql>
+            UPDATE $(common).DIM_ALERT_TYPE SET ALERT_TYPE_DESCRIPTION = 'Short Term Off sale'
+            WHERE ALERT_TYPE_DESCRIPTION = 'Offsale';
+        </sql>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-DATA-23">
+        <sql>
+            UPDATE $(common).DIM_ALERT_CATEGORY SET AlertCategory = 'Short Term Off sale'
+            WHERE AlertCategory = 'Offsale';
+        </sql>
+    </changeSet>
+
+    <changeSet author="hong.hu (generated)" id="COMMON-DATA-24">
+        <sql>
+            update $(common).alt_meta_intervention
+            set intervention_desc = b.interventiondesc
+            from (
+                select 37 as interventionkey, 'Short Term Off sale' as interventiondesc 
+            ) b
+            where alt_meta_intervention.intervention_key = b.interventionkey;
+            
+            update $(common).alt_meta_intervention
+            set intervention_name = b.intervention_name
+            from (
+                select 37 as intervention_key, 'STO' as intervention_name
+            ) b
+            where alt_meta_intervention.intervention_key = b.intervention_key;
+            
+            update $(common).dim_feedback_assumptions set alertTypeList = 'STO,Phantom,Shelf OOS,D-Void';
+            
+            UPDATE $(common).DIM_ALERT_TYPE SET ALERT_TYPE_DESCRIPTION = 'STO' WHERE ALERT_TYPE_DESCRIPTION = 'Short Term Off sale';
+            
+            UPDATE $(common).DIM_ALERT_CATEGORY SET AlertCategory = 'STO' WHERE AlertCategory = 'Short Term Off sale';
+            
+            UPDATE $(common).DIM_ALERT_CATEGORY SET AlertCategory = 'D-Void' WHERE AlertCategory = 'Distribution Void';
+        </sql>
+    </changeSet>
+    
+</databaseChangeLog>

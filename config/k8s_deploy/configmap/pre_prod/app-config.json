@@ -1,0 +1,33 @@
+{
+  "mode": "release",
+  "rsi-services": "rsi-services",
+  "rsi-user": "rsi-user",
+  "cloud": "https://irispre.rsicorp.local/",
+  "pbi": {
+    "service_url": "pbi/embedTokenReport",
+    "reportDetails": {
+      "workspaceId": "e687deac-bcae-41f6-a3d3-f8ea4489f8e8",
+      "reportId": "86644780-0468-4586-b7ef-ec00cbb7a70d",
+      "datasetId": "b17380c7-76ae-42bc-abf3-8a27c43f4084",
+      "effectiveId": "pbiembedirissvc@retailsolutions.com",
+      "type": "report"
+    },
+    "txtEmbedUrl": "https://app.powerbi.com/reportEmbed?",
+    "config": {
+      "settings": {
+        "filterPaneEnabled": false,
+        "navContentPaneEnabled": true
+      }
+    },
+    "filters": {
+          "$schema": "http://powerbi.com/product/schema#basic",
+          "target": {
+            "table": "Sheet1",
+            "column": "MARKET_CLUSTER"
+          },
+          "operator": "In",
+          "values": ["CO", "CA"]
+        }
+  }
+}
+

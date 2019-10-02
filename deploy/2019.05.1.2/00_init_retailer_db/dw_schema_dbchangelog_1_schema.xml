@@ -1,0 +1,26 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    
+    <changeSet author="hong.hu (generated)" id="2">
+        <sql>
+            alter table $(schema).FACT_OSM_STOREPRODUCT rename maxAdjustment to lastShipUnits;
+            alter table $(schema).FACT_OSM_STOREPRODUCT rename RSPI to salesUnitsSinceLastShip;
+            alter table $(schema).FACT_OSM_STOREPRODUCT rename minAdjustment to salesRate4Wks;
+            alter table $(schema).FACT_OSM_STOREPRODUCT rename maxUnexpAdjustment to salesRate8Wks;
+            alter table $(schema).FACT_OSM_STOREPRODUCT rename minUnexpAdjustment to salesRate13Wks;
+        </sql>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="6">
+        <sql>
+            alter table $(schema).fact_raw_alert add column salesUnitsSinceLastShip integer;
+        </sql>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="7">
+        <sql>
+            alter table $(schema).fact_processed_alert add column salesUnitsSinceLastShip integer;
+        </sql>
+    </changeSet>
+    
+</databaseChangeLog>

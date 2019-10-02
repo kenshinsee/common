@@ -1,0 +1,163 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    
+    <changeSet author="hong.hu (generated)" id="1">
+        <sql>
+			DROP TABLE if exists $(schema).FACT_OSM_CONDITION;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="2">
+        <sql>
+			CREATE TABLE $(schema).FACT_OSM_CONDITION
+			(
+				Vendor_key int NOT NULL ENCODING RLE,
+				Retailer_Key int NOT NULL ENCODING RLE,
+				Item_Key varchar(512) NOT NULL ENCODING RLE,
+				Store_key int NOT NULL ENCODING RLE,
+				Period_key int NOT NULL ENCODING RLE,
+				SupplyChainCondition int ENCODING RLE,
+				ConditionLength int ENCODING RLE,
+				accumLostUnits float ENCODING RLE,
+				accumRSDemand float ENCODING RLE,
+				SEQ_NUM int NOT NULL
+			) ORDER BY Vendor_key, Retailer_key,Item_Key, Store_key,Period_Key 
+			SEGMENTED BY MODULARHASH(Item_Key, Store_key) ALL NODES 
+			PARTITION BY SEQ_NUM;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="3">
+        <sql>
+			ALTER TABLE $(schema).FACT_OSM_CONDITION ADD CONSTRAINT PK_FACT_OSM_CONDITION PRIMARY KEY (Vendor_key, Retailer_Key, Item_Key, Store_key, Period_key, SEQ_NUM);
+        </sql>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="4">
+        <sql>
+			drop table if exists $(schema).FACT_OSM_UNHSEASONALITY_PROFILE;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="5">
+        <sql>
+			CREATE TABLE $(schema).FACT_OSM_UNHSEASONALITY_PROFILE
+			(
+				Vendor_key int NOT NULL ENCODING RLE,
+				Retailer_Key int NOT NULL ENCODING RLE,
+				ItemNumber varchar(512) NOT NULL ENCODING RLE,
+				Period_Key int NOT NULL ENCODING RLE,
+				posQty int NOT NULL ENCODING RLE,
+				grossShipQty int ENCODING RLE,
+				lostUnits float NOT NULL ENCODING RLE,
+				storeCount int NOT NULL ENCODING RLE,
+				posSeasonalityIndex float NOT NULL ENCODING RLE,
+				grossShipSeasonalityIndex float ENCODING RLE,
+				Shrink int ENCODING RLE,
+				Reclaim int ENCODING RLE,
+				SiteGrp varchar(64) NOT NULL ENCODING RLE,
+				SEQ_NUM int NOT NULL ENCODING RLE
+			)
+			ORDER BY Vendor_key,
+					  Retailer_Key,
+					  ItemNumber,
+					  Period_Key,
+					  SiteGrp
+			UNSEGMENTED ALL NODES
+			PARTITION BY (SEQ_NUM);
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="6">
+        <sql>
+			ALTER TABLE $(schema).FACT_OSM_UNHSEASONALITY_PROFILE ADD CONSTRAINT PK_FACT_OSM_UNHSEASONALITY_PROFILE PRIMARY KEY (Vendor_key, Retailer_Key, ItemNumber, Period_Key, SiteGrp, SEQ_NUM);
+        </sql>
+    </changeSet>
+	
+    <changeSet author="hong.hu (generated)" id="7">
+        <sql>
+			drop table $(schema).FACT_OSM_PRODUCT;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="8">
+        <sql>
+			CREATE TABLE $(schema).FACT_OSM_PRODUCT
+			(
+				VENDOR_KEY int NOT NULL ENCODING RLE,
+				RETAILER_KEY int NOT NULL ENCODING RLE,
+				ItemNumber varchar(512) NOT NULL ENCODING RLE,
+				SEQ_NUM int NOT NULL ENCODING RLE,
+				ItemCurrTotalPosQty int ENCODING RLE,
+				ItemCurrPosDays int ENCODING RLE,
+				ItemCurrPosStartDate timestamp ENCODING RLE,
+				ItemCurrPosEndDate timestamp ENCODING RLE,
+				ItemCurrAvgPosPerDay float ENCODING RLE,
+				ItemCurrAvgShelfSellThroughDays float ENCODING RLE,
+				ItemCurrAvgCaseSellThroughDays float ENCODING RLE,
+				ItemCurrAvgCasePackOut float ENCODING RLE,
+				ProductFreshnessProfile float ENCODING RLE
+			)
+			ORDER BY VENDOR_KEY,
+					  RETAILER_KEY,
+					  ItemNumber,
+					  SEQ_NUM,
+					  ItemCurrTotalPosQty,
+					  ItemCurrPosDays,
+					  ItemCurrPosStartDate,
+					  ItemCurrPosEndDate,
+					  ItemCurrAvgPosPerDay,
+					  ItemCurrAvgShelfSellThroughDays,
+					  ItemCurrAvgCaseSellThroughDays,
+					  ItemCurrAvgCasePackOut,
+					  ProductFreshnessProfile
+			UNSEGMENTED ALL NODES
+			PARTITION BY (SEQ_NUM);
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="9">
+        <sql>
+			ALTER TABLE $(schema).FACT_OSM_PRODUCT ADD CONSTRAINT PK_FACT_OSM_PRODUCT PRIMARY KEY (VENDOR_KEY, RETAILER_KEY, ItemNumber, SEQ_NUM);
+        </sql>
+    </changeSet>
+	
+    <changeSet author="hong.hu (generated)" id="10">
+        <sql>
+			DROP TABLE IF EXISTS $(schema).FACT_OSM_STORE;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="11">
+        <sql>
+			CREATE TABLE $(schema).FACT_OSM_STORE
+			(
+				VENDOR_KEY int NOT NULL ENCODING RLE,
+				RETAILER_KEY int NOT NULL ENCODING RLE,
+				Store_Key int NOT NULL ENCODING RLE,
+				SEQ_NUM int NOT NULL ENCODING RLE,
+				StoreCurrTotalPosQty int ENCODING RLE,
+				StoreCurrPosDays int ENCODING RLE,
+				StoreCurrPosStartDate timestamp ENCODING RLE,
+				StoreCurrPosEndDate timestamp ENCODING RLE,
+				StoreCurrAvgPosPerDay float ENCODING RLE,
+				StoreCurrAvgShelfSellThroughDays float ENCODING RLE,
+				StoreCurrAvgCaseSellThroughDays float ENCODING RLE,
+				StoreCurrAvgCasePackOut float ENCODING RLE
+			)
+			ORDER BY VENDOR_KEY,
+					  RETAILER_KEY,
+					  Store_Key,
+					  SEQ_NUM,
+					  StoreCurrTotalPosQty,
+					  StoreCurrPosDays,
+					  StoreCurrPosStartDate,
+					  StoreCurrPosEndDate,
+					  StoreCurrAvgPosPerDay,
+					  StoreCurrAvgShelfSellThroughDays,
+					  StoreCurrAvgCaseSellThroughDays,
+					  StoreCurrAvgCasePackOut
+			UNSEGMENTED ALL NODES
+			PARTITION BY (SEQ_NUM);
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="12">
+        <sql>
+			ALTER TABLE $(schema).FACT_OSM_STORE ADD CONSTRAINT PK_FACT_OSM_STORE PRIMARY KEY (VENDOR_KEY, RETAILER_KEY, Store_Key, SEQ_NUM);
+        </sql>
+    </changeSet>
+	
+</databaseChangeLog>

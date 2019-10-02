@@ -1,0 +1,116 @@
+import datetime, json, configparser, sys, copy, traceback
+from mq.publisher import BasePublisher
+from log.logger import Logger
+from dumpmain import DumpMain
+from common.step_status import StepStatus
+
+
+class DumpWrapper(BasePublisher):
+    def __init__(self, meta, params, logger=None):
+        self._meta = meta
+        self._params = params
+        self._exchange_name = self._meta["mq_exchange_name"]
+        self._exchange_type = self._meta["mq_exchange_type"]
+        self._queue = self._meta["mq_queue_name"]
+        self._routing_key = self._meta["mq_routing_key"]
+
+        __debug = self._params.get("debug", 'N')
+        __log_file = './log/dump_%s.log' % datetime.datetime.now().strftime('%Y%m%d')
+        __log_level = 'DEBUG' if str(__debug).upper() == 'Y' else 'INFO'
+        self._logger = logger if logger else Logger(log_level=__log_level, target="console|file",
+                                                    vendor_key=-1, retailer_key=-1,
+                                                    log_file=__log_file, sql_conn=None)
+        self._logger.set_level(log_level=__log_level)
+        super(DumpWrapper, self).__init__(meta=self._meta, logger=self._logger)
+
+    def on_action(self, body):
+        self._logger.info("dumper is getting started at: %s" % datetime.datetime.now())
+        try:
+            self._app_id = 'dumper'
+            self._logger.info("dumper body is: %s" % body)
+
+            dump = DumpMain(meta=self._meta, params=self._params, logger=self._logger)
+            dump.main_process()
+
+            # message for RabbitMQ
+            body["status"] = StepStatus.SUCCESS.value
+            body["message"] = "dumper is complete successfully"
+            body["timestamp"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            self._logger.info("dumper body is: %s" % body)
+            self._body = json.dumps(body)
+
+        # warning will be treated as success
+        except Warning as msg:
+            self._logger.warning("Warning: %s" % msg)
+            body["status"] = StepStatus.SUCCESS.value
+            body["message"] = '%s' % msg
+            body["timestamp"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            self._logger.info("dumper body is: %s" % body)
+            self._body = json.dumps(body)
+
+        except KeyError as msg:
+            self._logger.warning(traceback.format_exc())
+            body["status"] = StepStatus.ERROR.value
+            body["message"] = traceback.format_exc()
+            body["timestamp"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            self._logger.info("dumper body is: %s" % body)
+            self._body = json.dumps(body)
+            self._logger.error("KeyError: %s" % msg)
+
+        except SystemExit as msg:
+            self._logger.debug("In except SystemExit with message: %s" % msg)
+            if msg.code == 2:   # CANCEL: job termination check.
+                body["status"] = StepStatus.CANCEL.value
+                body["message"] = 'dumper Job get cancelled.'
+                body["timestamp"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                self._logger.info("dumper body is: %s" % body)
+                self._body = json.dumps(body)
+            else:
+                # body["status"] = StepStatus.ERROR.value
+                body["status"] = msg.code
+                body["message"] = 'dumper job exits with code: %s' % msg
+                body["timestamp"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                self._logger.info("dumper body is: %s" % body)
+                self._body = json.dumps(body)
+
+        except Exception as msg:
+            self._logger.debug("In except Exception with message: %s" % msg)
+            body["status"] = StepStatus.ERROR.value
+            body["message"] = '%s' % msg
+            body["timestamp"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            self._logger.info("dumper body is: %s" % body)
+            self._body = json.dumps(body)
+            self._logger.error(msg)     # will raise RuntimeError
+
+        finally:
+            self._logger.info("dumper is done at: %s" % datetime.datetime.now())
+
+
+if __name__ == '__main__':
+    with open("{}/../../../config/config.properties".format(sys.argv[0])) as fp:
+        cp = configparser.ConfigParser()
+        cp.read_file(fp)
+        _meta = dict(cp.items("DEFAULT"))
+    # _params = dict(vendor_key=113, retailer_key=267, cycle_key=2, period_key=20180128)
+    _params = {"jobId": 1234,
+               "stepId": 3,
+               "batchId": 0,
+               "retry": 0,
+               "groupName": "9:singleton",
+               "afmGroupName": "7:2",
+               "debug": "N"
+            }
+    dumper = DumpWrapper(meta=_meta, params=_params)
+
+    msg = copy.deepcopy(_params)
+    msg["status"] = StepStatus.RUNNING.value
+    msg["message"] = ""
+    msg["timestamp"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    try:
+        dumper.on_action(msg)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        dumper.run()
+        dumper.stop()

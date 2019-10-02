@@ -1,0 +1,17 @@
+numpy
+pandas
+pika
+pycryptodome
+pymssql
+pyodbc
+python-dateutil
+pytz
+PyYAML
+redis
+requests
+SQLAlchemy
+sqlalchemy-vertica-python
+tornado
+urllib3
+vertica-python
+xlrd

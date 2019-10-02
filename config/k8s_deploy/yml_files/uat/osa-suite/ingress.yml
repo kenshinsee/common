@@ -1,0 +1,102 @@
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  name: ingress
+  namespace: osa-suite
+spec:
+  rules:
+  - host: irisuat.rsicorp.local
+    http:
+      paths:
+      - path: /admin/
+        backend:
+          serviceName: osaadmin
+          servicePort: 80
+      - path: /osa/alerts/
+        backend:
+          serviceName: osaalertservice
+          servicePort: 80
+      - path: /osa/osacore/
+        backend:
+          serviceName: osacoreservice
+          servicePort: 80
+      - path: /pbi/
+        backend:
+          serviceName: powerbiembeddedservice
+          servicePort: 80
+      - path: /osa/afm/
+        backend:
+          serviceName: afmservice
+          servicePort: 80
+      - path: /osa/scorecard/
+        backend:
+          serviceName: scorecard
+          servicePort: 80
+      - path: /osa/ag/
+        backend:
+          serviceName: alertgeneration
+          servicePort: 80
+      - path: /osa_bundle/
+        backend:
+          serviceName: osabundle
+          servicePort: 80
+      - path: /iris/
+        backend:
+          serviceName: osaclient
+          servicePort: 80
+      - path: /provision/
+        backend:
+          serviceName: provisionservice
+          servicePort: 80
+      - path: /deploy/
+        backend:
+          serviceName: deploy
+          servicePort: 80
+  - host: uatz1k8mas001.rsicorp.local
+    http:
+      paths:
+      - path: /admin
+        backend:
+          serviceName: osaadmin
+          servicePort: 80
+      - path: /osa/alerts
+        backend:
+          serviceName: osaalertservice
+          servicePort: 80
+      - path: /osa/osacore
+        backend:
+          serviceName: osacoreservice
+          servicePort: 80
+      - path: /pbi
+        backend:
+          serviceName: powerbiembeddedservice
+          servicePort: 80
+      - path: /osa/afm/
+        backend:
+          serviceName: afmservice
+          servicePort: 80
+      - path: /osa/scorecard/
+        backend:
+          serviceName: scorecard
+          servicePort: 80
+      - path: /osa/ag/
+        backend:
+          serviceName: alertgeneration
+          servicePort: 80
+      - path: /osa_bundle/
+        backend:
+          serviceName: osabundle
+          servicePort: 80
+      - path: /iris
+        backend:
+          serviceName: osaclient
+          servicePort: 80
+      - path: /provision
+        backend:
+          serviceName: provisionservice
+          servicePort: 80
+      - path: /deploy/
+        backend:
+          serviceName: deploy
+          servicePort: 80

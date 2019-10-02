@@ -1,0 +1,10 @@
+{
+  "creater": "ben.wu@rsicorp.local",
+  "groupName": "1:58:4:1",
+  "jobDefinitionId": 1,
+  "parametersContext": "",
+  "priority": 1,
+  "scheduleExpression": "",
+  "scheduleName": "1:57:4:1:OSMAlerting",
+  "scheduleType": "EVENT"
+}

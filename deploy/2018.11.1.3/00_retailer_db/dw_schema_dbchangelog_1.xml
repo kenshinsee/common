@@ -1,0 +1,343 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet author="hong.hu (generated)" id="100">
+        <sql>
+            ALTER TABLE $(schema).FACT_AA_STOREPRODUCT RENAME TO FACT_AA_STOREPRODUCT_BK;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="110">
+        <sql>
+            ALTER PROJECTION $(schema).FACT_AA_STOREPRODUCT RENAME TO FACT_AA_STOREPRODUCT_BK;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="120">
+        <createTable tableName="FACT_AA_STOREPRODUCT">
+            <column name="VENDOR_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="SUBVENDOR_ID_KEY" type="int"/>
+            <column name="RETAILER_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="ITEMNUMBER" type="varchar(512)"><constraints nullable="false"/></column>
+            <column name="STORE_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="PERIOD_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="ITEM_KEY" type="int"/>
+            <column name="DC_KEY" type="int"/>
+            <column name="DC_RETAILER_KEY" type="int"/>
+            <column name="POSUNITS" type="int"/>
+            <column name="POSSALES" type="numeric(14,4)"><constraints nullable="false"/></column>
+            <column name="IDP" type="numeric(14,4)"/>
+            <column name="LDP" type="numeric(14,4)"/>
+            <column name="SSH" type="numeric(14,4)"/>
+            <column name="SC" type="numeric(14,4)"/>
+            <column name="ZSD" type="numeric(14,4)"/>
+            <column name="STO" type="numeric(14,4)"/>
+            <column name="OS" type="numeric(14,4)"/>
+            <column name="NS" type="numeric(14,4)"/>
+            <column name="POTENTIALSALES" type="numeric(14,4)"/>
+            <column name="RSP" type="numeric(14,4)"/>
+            <column name="FINALINDEXVALUE" type="float"/>
+            <column name="BASETOTALVOLUME" type="int"/>
+            <column name="BASEAVGVOLUME" type="int"/>
+            <column name="LEAGUESCORETOTALVOLUME" type="int"/>
+            <column name="LEAGUESCOREAVGVOLUME" type="int"/>
+            <column name="RANGEDFLAG" type="boolean"/>
+            <column name="SEQ_NUM" type="int"><constraints nullable="false"/></column>
+            <column name="RetailOnHand" type="int"/>
+            <column name="DaysSincePOS" type="int"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" order by VENDOR_KEY,RETAILER_KEY,ITEMNUMBER,STORE_KEY,PERIOD_KEY,ITEM_KEY SEGMENTED BY MODULARHASH (ITEM_KEY, STORE_KEY) ALL NODES PARTITION BY SEQ_NUM//1000000000%36500;"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="130">
+        <sql>
+            INSERT INTO $(schema).FACT_AA_STOREPRODUCT(VENDOR_KEY,SUBVENDOR_ID_KEY,RETAILER_KEY,ITEMNUMBER,STORE_KEY,PERIOD_KEY,ITEM_KEY,DC_KEY,DC_RETAILER_KEY,POSUNITS,POSSALES,IDP,LDP,SSH,SC,ZSD,STO,OS,NS,POTENTIALSALES,RSP,FINALINDEXVALUE,BASETOTALVOLUME,BASEAVGVOLUME,LEAGUESCORETOTALVOLUME,LEAGUESCOREAVGVOLUME,RANGEDFLAG,SEQ_NUM,RetailOnHand,DaysSincePOS) SELECT VENDOR_KEY,SUBVENDOR_ID_KEY,RETAILER_KEY,ITEMNUMBER,STORE_KEY,PERIOD_KEY,ITEM_KEY,DC_KEY,DC_RETAILER_KEY,POSUNITS,POSSALES,IDP,LDP,SSH,SC,ZSD,STO,OS,NS,POTENTIALSALES,RSP,FINALINDEXVALUE,BASETOTALVOLUME,BASEAVGVOLUME,LEAGUESCORETOTALVOLUME,LEAGUESCOREAVGVOLUME,RANGEDFLAG,SEQ_NUM,RetailOnHand,DaysSincePOS FROM $(schema).FACT_AA_STOREPRODUCT_BK;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="140">
+        <sql>
+            DROP TABLE $(schema).FACT_AA_STOREPRODUCT_BK;
+        </sql>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="150">
+        <sql>
+            ALTER TABLE $(schema).FACT_OSM_STOREPRODUCT RENAME TO FACT_OSM_STOREPRODUCT_BK;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="160">
+        <sql>
+            ALTER PROJECTION $(schema).FACT_OSM_STOREPRODUCT RENAME TO FACT_OSM_STOREPRODUCT_BK;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="170">
+        <createTable tableName="FACT_OSM_STOREPRODUCT">
+            <column name="Vendor_key" type="int"><constraints nullable="false"/></column>
+            <column name="Retailer_Key" type="int"><constraints nullable="false"/></column>
+            <column name="ItemNumber" type="varchar(512)"><constraints nullable="false"/></column>
+            <column name="Store_Key" type="int"><constraints nullable="false"/></column>
+            <column name="Item_Key" type="int"><constraints nullable="false"/></column>
+            <column name="SPName" type="varchar(512)"/>
+            <column name="SPCurrRSPIIsMax" type="int"/>
+            <column name="SPCurrTraitedStoreItemComb" type="varchar(50)"><constraints nullable="false"/></column>
+            <column name="SPCurrValidStoreItemComb" type="varchar(50)"><constraints nullable="false"/></column>
+            <column name="SPCurrDD" type="float"/>
+            <column name="SPCurrRetailOnHand" type="int"/>
+            <column name="SPCurrRSInventory" type="int"/>
+            <column name="SpCurrMaxShelfQty" type="int"/>
+            <column name="SPCurrSafetyStockQty" type="float"/>
+            <column name="SPCurrTotalPosQty" type="int"/>
+            <column name="SPCurrTotalPosDays" type="int"/>
+            <column name="SPCurrAvgPosPerDay" type="float"/>
+            <column name="SPCurrAvgShelfSellThroughDays" type="float"/>
+            <column name="SPCurrAvgCaseSellThroughDays" type="float"/>
+            <column name="SPCurrAvgCasePackOut" type="float"/>
+            <column name="SPCurrAvgRSDemand" type="float"/>
+            <column name="SPCurrAvgPrice" type="float"/>
+            <column name="SPCurrGapProbability" type="float"/>
+            <column name="spCurrEpisodeType" type="int"/>
+            <column name="SPCurrClassificationCode" type="int"/>
+            <column name="SPCurrSupplyChainCondition" type="int"/>
+            <column name="SPCurrInvErr" type="int"/>
+            <column name="DaysSinceBottom" type="int"/>
+            <column name="AccumAdjUnConfirmed" type="int"/>
+            <column name="SPCurrRecordStartDate" type="timestamp"/>
+            <column name="SPCurrRecordEndDate" type="timestamp"/>
+            <column name="SPCurrPosStartDate" type="timestamp"/>
+            <column name="SPCurrPosEndDate" type="timestamp"/>
+            <column name="LastPOSDay" type="timestamp"/>
+            <column name="FirstPOSDay" type="timestamp"/>
+            <column name="LastGrossShipDay" type="timestamp"/>
+            <column name="FirstGrossShipDay" type="timestamp"/>
+            <column name="DaysSincePOS" type="int"/>
+            <column name="DaysSinceGrossShip" type="int"/>
+            <column name="SumGrossShip" type="int"/>
+            <column name="SumRetailAdjustment" type="int"/>
+            <column name="SumUnexplainedAdjustment" type="int"/>
+            <column name="DaysSincePositiveRetailAdj" type="int"/>
+            <column name="DaysSincePositiveUnexplainedAdj" type="int"/>
+            <column name="DaysSinceShrink" type="int"/>
+            <column name="LostSalesToDate" type="float"/>
+            <column name="LostUnitsToDate" type="float"/>
+            <column name="ConditionLength" type="int"/>
+            <column name="ZeroScanDays" type="int"/>
+            <column name="RSInventory" type="int"/>
+            <column name="RSPI" type="int"/>
+            <column name="RetailOnHandAverage" type="int"/>
+            <column name="RSInventoryAverage" type="int"/>
+            <column name="DaysSinceNegativeRetailAdjustment" type="int"/>
+            <column name="RSDemand" type="float"/>
+            <column name="ConditionSales" type="float"/>
+            <column name="ConditionDays" type="int"/>
+            <column name="DefaultSales" type="float"/>
+            <column name="DefaultDays" type="int"/>
+            <column name="salesRate13weeks" type="float"/>
+            <column name="zeroScanRate13weeks" type="float"/>
+            <column name="onHandAvg13weeks" type="float"/>
+            <column name="MaxAdjustment" type="int"/>
+            <column name="MinAdjustment" type="int"/>
+            <column name="MaxUnexpAdjustment" type="int"/>
+            <column name="MinUnexpAdjustment" type="int"/>
+            <column name="supplyChainConditionDemand" type="float"/>
+            <column name="salesLastWeek" type="float"/>
+            <column name="maxDaysZeroStock" type="int"/>
+            <column name="binomial" type="int"/>
+            <column name="ProductFreshnessProfile" type="float"/>
+            <column name="EffectiveDate" type="timestamp"/>
+            <column name="AvgPOSQtyWeekly" type="float"/>
+            <column name="AvgRSDemandWeekly" type="float"/>
+            <column name="AvgDDWeekly" type="float"/>
+            <column name="VelocityTierUnits" type="int"/>
+            <column name="IncrGoodDayStartDate" type="timestamp"/>
+            <column name="IncrEpisodeType" type="int"/>
+            <column name="IncrConditionLength" type="int"/>
+            <column name="IncrZeroScanDays" type="int"/>
+            <column name="IncrSupplyChainCondition" type="int"/>
+            <column name="IncrDaysSincePOS" type="int"/>
+            <column name="IncrNoneOOSTotalDays" type="int"/>
+            <column name="IncrNoneOOSTotalQty" type="float"/>
+            <column name="IncrAccumRSDemandPoisson" type="float"/>
+            <column name="IncrLastValue4EMA" type="float"/>
+            <column name="IncrSalesDays" type="int"/>
+            <column name="IncrSalesTotalDays" type="int"/>
+            <column name="IncrTotalDays" type="int"/>
+            <column name="IncrGapDaysCount" type="int"/>
+            <column name="IncrGapDaysMax" type="int"/>
+            <column name="IncrGapProbability" type="float"/>
+            <column name="IncrTotalPosQty" type="int"/>
+            <column name="IncrTotalPosSales" type="float"/>
+            <column name="IncrTotalPosDays" type="int"/>
+            <column name="IncrSumAdjOrig" type="int"/>
+            <column name="IncrSumUnexpAdj" type="int"/>
+            <column name="IncrSumGrossShip" type="int"/>
+            <column name="IncrConditionLostUnits" type="float"/>
+            <column name="IncrConditionRSDemands" type="float"/>
+            <column name="lastSubvendorIDKey" type="int"/>
+            <column name="codeLifeExpiringAge" type="int"/>
+            <column name="codeLifeExpiringQty" type="int"/>
+            <column name="codeLifeExpiringSales" type="float"/>
+            <column name="peak3DaysSales" type="int"/>
+            <column name="peak7DaysSales" type="int"/>
+            <column name="LastPeak3DaysSales" type="int"/>
+            <column name="LastPeak7DaysSales" type="int"/>
+            <column name="LastWeekRSDemand" type="float"/>
+            <column name="LastExcessRSDemand" type="float"/>
+            <column name="LastOrderKey" type="int"/>
+            <column name="LastReceiptKey" type="int"/>
+            <column name="LastOrderQty" type="int"/>
+            <column name="LastReceiptQty" type="int"/>
+            <column name="SecondLastOrderKey" type="int"/>
+            <column name="SecondLastReceiptKey" type="int"/>
+            <column name="SecondLastOrderQty" type="int"/>
+            <column name="SecondLastReceiptQty" type="int"/>
+            <column name="DSD_IND" type="int"/>
+            <column name="POG_IND" type="int"/>
+            <column name="AlertITEMKey" type="int"/>
+            <column name="PROMO_IND" type="int"/>
+            <column name="AlertLostUnitsToDate" type="float"/>
+            <column name="AlertLostSalesToDate" type="float"/>
+            <column name="AlertLostUnitsToDate2" type="float"/>
+            <column name="PromoType" type="int"/>
+            <column name="RegularSalesRate" type="float"/>
+            <column name="PromoSalesRate" type="float"/>
+            <column name="DaysSincePromo" type="int"/>
+            <column name="AlertItemNumber" type="varchar(512)"/>
+            <column name="SEQ_NUM" type="int"><constraints nullable="false"/></column>
+            <column name="DC_RETAILER_KEY" type="int" defaultValueNumeric="-1"><constraints nullable="false"/></column>
+            <column name="DC_KEY" type="int" defaultValueNumeric="-1"><constraints nullable="false"/></column>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" ORDER BY Vendor_key, Retailer_key,ITEM_KEY, Store_Key SEGMENTED BY MODULARHASH(ITEM_KEY,STORE_KEY) ALL NODES PARTITION BY SEQ_NUM//1000000000%36500;"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="180">
+        <addPrimaryKey columnNames="Vendor_key, Retailer_Key, ITEM_KEY, Store_Key, SEQ_NUM" constraintName="PK_FACT_OSM_STOREPRODUCT" tableName="FACT_OSM_STOREPRODUCT"/>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="190">
+        <sql>
+            INSERT INTO $(schema).FACT_OSM_STOREPRODUCT(Vendor_key,Retailer_Key,ItemNumber,Store_Key,Item_Key,SPName,SPCurrRSPIIsMax,SPCurrTraitedStoreItemComb,SPCurrValidStoreItemComb,SPCurrDD,SPCurrRetailOnHand,SPCurrRSInventory,SpCurrMaxShelfQty,SPCurrSafetyStockQty,SPCurrTotalPosQty,SPCurrTotalPosDays,SPCurrAvgPosPerDay,SPCurrAvgShelfSellThroughDays,SPCurrAvgCaseSellThroughDays,SPCurrAvgCasePackOut,SPCurrAvgRSDemand,SPCurrAvgPrice,SPCurrGapProbability,spCurrEpisodeType,SPCurrClassificationCode,SPCurrSupplyChainCondition,SPCurrInvErr,DaysSinceBottom,AccumAdjUnConfirmed,SPCurrRecordStartDate,SPCurrRecordEndDate,SPCurrPosStartDate,SPCurrPosEndDate,LastPOSDay,FirstPOSDay,LastGrossShipDay,FirstGrossShipDay,DaysSincePOS,DaysSinceGrossShip,SumGrossShip,SumRetailAdjustment,SumUnexplainedAdjustment,DaysSincePositiveRetailAdj,DaysSincePositiveUnexplainedAdj,DaysSinceShrink,LostSalesToDate,LostUnitsToDate,ConditionLength,ZeroScanDays,RSInventory,RSPI,RetailOnHandAverage,RSInventoryAverage,DaysSinceNegativeRetailAdjustment,RSDemand,ConditionSales,ConditionDays,DefaultSales,DefaultDays,salesRate13weeks,zeroScanRate13weeks,onHandAvg13weeks,MaxAdjustment,MinAdjustment,MaxUnexpAdjustment,MinUnexpAdjustment,supplyChainConditionDemand,salesLastWeek,maxDaysZeroStock,binomial,ProductFreshnessProfile,EffectiveDate,AvgPOSQtyWeekly,AvgRSDemandWeekly,AvgDDWeekly,VelocityTierUnits,IncrGoodDayStartDate,IncrEpisodeType,IncrConditionLength,IncrZeroScanDays,IncrSupplyChainCondition,IncrDaysSincePOS,IncrNoneOOSTotalDays,IncrNoneOOSTotalQty,IncrAccumRSDemandPoisson,IncrLastValue4EMA,IncrSalesDays,IncrSalesTotalDays,IncrTotalDays,IncrGapDaysCount,IncrGapDaysMax,IncrGapProbability,IncrTotalPosQty,IncrTotalPosSales,IncrTotalPosDays,IncrSumAdjOrig,IncrSumUnexpAdj,IncrSumGrossShip,IncrConditionLostUnits,IncrConditionRSDemands,lastSubvendorIDKey,codeLifeExpiringAge,codeLifeExpiringQty,codeLifeExpiringSales,peak3DaysSales,peak7DaysSales,LastPeak3DaysSales,LastPeak7DaysSales,LastWeekRSDemand,LastExcessRSDemand,LastOrderKey,LastReceiptKey,LastOrderQty,LastReceiptQty,SecondLastOrderKey,SecondLastReceiptKey,SecondLastOrderQty,SecondLastReceiptQty,DSD_IND,POG_IND,AlertITEMKey,PROMO_IND,AlertLostUnitsToDate,AlertLostSalesToDate,AlertLostUnitsToDate2,PromoType,RegularSalesRate,PromoSalesRate,DaysSincePromo,AlertItemNumber,SEQ_NUM,DC_RETAILER_KEY,DC_KEY) SELECT Vendor_key,Retailer_Key,ItemNumber,Store_Key,Item_Key,SPName,SPCurrRSPIIsMax,SPCurrTraitedStoreItemComb,SPCurrValidStoreItemComb,SPCurrDD,SPCurrRetailOnHand,SPCurrRSInventory,SpCurrMaxShelfQty,SPCurrSafetyStockQty,SPCurrTotalPosQty,SPCurrTotalPosDays,SPCurrAvgPosPerDay,SPCurrAvgShelfSellThroughDays,SPCurrAvgCaseSellThroughDays,SPCurrAvgCasePackOut,SPCurrAvgRSDemand,SPCurrAvgPrice,SPCurrGapProbability,spCurrEpisodeType,SPCurrClassificationCode,SPCurrSupplyChainCondition,SPCurrInvErr,DaysSinceBottom,AccumAdjUnConfirmed,SPCurrRecordStartDate,SPCurrRecordEndDate,SPCurrPosStartDate,SPCurrPosEndDate,LastPOSDay,FirstPOSDay,LastGrossShipDay,FirstGrossShipDay,DaysSincePOS,DaysSinceGrossShip,SumGrossShip,SumRetailAdjustment,SumUnexplainedAdjustment,DaysSincePositiveRetailAdj,DaysSincePositiveUnexplainedAdj,DaysSinceShrink,LostSalesToDate,LostUnitsToDate,ConditionLength,ZeroScanDays,RSInventory,RSPI,RetailOnHandAverage,RSInventoryAverage,DaysSinceNegativeRetailAdjustment,RSDemand,ConditionSales,ConditionDays,DefaultSales,DefaultDays,salesRate13weeks,zeroScanRate13weeks,onHandAvg13weeks,MaxAdjustment,MinAdjustment,MaxUnexpAdjustment,MinUnexpAdjustment,supplyChainConditionDemand,salesLastWeek,maxDaysZeroStock,binomial,ProductFreshnessProfile,EffectiveDate,AvgPOSQtyWeekly,AvgRSDemandWeekly,AvgDDWeekly,VelocityTierUnits,IncrGoodDayStartDate,IncrEpisodeType,IncrConditionLength,IncrZeroScanDays,IncrSupplyChainCondition,IncrDaysSincePOS,IncrNoneOOSTotalDays,IncrNoneOOSTotalQty,IncrAccumRSDemandPoisson,IncrLastValue4EMA,IncrSalesDays,IncrSalesTotalDays,IncrTotalDays,IncrGapDaysCount,IncrGapDaysMax,IncrGapProbability,IncrTotalPosQty,IncrTotalPosSales,IncrTotalPosDays,IncrSumAdjOrig,IncrSumUnexpAdj,IncrSumGrossShip,IncrConditionLostUnits,IncrConditionRSDemands,lastSubvendorIDKey,codeLifeExpiringAge,codeLifeExpiringQty,codeLifeExpiringSales,peak3DaysSales,peak7DaysSales,LastPeak3DaysSales,LastPeak7DaysSales,LastWeekRSDemand,LastExcessRSDemand,LastOrderKey,LastReceiptKey,LastOrderQty,LastReceiptQty,SecondLastOrderKey,SecondLastReceiptKey,SecondLastOrderQty,SecondLastReceiptQty,DSD_IND,POG_IND,AlertITEMKey,PROMO_IND,AlertLostUnitsToDate,AlertLostSalesToDate,AlertLostUnitsToDate2,PromoType,RegularSalesRate,PromoSalesRate,DaysSincePromo,AlertItemNumber,SEQ_NUM,DC_RETAILER_KEY,DC_KEY FROM $(schema).FACT_OSM_STOREPRODUCT_BK;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="200">
+        <sql>
+            DROP TABLE $(schema).FACT_OSM_STOREPRODUCT_BK;
+        </sql>
+    </changeSet>
+    
+    <changeSet author="hong.hu (generated)" id="210">
+        <sql>
+            ALTER TABLE $(schema).FACT_RAW_ALERT RENAME TO FACT_RAW_ALERT_BK;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="220">
+        <sql>
+            ALTER PROJECTION $(schema).FACT_RAW_ALERT RENAME TO FACT_RAW_ALERT_BK;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="230">
+        <createTable tableName="FACT_RAW_ALERT">
+            <column name="Vendor_key" type="int"><constraints nullable="false"/></column>
+            <column name="Retailer_Key" type="int"><constraints nullable="false"/></column>
+            <column name="ItemNumber" type="varchar(512)"><constraints nullable="false"/></column>
+            <column name="Store_Key" type="int"><constraints nullable="false"/></column>
+            <column name="Period_Key" type="int"><constraints nullable="false"/></column>
+            <column name="InterventionKey" type="int"><constraints nullable="false"/></column>
+            <column name="FirstPublishDate" type="timestamp"><constraints nullable="false"/></column>
+            <column name="LastPublishDate" type="timestamp"><constraints nullable="false"/></column>
+            <column name="SEQ_NUM" type="int"><constraints nullable="false"/></column>
+            <column name="ACTUAL_DAY_KEY" type="int"><constraints nullable="false"/></column>
+            <column name="MerchandizerAccessibleValue" type="int"/>
+            <column name="IncidentDetails" type="varchar(250)"/>
+            <column name="IncidentID" type="bigint"><constraints nullable="false"/></column>
+            <column name="RSInventory" type="int"/>
+            <column name="RetailOnHandAverage" type="int"/>
+            <column name="RSInventoryAverage" type="int"/>
+            <column name="RetailOnHand" type="int"/>
+            <column name="DaysSincePOS" type="int"/>
+            <column name="RSPIIsMax" type="int"/>
+            <column name="LostSalesToDate" type="float"/>
+            <column name="LostUnitsToDate" type="float"/>
+            <column name="ConditionLength" type="int"/>
+            <column name="ZeroScanDays" type="int"/>
+            <column name="SalesRate13weeks" type="float"/>
+            <column name="SalesLastWeek" type="float"/>
+            <column name="AvgRSDemand" type="float"/>
+            <column name="AvgPrice" type="float"/>
+            <column name="ITEM_KEY" type="int"/>
+            <column name="SUBVENDOR_ID_KEY" type="int"/>
+            <column name="ExpectedLostSalesUnits" type="float"/>
+            <column name="ExpectedLostSalesAmount" type="float"/>
+            <column name="LastPOSScanPeriod" type="int"/>
+            <column name="UPC" type="varchar(512)"/>
+            <column name="STOREID" type="varchar(512)"/>
+            <column name="ClassificationCode" type="int"/>
+            <column name="GapProbability" type="float"/>
+            <column name="AvgPOSPerDay" type="float"/>
+            <column name="DaysSincePositiveRetailAdj" type="int"/>
+            <column name="DaysSinceNegativeRetailAdj" type="int"/>
+            <column name="DaysSincePositiveUnexplainedAdj" type="int"/>
+            <column name="DaysSinceShrink" type="int"/>
+            <column name="DaysSinceGS" type="int"/>
+            <column name="CurrInvErr" type="int"/>
+            <column name="ConditionSales" type="int"/>
+            <column name="ConditionDays" type="int"/>
+            <column name="DefaultSales" type="int"/>
+            <column name="DefaultDays" type="int"/>
+            <column name="DefaultConditionRate" type="float"/>
+            <column name="SupplyChainConditionRate" type="float"/>
+            <column name="MaxAdjustment" type="int"/>
+            <column name="MinAdjustment" type="int"/>
+            <column name="MaxUnexpAdjustment" type="int"/>
+            <column name="MinUnexpAdjustment" type="int"/>
+            <column name="DSD_Ind" type="int"/>
+            <column name="RatesofSalesChange" type="float"/>
+            <column name="RSDaysOH" type="float"/>
+            <column name="POG_Ind" type="int"/>
+            <column name="AlertUPC" type="varchar(512)"/>
+            <column name="PROMO_Ind" type="int"/>
+            <column name="ShelfCapacity" type="int"/>
+            <column name="CasePack" type="int"/>
+            <column name="ProjectedWeeklySalesGain" type="float"/>
+            <column name="AlertLostUnitsToDate" type="float"/>
+            <column name="AlertLostSalesToDate" type="float"/>
+            <column name="POSUNITS" type="int"/>
+            <column name="POSSALES" type="numeric(9,2)"/>
+            <column name="AlertLostUnitsToDate2" type="float"/>
+            <column name="PromoType" type="int"/>
+            <column name="RegularSalesRate" type="float"/>
+            <column name="PromoSalesRate" type="float"/>
+            <column name="DaysSincePromo" type="int"/>
+            <column name="AlertItemNumber" type="varchar(512)"/>
+            <column name="Attributes" type="varchar(40000)"/>
+            <column name="RANK_VALUE" type="float"/>
+        </createTable>
+        <modifySql>
+             <regExpReplace replace=", ([a-zA-Z]+)" with=" ENCODING RLE, $1"/>
+             <regExpReplace replace="\)$" with=" ENCODING RLE\)"/>
+        </modifySql>
+        <modifySql>
+             <append value=" ORDER BY VENDOR_KEY,RETAILER_KEY,Period_Key,itemNumber,STORE_KEY,InterventionKey SEGMENTED BY MODULARHASH(Period_Key,ITEM_KEY,STORE_KEY,InterventionKey) ALL NODES PARTITION BY SEQ_NUM//1000000000%36500;"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="240">
+        <addPrimaryKey columnNames="VENDOR_KEY,RETAILER_KEY,Period_Key,itemNumber,STORE_KEY,SEQ_NUM" constraintName="PK_FACT_RAW_ALERT" tableName="FACT_RAW_ALERT"/>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="250">
+        <sql>
+            INSERT INTO $(schema).FACT_RAW_ALERT(Vendor_key,Retailer_Key,ItemNumber,Store_Key,Period_Key,InterventionKey,FirstPublishDate,LastPublishDate,SEQ_NUM,ACTUAL_DAY_KEY,MerchandizerAccessibleValue,IncidentDetails,IncidentID,RSInventory,RetailOnHandAverage,RSInventoryAverage,RetailOnHand,DaysSincePOS,RSPIIsMax,LostSalesToDate,LostUnitsToDate,ConditionLength,ZeroScanDays,SalesRate13weeks,SalesLastWeek,AvgRSDemand,AvgPrice,ITEM_KEY,SUBVENDOR_ID_KEY,ExpectedLostSalesUnits,ExpectedLostSalesAmount,LastPOSScanPeriod,UPC,STOREID,ClassificationCode,GapProbability,AvgPOSPerDay,DaysSincePositiveRetailAdj,DaysSinceNegativeRetailAdj,DaysSincePositiveUnexplainedAdj,DaysSinceShrink,DaysSinceGS,CurrInvErr,ConditionSales,ConditionDays,DefaultSales,DefaultDays,DefaultConditionRate,SupplyChainConditionRate,MaxAdjustment,MinAdjustment,MaxUnexpAdjustment,MinUnexpAdjustment,DSD_Ind,RatesofSalesChange,RSDaysOH,POG_Ind,AlertUPC,PROMO_Ind,ShelfCapacity,CasePack,ProjectedWeeklySalesGain,AlertLostUnitsToDate,AlertLostSalesToDate,POSUNITS,POSSALES,AlertLostUnitsToDate2,PromoType,RegularSalesRate,PromoSalesRate,DaysSincePromo,AlertItemNumber,Attributes,RANK_VALUE) SELECT Vendor_key,Retailer_Key,ItemNumber,Store_Key,Period_Key,InterventionKey,FirstPublishDate,LastPublishDate,SEQ_NUM,ACTUAL_DAY_KEY,MerchandizerAccessibleValue,IncidentDetails,IncidentID,RSInventory,RetailOnHandAverage,RSInventoryAverage,RetailOnHand,DaysSincePOS,RSPIIsMax,LostSalesToDate,LostUnitsToDate,ConditionLength,ZeroScanDays,SalesRate13weeks,SalesLastWeek,AvgRSDemand,AvgPrice,ITEM_KEY,SUBVENDOR_ID_KEY,ExpectedLostSalesUnits,ExpectedLostSalesAmount,LastPOSScanPeriod,UPC,STOREID,ClassificationCode,GapProbability,AvgPOSPerDay,DaysSincePositiveRetailAdj,DaysSinceNegativeRetailAdj,DaysSincePositiveUnexplainedAdj,DaysSinceShrink,DaysSinceGS,CurrInvErr,ConditionSales,ConditionDays,DefaultSales,DefaultDays,DefaultConditionRate,SupplyChainConditionRate,MaxAdjustment,MinAdjustment,MaxUnexpAdjustment,MinUnexpAdjustment,DSD_Ind,RatesofSalesChange,RSDaysOH,POG_Ind,AlertUPC,PROMO_Ind,ShelfCapacity,CasePack,ProjectedWeeklySalesGain,AlertLostUnitsToDate,AlertLostSalesToDate,POSUNITS,POSSALES,AlertLostUnitsToDate2,PromoType,RegularSalesRate,PromoSalesRate,DaysSincePromo,AlertItemNumber,Attributes,RANK_VALUE FROM $(schema).FACT_RAW_ALERT_BK;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="260">
+        <sql>
+            DROP TABLE $(schema).FACT_RAW_ALERT_BK;
+        </sql>
+    </changeSet>
+    
+    
+</databaseChangeLog>

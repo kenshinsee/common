@@ -1,0 +1,8 @@
+FROM rsiiris/iris:python_with_jre
+ADD common /tmp/common/
+RUN \
+  chmod +x /tmp/common/deploy/deploy.py && \
+  chmod +x /tmp/common/script/liquibase/liquibase && \
+  python /tmp/common/deploy/0000.initial/00_init_common_script/00_add_pth.py
+ENV PATH=/tmp/common/script/liquibase:$PATH
+CMD ["/tmp/common/deploy/deploy.py"]

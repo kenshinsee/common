@@ -1,0 +1,181 @@
+#!/usr/bin/env python
+# coding=utf-8
+
+import json, datetime, configparser, sys, time, os, copy
+import tornado.web
+import tornado.ioloop
+import tornado.autoreload
+# from tornado.options import define, options
+from tornado.concurrent import run_on_executor
+from concurrent.futures import ThreadPoolExecutor
+from log.logger import Logger
+import fdbk_wrapper as wrapper
+from common.step_status import StepStatus
+
+# how many threads can be run at the same time. could trigger multi modules.
+MAX_WORKERS = 20
+PORT = 8000
+settings = {'debug': False, 'autoreload': False}
+
+# define("debug", default=True, help="Debug Mode", type=bool)
+# define('port', default=8000, type=int, help="this is the port >for application")
+
+# only works for individual testing. getting meta
+SEP = os.path.sep
+cwd = os.path.dirname(os.path.realpath(__file__))
+# generic_main_file = cwd + SEP + '..' + SEP + 'main.py'
+# CONFIG_FILE = cwd + SEP + '..' + SEP + '..' + SEP + 'config' + SEP + 'config.properties'
+# exec(open(generic_main_file).read())
+
+_log_file = '{path}{sep}log{sep}sync_feedback_{stamp}.log'.format(path=cwd, sep=SEP,
+                                                                  stamp=datetime.datetime.now().strftime('%Y%m%d'))
+_logger = Logger(log_level="INFO", target="console|file", module_name='syncrdpfeedback',
+                 vendor_key=-1, retailer_key=-1, log_file=_log_file, sql_conn=None)
+
+
+class FeedbackHandler(tornado.web.RequestHandler):
+    """
+    Sync feedback data from RDPs to OSA db.
+    sample URL: http://localhost:8000/osa/syncrdpfdbk/process
+    testing json data with post action
+    {"jobId": 1234,      # mandatory. passed from JobScheduler
+     "stepId": 3,        # mandatory. passed from JobScheduler
+     "batchId": 0,       # mandatory. passed from JobScheduler
+     "retry": 0,         # mandatory. passed from JobScheduler
+     "rdpId": "RDP_AUX", # optional - will process data with all feedback related RDPs(get RDPs from cp) if no rdp pa
+     "debug":"N"         # char: optional [Y|N]
+    }
+    if rdpId is given, then sync data for this specific rdp.
+    if rdpId is not given, then sync data for all feedback related RDPs.
+       This is the url to get all related RDPs: http://engv3dstr2.eng.rsicorp.local/config/properties/rdps?factType=fdbk
+    """
+    executor = ThreadPoolExecutor(max_workers=MAX_WORKERS)
+
+    # def initialize(self):  # testing
+    def initialize(self, meta):
+        self._meta = meta
+        self._rdp_id = self.get_argument('rdpId', None)
+
+    # get is only for testing purpose
+    def get(self, *args, **kwargs):
+        self.write("Please use post action")
+        # tornado.web.RequestHandler.write_error = self.write_error
+        # params = {"app": "sync_RDP_feedback",
+        #           "rdp_id": self._rdp_id,
+        #           "status": StepStatus.RUNNING.value}
+        # self.trigger_sync(params)
+        # _logger.info("Feedback is being processed at: %s with below parameters: " % datetime.datetime.now())
+        # _logger.info("rdp_id is: %s " % self._rdp_id)
+        # self.write(params)
+
+    def post(self, *args, **kwargs):
+        tornado.web.RequestHandler.write_error = self.write_error
+        params = json.loads(self.request.body.decode('utf-8'))
+        _logger.info("input json data is: %s" % params)
+
+        self.trigger_sync(params)
+
+        params["status"] = StepStatus.RUNNING.value
+        _logger.info("Feedback is being processed at: %s with below parameters: " % datetime.datetime.now())
+        _logger.info("parameters are: %s " % params)
+        self.write(params)
+
+    @run_on_executor
+    def trigger_sync(self, params):
+        fdbk = wrapper.FeedbackWrapper(meta=self._meta, params=params, logger=_logger)
+        msg = copy.deepcopy(params)
+        msg["status"] = StepStatus.RUNNING.value
+        msg["message"] = ""
+        msg["timestamp"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        try:
+            fdbk.on_action(msg)
+        except KeyboardInterrupt:
+            pass
+        finally:
+            fdbk.run()
+            fdbk.stop()
+
+    def write_error(self, status_code, **kwargs):
+        # by status_code
+        if status_code == 500:
+            self.write("<h1>Internal Server Error</h1>")
+        elif status_code == 400:
+            self.write('<h1>tornado.web.MissingArgumentError: HTTP 400: Bad Request (Missing argument retailerKey)</h1>')
+        elif status_code == 403:
+            self.write('<h1>sorry, request forbidden!</h1>')
+        else:
+            self.write('<h1>sorry, %s error occured!</h1>' % str(status_code))
+
+# Commented out below part as initialization is incorporated into the same handler FeedbackHandler.
+# And it will be triggered from common\deploy\0000.initial\03_script\01_init_feedback.py when initializing a new customer.
+# class InitialFeedbackHandler(tornado.web.RequestHandler):
+#     """
+#     one-time process, only sync feedback for new customer(vendor_key&retailer_key). Then FeedbackHandler will take care remaining job.
+#     example url: http://localhost:8000/osa/syncrdpfdbk/init?vendorKey=15&retailerKey=267
+#     vendorKey: mandatory.
+#     retailerKey: mandatory.
+#     """
+#     executor = ThreadPoolExecutor(max_workers=MAX_WORKERS)
+#
+#     def initialize(self, meta):
+#         self._meta = meta
+#         self._meta["LOGGER"] = _logger
+#         self._vendor_key = self.get_argument('vendorKey')
+#         self._retailer_key = self.get_argument('retailerKey')
+#         self._debug = self.get_argument('debug', 'N')
+#
+#     def get(self, *args, **kwargs):
+#         tornado.web.RequestHandler.write_error = self.write_error
+#         params = {"app": "init_rdp_feedback",
+#                   "vendor_key": self._vendor_key,
+#                   "retailer_key": self._retailer_key,
+#                   "debug": self._debug
+#                   }
+#
+#         self.trigger_init(params=params)
+#
+#         params["status"] = StepStatus.RUNNING.value  # running
+#         _logger.info("Initial feedback is being processed at: %s with below parameters: <br>" % datetime.datetime.now())
+#         _logger.info("parameters are: %s" % params)
+#         self.write(params)
+#
+#     @run_on_executor
+#     def trigger_init(self, params):
+#         init_fdbk = wrapper.InitialWrapper('amqp://admin:admin@10.172.36.74:5672/%2F',
+#                                            meta=self._meta, params=params, logger=self._meta["LOGGER"])
+#
+#         msg = copy.deepcopy(params)
+#         msg["status"] = StepStatus.RUNNING.value
+#         msg["message"] = ""
+#         msg["timestamp"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+#
+#         try:
+#             init_fdbk.on_action(msg)
+#         except KeyboardInterrupt:
+#             pass
+#         finally:
+#             init_fdbk.run()
+#             init_fdbk.stop()
+#
+#     def write_error(self, status_code, **kwargs):
+#         # by status_code
+#         if status_code == 500:
+#             self.write("<h1>Internal Server Error</h1>")
+#         elif status_code == 400:
+#             self.write('<h1>tornado.web.MissingArgumentError: HTTP 400: Bad Request (Missing argument retailerKey)</h1>')
+#         elif status_code == 403:
+#             self.write('<h1>sorry, request forbidden!</h1>')
+#         else:
+#             self.write('<h1>sorry, %s error occured!</h1>' % str(status_code))
+
+
+if __name__ == "__main__":
+    # options.parse_command_line()
+    fdbk_app = tornado.web.Application(
+        [(r'/osa/syncrdpfdbk/process', FeedbackHandler)
+         ],
+        **settings
+    )
+    fdbk_app.listen(PORT)
+    tornado.ioloop.IOLoop.current().start()

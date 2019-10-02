@@ -1,0 +1,125 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress
+  namespace: rsicommon
+spec:
+  rules:
+  - host: qaz1k8mas001.rsicorp.local
+    http:
+      paths:
+      - backend:
+          serviceName: scheduleservice
+          servicePort: 80
+        path: /common/schedule
+      - backend:
+          serviceName: jobservice
+          servicePort: 80
+        path: /common/job
+      - backend:
+          serviceName: authenticationservice
+          servicePort: 80
+        path: /auth
+      - backend:
+          serviceName: usermetadataservice
+          servicePort: 80
+        path: /usermetadata
+      - backend:
+          serviceName: pmpservice
+          servicePort: 80
+        path: /pmp
+      - backend:
+          serviceName: attributeservice
+          servicePort: 80
+        path: /attribute
+      - backend:
+          serviceName: configurationservice
+          servicePort: 80
+        path: /config
+  - host: irisqa.rsicorp.local
+    http:
+      paths:
+      - backend:
+          serviceName: authenticationservice
+          servicePort: 80
+        path: /auth
+  - host: pmaqa.rsicorp.local
+    http:
+      paths:
+      - backend:
+          serviceName: authenticationservice
+          servicePort: 80
+        path: /auth
+  - host: rppmqa.rsicorp.local
+    http:
+      paths:
+      - backend:
+          serviceName: pmpservice
+          servicePort: 80
+        path: /pmp
+      - backend:
+          serviceName: pmpclient
+          servicePort: 80
+        path: /rppm
+      - backend:
+          serviceName: pmpclient
+          servicePort: 80
+        path: /
+      - backend:
+          serviceName: authenticationservice
+          servicePort: 80
+        path: /auth
+  - host: adminqa.rsicorp.local
+    http:
+      paths:
+      - backend:
+          serviceName: authenticationservice
+          servicePort: 80
+        path: /auth
+      - backend:
+          serviceName: usermetadataservice
+          servicePort: 80
+        path: /usermetadata
+      - backend:
+          serviceName: pmpservice
+          servicePort: 80
+        path: /pmp
+      - backend:
+          serviceName: attributeservice
+          servicePort: 80
+        path: /attribute
+      - backend:
+          serviceName: configurationservice
+          servicePort: 80
+        path: /config
+  - host: reomobileqa.rsicorp.local
+    http:
+      paths:
+      - backend:
+          serviceName: usermetadataservice
+          servicePort: 80
+        path: /usermetadata
+      - backend:
+          serviceName: authenticationservice
+          servicePort: 80
+        path: /auth
+      - backend:
+          serviceName: configurationservice
+          servicePort: 80
+        path: /config
+      - backend:
+          serviceName: pmpservice
+          servicePort: 80
+        path: /pmp
+      - backend:
+          serviceName: pmpclient
+          servicePort: 80
+        path: /rppm
+  - host: pacific-qa.rsicorp.local
+    http:
+      paths:
+      - backend:
+          serviceName: authenticationservice
+          servicePort: 80
+        path: /auth

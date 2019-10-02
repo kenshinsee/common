@@ -1,0 +1,32 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    
+    <changeSet author="hong.hu (generated)" id="2">
+        <sql>
+            alter table $(common).DIM_STORE add column insert_ts timestamp default sysdate;
+            alter table $(common).DIM_STORE add column STORE_NAME varchar(200);
+            alter table $(common).DIM_PRODUCT add column insert_ts timestamp default sysdate;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="3">
+        <sql>
+            ALTER TABLE $(common).DIM_STORE DROP CONSTRAINT PK_DIM_STORE;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="4">
+        <sql>
+            ALTER TABLE $(common).DIM_STORE ADD CONSTRAINT PK_DIM_STORE PRIMARY KEY (RETAILER_KEY, VENDOR_KEY, STORE_KEY) DISABLED;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="5">
+        <sql>
+            ALTER TABLE $(common).DIM_PRODUCT DROP CONSTRAINT PK_DIM_PRODUCT;
+        </sql>
+    </changeSet>
+    <changeSet author="hong.hu (generated)" id="6">
+        <sql>
+            ALTER TABLE $(common).DIM_PRODUCT ADD CONSTRAINT PK_DIM_PRODUCT PRIMARY KEY (RETAILER_KEY, VENDOR_KEY, ITEM_KEY) DISABLED;
+        </sql>
+    </changeSet>
+    
+</databaseChangeLog>

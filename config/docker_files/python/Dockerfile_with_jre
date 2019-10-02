@@ -1,0 +1,2 @@
+FROM rsiiris/iris:python
+RUN apt-get -y install default-jre-headless

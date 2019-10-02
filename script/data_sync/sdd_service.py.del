@@ -1,0 +1,65 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+import time
+import json
+import requests
+from tornado.web import RequestHandler
+from concurrent.futures import ThreadPoolExecutor
+from tornado.concurrent import run_on_executor
+from log.logger import Logger
+from common.step_status import StepStatus
+from SyncDimData import SDDWrapper
+
+logger = Logger(log_level="INFO", target="console", module_name="sdd_service")
+
+
+class SyncDimDataHandler(RequestHandler):
+    """
+    Handle Sync Dim Data by HTTP POST request
+    http://localhost:7890/osa/syncDimData/process
+    POST body like
+    {
+        "jobId": 234567890,
+        "stepId": 1,
+        "batchId": 1,
+        "retry": 0,
+        "dwConnVertica": false,
+        "allDim": false,
+        "hubIDs": "['HUB_FUNCTION_BETA', 'HUB_FUNCTION_MB']",
+        "log_level": 20
+    }
+    dwConnVertica: optional - [true | false(default)] True will copy data from Vertica to Vertica, else exchange by file
+    allDim: optional - [true | false(default)] True will get all dim data, else only those set in AP_ALERT_CYCLE_MAPPING
+    hubIDs: optional - ignore this will get hubs from service {api_config_str}/hubs
+    log_level: optional - default 20 AS Info, refer logging level
+    """
+    executor = ThreadPoolExecutor(11)
+
+    def initialize(self, meta):
+        self._logger = logger
+        self._meta = meta.copy()
+        self._request_body = json.loads(self.request.body.decode('utf-8'))
+        self._request_body["log_level"] = self._request_body.get("log_level", 20)
+        self._logger.set_level(self._request_body["log_level"])
+        self._logger.set_keys(log_id="{}_{}".format(self._request_body["jobId"], self._request_body["stepId"]))
+        self._logger.info(self._request_body)
+        self._request_body["dw_conn_vertica"] = self._request_body.get("dwConnVertica", False)
+        self._request_body["all_dim"] = self._request_body.get("allDim", False)
+        if self._request_body.get("hubIDs"):
+            self._request_body["hub_ids"] = eval(self._request_body.get("hubIDs"))
+        else:
+            self._request_body["hub_ids"] = requests.get("{}/hubs".format(meta["api_config_str"])).json()
+
+    @run_on_executor
+    def sync_dim_data(self):
+        sdd = SDDWrapper(meta={**self._meta, **{"logger": self._logger}}.copy())
+        sdd.on_action(self._request_body.copy())
+
+    def post(self, *args, **kwargs):
+        self.sync_dim_data()
+        self.set_header('Content-Type', 'application/json')
+        self._request_body["status"] = StepStatus.RUNNING.value
+        self._request_body["message"] = '{}: Sync Dim Data is processing with parameters {}'.format(
+            time.asctime(time.localtime(time.time())), self._request_body)
+        self.write(json.dumps(self._request_body))
+        self.flush()
