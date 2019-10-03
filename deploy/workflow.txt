@@ -8,7 +8,6 @@ deployMain/process
       "vendor_key": -1, 
       "retailer_key": -1
     }
-query status of $defid:deploy:common
 (2) 
 --> deploy/process
 --> "groupName": "$defid:deploy:$retailer_key"

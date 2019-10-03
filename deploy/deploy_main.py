@@ -66,18 +66,26 @@ class DeployMain(object):
                 self._sql.close_connection()
                 
             for p in v_r_pair:
-                vendor_key = p.VENDOR_KEY
-                retailer_key = p.RETAILER_KEY
-                try:
-                    silo_config = Config(meta=self.meta, vendor_key=vendor_key, retailer_key=retailer_key).json_data
-                except Exception as e:
-                    self.logger.warning('vendor=%s retailer=%s is not found in the configuration service, skipping...' % (vendor_key, retailer_key))
-                    continue
-                self.retailer_vendor_pair.setdefault(retailer_key, []).append[vendor_key]
+                if self.is_valid_retailer_vendor_combination(retailer_key = p.RETAILER_KEY, vendor_key = p.VENDOR_KEY):
+                    self.retailer_vendor_pair.setdefault(p.RETAILER_KEY, []).append[p.VENDOR_KEY]
         else:
             retailer_key = request_body.get("retailer_key")
             vendor_key_list = request_body.get("vendor_key_list", [])
-            self.retailer_vendor_pair[retailer_key] = vendor_key_list
+            if retailer_key is None or len(vendor_key_list)==0:
+                raise ValueError('retailer_key=%s vendor_key_list=%s must be specified.'%(retailer_key, vendor_key_list))
+            for vendor_key in vendor_key_list:
+                if self.is_valid_retailer_vendor_combination(retailer_key = retailer_key, vendor_key = vendor_key):
+                    self.retailer_vendor_pair.setdefault(retailer_key, []).append[vendor_key]
+                    
+        
+    def is_valid_retailer_vendor_combination(self, retailer_key, vendor_key):
+        is_valid = True
+        try:
+            silo_config = Config(meta=self.meta, vendor_key=vendor_key, retailer_key=retailer_key).json_data
+        except Exception as e:
+            self.logger.warning('vendor=%s retailer=%s is not found in the configuration service, skipping...' % (vendor_key, retailer_key))
+            is_valid = False
+        return is_valid
         
         
     def get_schema_name(self, retailer_key):
@@ -144,7 +152,7 @@ class DeployMain(object):
         pass
     
     
-    def gen_db_property_files(self, retailer_key=-1, db_folder):
+    def gen_db_property_files(self, retailer_key, db_folder):
         '''
         1. create work_dir under db_folder
         2. create property files under work_dir
@@ -236,8 +244,53 @@ class DeployMain(object):
             prop_files.append(full_file)
             self.logger.info('Property file: %s is created.' % full_file)
             
-        return (master_src_tgt_mapping, prop_files)
+        return (master_src_tgt_mapping, prop_files, work_dir)
     
+        
+    def gen_db_master_change_log(self, retailer_key, master_src_tgt_mapping, work_dir):
+        '''
+        get master change log name from property file
+        '''
+        for prefix in master_src_tgt_mapping:
+            if master_src_tgt_mapping[prefix]['source_file']:
+                source_file = master_src_tgt_mapping[prefix]['source_file']
+                target_file = master_src_tgt_mapping[prefix]['target_file']
+                if os.path.exists(target_file):
+                    self.logger.info('Master file: %s already exists.' % target_file)
+                    continue
+                
+                if os.path.exists(source_file):
+                    with open(source_file, 'rt') as in_file:
+                        with open(target_file, 'wt') as out_file:
+                            content = in_file.read()
+                            change_log_files = re.findall(r'file="(.*)"', content)
+                            for change_log_file in change_log_files:
+                                full_change_log_file = os.path.join(work_dir, change_log_file)
+                                updated_change_log_file = self.add_suffix_to_file_name(full_change_log_file, work_dir)
+                                content = content.replace('"%s"' % change_log_file, '"%s"' % updated_change_log_file)
+                            out_file.write(content)
+                else:
+                    self.gen_empty_db_change_log(target_file, work_dir) # create master file with a change log file which actually is an empty change log file
+                self.logger.info('Master file: %s is created.' % target_file)
+        
+        
+    def gen_empty_db_change_log(self, file_name, work_dir):
+        with open(file_name, 'w') as f:
+            f.write('<?xml version="1.1" encoding="UTF-8" standalone="no"?>\n')
+            f.write('<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">\n')
+            if 'master' in file_name: 
+                raw_file_name = file_name.split(self.SEP)[-1]
+                change_log_file = 'dbchangelog_1_schema.xml'
+                if raw_file_name.startswith('app_'):
+                    change_log_file = 'app_' + change_log_file
+                else:
+                    prefix = '_'.join(raw_file_name.split('_')[0:2])
+                    change_log_file = prefix + '_' + change_log_file
+                f.write('  <include file="%s"/>\n' % os.path.join(work_dir, change_log_file))
+            f.write('</databaseChangeLog>')
+            
+            
+            
         
     def main(self):
         
@@ -246,7 +299,8 @@ class DeployMain(object):
             common_folders = self.get_folder_list(deploy_type='common')
             for common_folder in common_folders:
                 if common_folder.endswith('_db'):
-                    self.gen_db_property_files(common_folder)
+                    master_src_tgt_mapping, prop_files, work_dir = self.gen_db_property_files(retailer_key = -1, db_folder = common_folder)
+                    self.gen_db_master_change_log(retailer_key = -1, master_src_tgt_mapping = master_src_tgt_mapping, work_dir = work_dir)
                     #self.exec_db(retailer_key=-1, db_folder=common_folder)
                 elif common_folder.endswith('_script'):
                     self.exec_script(common_folder)
