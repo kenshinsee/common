@@ -63,7 +63,7 @@ class DeployMain(object):
                 
             for p in v_r_pair:
                 if self.is_valid_retailer_vendor_combination(retailer_key = p.RETAILER_KEY, vendor_key = p.VENDOR_KEY):
-                    self.retailer_vendor_pair.setdefault(p.RETAILER_KEY, []).append[p.VENDOR_KEY]
+                    self.retailer_vendor_pair.setdefault(p.RETAILER_KEY, []).append(p.VENDOR_KEY)
         else:
             retailer_key = request_body.get("retailer_key")
             vendor_key_list = request_body.get("vendor_key_list", [])
@@ -71,7 +71,7 @@ class DeployMain(object):
                 raise ValueError('retailer_key=%s vendor_key_list=%s must be specified.'%(retailer_key, vendor_key_list))
             for vendor_key in vendor_key_list:
                 if self.is_valid_retailer_vendor_combination(retailer_key = retailer_key, vendor_key = vendor_key):
-                    self.retailer_vendor_pair.setdefault(retailer_key, []).append[vendor_key]
+                    self.retailer_vendor_pair.setdefault(retailer_key, []).append(vendor_key)
                     
         
     def is_valid_retailer_vendor_combination(self, retailer_key, vendor_key):
@@ -354,6 +354,19 @@ class DeployMain(object):
                 elif common_folder.endswith('_script'):
                     self.exec_script(script_dir = common_folder, vendor_key = -1, retailer_key = -1)
         
+        for retailer_key in retailer_vendor_pair:
+            folders = self.get_folder_list(deploy_type='retailer')
+            db_folders = [folder for folder in folders if folder.endswith('_db')]
+            script_folders = [folder for folder in folders if folder.endswith('_script')]
+            
+            # initialize retailer schema
+            for folder in db_folders:
+                self.exec_db(db_dir = folder, retailer_key = retailer_key)
+                
+            # execute scripts for retailer vendor combinations
+            for vendor_key in vendor_key_list:
+                for folder in script_folders:
+                    self.exec_script(script_dir = folder, vendor_key = vendor_key, retailer_key = retailer_key)
         
         
 class DeployMainHandler(MasterHandler):
