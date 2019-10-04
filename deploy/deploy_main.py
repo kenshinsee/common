@@ -19,11 +19,7 @@ from datetime import datetime
  
 class DeployMain(object):
     
-    def __init__(self, 
-                 meta=None, 
-                 request_body=None, 
-                 logger=None
-                 ):
+    def __init__(self, meta=None, request_body=None, logger=None):
         
         self.meta = meta
         self.logger = logger if logger else Logger(log_level="info", vendor_key=-1, retailer_key=-1, module_name="deployMain")
@@ -91,8 +87,8 @@ class DeployMain(object):
     def get_schema_name(self, retailer_key):
         if not retailer_key:
             raise ValueError('retailer_key is None.')
-        elif retailer_key == -1: # -1 is just for installing common schema (0000.initial/[00_init_common_script|00_init_common_db])
-            return self.common_schema # liquibase anyway would check this schema and create meta table in it, so it should be an existing schema, actually we do nothing to this schema if -1, -1 is specified
+        elif retailer_key == -1:
+            return self.common_schema
         else:
             return self.vertica_schema_prefix + self.capacity.get_retailer_schema_name(retailer_key)
         
@@ -120,9 +116,9 @@ class DeployMain(object):
     
     def add_suffix_to_file_name(self, file_name, suffix):
         '''
-        file_name: xxxx.xml
+        file_name: /aa/bb/xxxx.xml
         suffix: -1
-        return: xxxx.-1.xml
+        return: /aa/bb/xxxx.-1.xml
         '''
         path = (self.SEP).join( file_name.split(self.SEP)[0:-1])
         raw_file_name = file_name.split(self.SEP)[-1]
@@ -130,41 +126,32 @@ class DeployMain(object):
         ext = raw_file_name.split('.')[-1]
         return os.path.join(path, '%s.%s.%s'%(raw_file_name_without_ext, suffix, ext))
         
-        
-    def exec_script(self, folder):
-        try:
-            self.logger.info(self.meta)
-            json_meta_str = json.dumps(self.meta) # not sure why sometimes it stops here without any error info, so wrap it with try-except for debug purpose
-            self.logger.info('Dump json successfully.')
-        except Exception as e:
-            self.logger.info('Dump json failed.')
-            raise e
-        
-        scripts = [os.path.join(folder,f) for f in os.listdir(folder) if os.path.isfile(os.path.join(folder,f)) and f.endswith('.py')]
-        scripts.sort()
-        for script in scripts:
-            args = ['python', script, '--vendor_key', str(self.vendor_key), '--retailer_key', str(self.retailer_key), '--meta', json_meta_str]
-            self.logger.info('Executing %s' % script)
-            subprocess.run(args, check=True)
     
-    
-    def exec_db(self, folder):
-        pass
-    
-    
-    def gen_db_property_files(self, retailer_key, db_folder):
+    def remove_suffix_from_file_name(self, file_name, suffix):
         '''
-        1. create work_dir under db_folder
-        2. create property files under work_dir
+        file_name: /aa/bb/xxxx.-1.xml
+        suffix: -1
+        return: /aa/bb/xxxx.xml
+        '''
+        path = os.path.join(*file_name.split(self.SEP)[0:-1])
+        raw_file_name = file_name.split(self.SEP)[-1]
+        raw_file_name_ext = raw_file_name.split('.')[-2:-1][0]
+        if raw_file_name_ext == suffix:
+            raw_file_name_without_ext = '.'.join(raw_file_name.split('.')[0:-2])
+            ext = raw_file_name.split('.')[-1]
+            return os.path.join(path, '%s.%s'%(raw_file_name_without_ext, ext))
+        else:
+            raise ValueError('Suffix %s is not found in %s'%(suffix, file_name))
+        
+        
+    def gen_db_property_files(self, retailer_key, db_dir, work_dir):
+        '''
+        1. create property files under work_dir
            - app property file with suffix
            - dw_common property file with suffix
            - dw_schema property file with suffix
-        3. retailer_key = -1: deploy common schema, otherwise deploy retailer schema
+        2. retailer_key = -1: deploy common schema, otherwise deploy retailer schema
         '''
-        work_dir = os.path.join(db_folder, self.vertica_schema_prefix + 'work_dir')
-        if not os.path.exists(work_dir):
-            os.mkdir(work_dir)
-            
         prop_meta = [ {'app_dbchangelog.properties': {
                              'driver': 'com.microsoft.sqlserver.jdbc.SQLServerDriver',
                              'classpath': os.path.join(self.liquibase_dir, 'lib', 'sqljdbc42.jar'),
@@ -234,7 +221,7 @@ class DeployMain(object):
                     if prop == 'changeLogFile':
                         for prefix in master_src_tgt_mapping:
                             if file.startswith(prefix):
-                                master_src_tgt_mapping[prefix]['source_file'] = os.path.join(db_folder, m[prop].strip())
+                                master_src_tgt_mapping[prefix]['source_file'] = os.path.join(db_dir, m[prop].strip())
                                 master_src_tgt_mapping[prefix]['target_file'] = self.add_suffix_to_file_name(os.path.join(work_dir, m[prop].strip()), retailer_key)
                                 value = master_src_tgt_mapping[prefix]['target_file'].replace('\\', '\\\\') # escape \ for win
                                 break
@@ -244,7 +231,7 @@ class DeployMain(object):
             prop_files.append(full_file)
             self.logger.info('Property file: %s is created.' % full_file)
             
-        return (master_src_tgt_mapping, prop_files, work_dir)
+        return (master_src_tgt_mapping, prop_files)
     
         
     def gen_db_master_change_log(self, retailer_key, master_src_tgt_mapping, work_dir):
@@ -265,8 +252,7 @@ class DeployMain(object):
                             content = in_file.read()
                             change_log_files = re.findall(r'file="(.*)"', content)
                             for change_log_file in change_log_files:
-                                full_change_log_file = os.path.join(work_dir, change_log_file)
-                                updated_change_log_file = self.add_suffix_to_file_name(full_change_log_file, work_dir)
+                                updated_change_log_file = self.add_suffix_to_file_name(os.path.join(work_dir, change_log_file), retailer_key)
                                 content = content.replace('"%s"' % change_log_file, '"%s"' % updated_change_log_file)
                             out_file.write(content)
                 else:
@@ -274,6 +260,39 @@ class DeployMain(object):
                 self.logger.info('Master file: %s is created.' % target_file)
         
         
+    def gen_db_change_log(self, retailer_key, master_src_tgt_mapping, db_dir):
+        '''
+        get change log names from master change log
+        '''
+        var_in_content = {
+            '$(schema)': self.get_schema_name(retailer_key), 
+            '$(common)': self.common_schema
+        }
+        for prefix in master_src_tgt_mapping:
+            master_file = master_src_tgt_mapping[prefix]['target_file']
+            self.logger.info('Creating changelogfile for %s'%master_file)
+            with open(master_file) as mf:
+                mf_content = mf.read()
+                db_change_log_files = re.findall(r'file="(.*)"', mf_content)
+                for log_file in db_change_log_files:
+                    if os.path.exists(log_file):
+                        self.logger.info('Change log file: %s already exists.' % log_file)
+                        continue
+                        
+                    raw_log_name = self.remove_suffix_from_file_name(log_file, retailer_key).split(self.SEP)[-1]
+                    full_raw_log_name = os.path.join(db_dir, raw_log_name)
+                    if os.path.exists(full_raw_log_name):
+                        with open(full_raw_log_name, 'rt', encoding='utf-8', errors='ignore') as in_file:
+                            with open(log_file, 'wt', encoding='utf-8') as out_file:
+                                content = in_file.read()
+                                for v in var_in_content:
+                                    content = content.replace(v, var_in_content[v])
+                                out_file.write(content)
+                    else:
+                        self.gen_empty_db_change_log(log_file)
+                    self.logger.info('Change log file: %s is created.' % log_file)
+                    
+                    
     def gen_empty_db_change_log(self, file_name, work_dir):
         with open(file_name, 'w') as f:
             f.write('<?xml version="1.1" encoding="UTF-8" standalone="no"?>\n')
@@ -289,21 +308,51 @@ class DeployMain(object):
                 f.write('  <include file="%s"/>\n' % os.path.join(work_dir, change_log_file))
             f.write('</databaseChangeLog>')
             
+
+    def exec_db(self, db_dir, retailer_key):
+        work_dir = os.path.join(db_dir, self.vertica_schema_prefix + 'work_dir')
+        if not os.path.exists(work_dir):
+            os.mkdir(work_dir)
+        master_src_tgt_mapping, prop_files = self.gen_db_property_files(retailer_key = retailer_key, db_dir = db_dir, work_dir = work_dir)
+        self.gen_db_master_change_log(retailer_key = retailer_key, master_src_tgt_mapping = master_src_tgt_mapping, work_dir = work_dir)
+        self.gen_db_change_log(retailer_key = retailer_key, master_src_tgt_mapping = master_src_tgt_mapping, db_dir = db_dir)
+                
+        liquibase_script = os.path.join(self.liquibase_dir, 'liquibase')
+        db_extra_param = ''
+        db_mode = 'update'
+        for prop_file in prop_files:
+            liquibase_param = '--defaultsFile %s %s' % (prop_file, db_extra_param)
+            cmd = '%s %s %s' % (liquibase_script, liquibase_param, db_mode)
+            self.logger.info('Executing %s' % cmd)
+            subprocess.run(cmd, shell=True, check=True)
             
             
+    def exec_script(self, script_dir, vendor_key, retailer_key):
+        try:
+            self.logger.info(self.meta)
+            json_meta_str = json.dumps(self.meta) # not sure why sometimes it stops here without any error info, so wrap it with try-except for debug purpose
+            self.logger.info('Dump json successfully.')
+        except Exception as e:
+            self.logger.info('Dump json failed.')
+            raise e
         
+        scripts = [os.path.join(script_dir, f) for f in os.listdir(script_dir) if os.path.isfile(os.path.join(script_dir, f)) and f.endswith('.py')]
+        scripts.sort()
+        for script in scripts:
+            args = ['python', script, '--vendor_key', str(vendor_key), '--retailer_key', str(retailer_key), '--meta', json_meta_str]
+            self.logger.info('Executing %s' % script)
+            subprocess.run(args, check=True)
+    
+    
     def main(self):
-        
         if self.is_initial:
             # initialize common schema
             common_folders = self.get_folder_list(deploy_type='common')
             for common_folder in common_folders:
                 if common_folder.endswith('_db'):
-                    master_src_tgt_mapping, prop_files, work_dir = self.gen_db_property_files(retailer_key = -1, db_folder = common_folder)
-                    self.gen_db_master_change_log(retailer_key = -1, master_src_tgt_mapping = master_src_tgt_mapping, work_dir = work_dir)
-                    #self.exec_db(retailer_key=-1, db_folder=common_folder)
+                    self.exec_db(db_dir = common_folder, retailer_key = -1)
                 elif common_folder.endswith('_script'):
-                    self.exec_script(common_folder)
+                    self.exec_script(script_dir = common_folder, vendor_key = -1, retailer_key = -1)
         
         
         
