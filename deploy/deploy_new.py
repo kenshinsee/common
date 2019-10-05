@@ -24,8 +24,7 @@ class Deploy(object):
         self.meta = meta
         self.logger = logger if logger else Logger(log_level="info", vendor_key=-1, retailer_key=-1, module_name="deployMain")
         self.cwd = os.path.dirname(os.path.realpath(__file__))
-        self.SEP = os.path.sep
-        self.liquibase_dir = os.path.join(self.cwd, '..', 'script', 'liquibase')
+        self.liquibase_dir = self.path_join(self.cwd, '..', 'script', 'liquibase')
         self.common_schema = meta['db_conn_vertica_common_schema']
         self.vertica_schema_prefix = meta['db_conn_vertica_schema_prefix']
         self.capacity = Capacity(meta=meta)
@@ -73,6 +72,20 @@ class Deploy(object):
                 if self.is_valid_retailer_vendor_combination(retailer_key = retailer_key, vendor_key = vendor_key):
                     self.retailer_vendor_pair.setdefault(retailer_key, []).append(vendor_key)
                     
+                    
+    def path_join(*args):
+        '''
+        os.path.join has a bug on Windows, it is not able to add os.sep after root path.
+        e.g.
+        os.path.join('c:', 'a')
+        expected: c:\\a
+        actual return: c:a
+        '''
+        ret = []
+        for arg in args:
+            ret.append(arg)
+        return (os.sep).join(ret)
+    
         
     def is_valid_retailer_vendor_combination(self, retailer_key, vendor_key):
         is_valid = True
@@ -94,7 +107,7 @@ class Deploy(object):
         
         
     def get_sub_folders(self, folder):
-        sub_folders = [os.path.join(folder, f) for f in next(os.walk(folder))[1] if not f.endswith('__pycache__')]
+        sub_folders = [self.path_join(folder, f) for f in next(os.walk(folder))[1] if not f.endswith('__pycache__')]
         sub_folders.sort()
         return sub_folders
         
@@ -106,9 +119,9 @@ class Deploy(object):
             sub_folders = self.get_sub_folders(release_folder)
             for sub_folder in sub_folders:
                 if deploy_type == 'common' and (sub_folder.endswith('common_script') or sub_folder.endswith('common_db')): 
-                    return_folders.append(os.path.join(release_folder, sub_folder))
+                    return_folders.append(self.path_join(release_folder, sub_folder))
                 elif deploy_type == 'retailer' and not (sub_folder.endswith('common_script') or sub_folder.endswith('common_db')): 
-                    return_folders.append(os.path.join(release_folder, sub_folder))
+                    return_folders.append(self.path_join(release_folder, sub_folder))
                 else:
                     pass
         return return_folders
@@ -120,11 +133,11 @@ class Deploy(object):
         suffix: -1
         return: /aa/bb/xxxx.-1.xml
         '''
-        path = (self.SEP).join( file_name.split(self.SEP)[0:-1])
-        raw_file_name = file_name.split(self.SEP)[-1]
+        path = (os.sep).join( file_name.split(os.sep)[0:-1])
+        raw_file_name = file_name.split(os.sep)[-1]
         raw_file_name_without_ext = '.'.join(raw_file_name.split('.')[0:-1])
         ext = raw_file_name.split('.')[-1]
-        return os.path.join(path, '%s.%s.%s'%(raw_file_name_without_ext, suffix, ext))
+        return self.path_join(path, '%s.%s.%s'%(raw_file_name_without_ext, suffix, ext))
         
     
     def remove_suffix_from_file_name(self, file_name, suffix):
@@ -133,13 +146,13 @@ class Deploy(object):
         suffix: -1
         return: /aa/bb/xxxx.xml
         '''
-        path = os.path.join(*file_name.split(self.SEP)[0:-1])
-        raw_file_name = file_name.split(self.SEP)[-1]
+        path = self.path_join(*file_name.split(os.sep)[0:-1])
+        raw_file_name = file_name.split(os.sep)[-1]
         raw_file_name_ext = raw_file_name.split('.')[-2:-1][0]
         if raw_file_name_ext == suffix:
             raw_file_name_without_ext = '.'.join(raw_file_name.split('.')[0:-2])
             ext = raw_file_name.split('.')[-1]
-            return os.path.join(path, '%s.%s'%(raw_file_name_without_ext, ext))
+            return self.path_join(path, '%s.%s'%(raw_file_name_without_ext, ext))
         else:
             raise ValueError('Suffix %s is not found in %s'%(suffix, file_name))
         
@@ -154,7 +167,7 @@ class Deploy(object):
         '''
         prop_meta = [ {'app_dbchangelog.properties': {
                              'driver': 'com.microsoft.sqlserver.jdbc.SQLServerDriver',
-                             'classpath': os.path.join(self.liquibase_dir, 'lib', 'sqljdbc42.jar'),
+                             'classpath': self.path_join(self.liquibase_dir, 'lib', 'sqljdbc42.jar'),
                              'changeLogFile': 'app_dbchangelog_0_master.xml',
                              'url': 'jdbc:sqlserver://%s:%s;databaseName=%s;integratedSecurity=false' % (self.meta['db_conn_mssql_servername'], 
                                                                                                          self.meta['db_conn_mssql_port'], 
@@ -167,7 +180,7 @@ class Deploy(object):
                        },
                        {'dw_common_dbchangelog.properties': {
                              'driver': 'com.vertica.jdbc.Driver',
-                             'classpath': os.path.join(self.liquibase_dir, 'lib', 'vertica-jdbc-7.2.1-0.jar'),
+                             'classpath': self.path_join(self.liquibase_dir, 'lib', 'vertica-jdbc-7.2.1-0.jar'),
                              'changeLogFile': 'dw_common_dbchangelog_0_master.xml',
                              'url': 'jdbc:vertica://%s:%s/%s' % (self.meta['db_conn_vertica_servername'], 
                                                                  self.meta['db_conn_vertica_port'], 
@@ -181,7 +194,7 @@ class Deploy(object):
                        },
                        {'dw_schema_dbchangelog.properties': {
                              'driver': 'com.vertica.jdbc.Driver',
-                             'classpath': os.path.join(self.liquibase_dir, 'lib', 'vertica-jdbc-7.2.1-0.jar'),
+                             'classpath': self.path_join(self.liquibase_dir, 'lib', 'vertica-jdbc-7.2.1-0.jar'),
                              'changeLogFile': 'dw_schema_dbchangelog_0_master.xml',
                              'url': 'jdbc:vertica://%s:%s/%s' % (self.meta['db_conn_vertica_servername'], 
                                                                  self.meta['db_conn_vertica_port'], 
@@ -213,7 +226,7 @@ class Deploy(object):
         prop_files = []
         for idx, sub_meta in enumerate(prop_meta):
             file = list(sub_meta.keys())[0]
-            full_file = self.add_suffix_to_file_name(os.path.join(work_dir, file), retailer_key)
+            full_file = self.add_suffix_to_file_name(self.path_join(work_dir, file), retailer_key)
             
             with open(full_file, 'w') as fh:
                 m = prop_meta[idx][file]
@@ -221,8 +234,8 @@ class Deploy(object):
                     if prop == 'changeLogFile':
                         for prefix in master_src_tgt_mapping:
                             if file.startswith(prefix):
-                                master_src_tgt_mapping[prefix]['source_file'] = os.path.join(db_dir, m[prop].strip())
-                                master_src_tgt_mapping[prefix]['target_file'] = self.add_suffix_to_file_name(os.path.join(work_dir, m[prop].strip()), retailer_key)
+                                master_src_tgt_mapping[prefix]['source_file'] = self.path_join(db_dir, m[prop].strip())
+                                master_src_tgt_mapping[prefix]['target_file'] = self.add_suffix_to_file_name(self.path_join(work_dir, m[prop].strip()), retailer_key)
                                 value = master_src_tgt_mapping[prefix]['target_file'].replace('\\', '\\\\') # escape \ for win
                                 break
                     else:
@@ -252,7 +265,7 @@ class Deploy(object):
                             content = in_file.read()
                             change_log_files = re.findall(r'file="(.*)"', content)
                             for change_log_file in change_log_files:
-                                updated_change_log_file = self.add_suffix_to_file_name(os.path.join(work_dir, change_log_file), retailer_key)
+                                updated_change_log_file = self.add_suffix_to_file_name(self.path_join(work_dir, change_log_file), retailer_key)
                                 content = content.replace('"%s"' % change_log_file, '"%s"' % updated_change_log_file)
                             out_file.write(content)
                 else:
@@ -279,8 +292,8 @@ class Deploy(object):
                         self.logger.info('Change log file: %s already exists.' % log_file)
                         continue
                         
-                    raw_log_name = self.remove_suffix_from_file_name(log_file, retailer_key).split(self.SEP)[-1]
-                    full_raw_log_name = os.path.join(db_dir, raw_log_name)
+                    raw_log_name = self.remove_suffix_from_file_name(log_file, retailer_key).split(os.sep)[-1]
+                    full_raw_log_name = self.path_join(db_dir, raw_log_name)
                     if os.path.exists(full_raw_log_name):
                         with open(full_raw_log_name, 'rt', encoding='utf-8', errors='ignore') as in_file:
                             with open(log_file, 'wt', encoding='utf-8') as out_file:
@@ -298,26 +311,26 @@ class Deploy(object):
             f.write('<?xml version="1.1" encoding="UTF-8" standalone="no"?>\n')
             f.write('<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">\n')
             if 'master' in file_name: 
-                raw_file_name = file_name.split(self.SEP)[-1]
+                raw_file_name = file_name.split(os.sep)[-1]
                 change_log_file = 'dbchangelog_1_schema.xml'
                 if raw_file_name.startswith('app_'):
                     change_log_file = 'app_' + change_log_file
                 else:
                     prefix = '_'.join(raw_file_name.split('_')[0:2])
                     change_log_file = prefix + '_' + change_log_file
-                f.write('  <include file="%s"/>\n' % os.path.join(work_dir, change_log_file))
+                f.write('  <include file="%s"/>\n' % self.path_join(work_dir, change_log_file))
             f.write('</databaseChangeLog>')
             
 
     def exec_db(self, db_dir, retailer_key):
-        work_dir = os.path.join(db_dir, self.vertica_schema_prefix + 'work_dir')
+        work_dir = self.path_join(db_dir, self.vertica_schema_prefix + 'work_dir')
         if not os.path.exists(work_dir):
             os.mkdir(work_dir)
         master_src_tgt_mapping, prop_files = self.gen_db_property_files(retailer_key = retailer_key, db_dir = db_dir, work_dir = work_dir)
         self.gen_db_master_change_log(retailer_key = retailer_key, master_src_tgt_mapping = master_src_tgt_mapping, work_dir = work_dir)
         self.gen_db_change_log(retailer_key = retailer_key, master_src_tgt_mapping = master_src_tgt_mapping, db_dir = db_dir)
                 
-        liquibase_script = os.path.join(self.liquibase_dir, 'liquibase')
+        liquibase_script = self.path_join(self.liquibase_dir, 'liquibase')
         db_extra_param = ''
         db_mode = 'update'
         for prop_file in prop_files:
@@ -336,7 +349,7 @@ class Deploy(object):
             self.logger.info('Dump json failed.')
             raise e
         
-        scripts = [os.path.join(script_dir, f) for f in os.listdir(script_dir) if os.path.isfile(os.path.join(script_dir, f)) and f.endswith('.py')]
+        scripts = [self.path_join(script_dir, f) for f in os.listdir(script_dir) if os.path.isfile(self.path_join(script_dir, f)) and f.endswith('.py')]
         scripts.sort()
         for script in scripts:
             args = ['python', script, '--vendor_key', str(vendor_key), '--retailer_key', str(retailer_key), '--meta', json_meta_str]
